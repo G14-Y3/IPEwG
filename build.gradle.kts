@@ -18,16 +18,14 @@ repositories {
 }
 
 javafx {
-    version = "11.0.2"
+    version = "14"
     modules = listOf("javafx.controls", "javafx.graphics")
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
-    implementation("no.tornado:tornadofx:1.7.20") {
-        exclude("org.jetbrains.kotlin")
-    }
+    implementation("no.tornado:tornadofx:1.7.20")
 
     testImplementation(kotlin("test"))
 }
