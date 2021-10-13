@@ -18,7 +18,6 @@ class GUI : View("IPEwG") {
         top<TopBar>()
         left<FilterPanel>()
         center = find<ImagePanel>(mapOf(ImagePanel::uri to sample1)).root
-        right = label("seomthing")
     }
 }
 

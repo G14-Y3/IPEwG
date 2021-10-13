@@ -2,6 +2,7 @@ package gui
 
 import ImageController
 import ImportImage
+import javafx.geometry.Insets
 import javafx.scene.image.ImageView
 import javafx.stage.StageStyle
 import tornadofx.*
@@ -15,11 +16,8 @@ class ImagePanel : View() {
     override val root = vbox {
         imageview(ImageController().load(testImageUrl).get(raw = true)) {
             oriImageView = this
-        }
-
-        button("Open...") {
-            action {
-                find(ImportImage::class).openModal(stageStyle = StageStyle.UTILITY)
+            vboxConstraints {
+                margin = Insets(20.0)
             }
         }
     }
