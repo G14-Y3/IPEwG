@@ -1,3 +1,6 @@
+import gui.FilterPanel
+import gui.ImagePanel
+import gui.TopBar
 import javafx.geometry.Pos
 import javafx.scene.control.Alert
 import javafx.scene.control.TextField
@@ -9,28 +12,13 @@ import tornadofx.*
 var oriImageView: ImageView by singleAssign()
 
 class GUI : View("IPEwG") {
-
-    private val testImageUrl = resources.url("test_image.png").toURI()
-
+    val sample1 = "../test_image.png"
+    val sample2 = "../test_image.png"
     override val root = borderpane {
-        center {
-            vbox {
-                stackpane {
-                    //oriImage
-                    imageview(ImageController().load(testImageUrl).get(raw = true)) {
-                        oriImageView = this
-                    }
-                }
-                stackpane {
-                    alignment = Pos.CENTER
-                    button("Open...") {
-                        action {
-                            find(ImportImage::class).openModal(stageStyle = StageStyle.UTILITY)
-                        }
-                    }
-                }
-            }
-        }
+        top<TopBar>()
+        left<FilterPanel>()
+        center = find<ImagePanel>(mapOf(ImagePanel::uri to sample1)).root
+        right = label("seomthing")
     }
 }
 
@@ -102,7 +90,6 @@ class ImportImage : Fragment("Import image..") {
 
 class GUIController : Controller() {
     fun show(imageUrl: String) {
-        //if (imageUrl != "") println(imageUrl)
         oriImageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
     }
 }
