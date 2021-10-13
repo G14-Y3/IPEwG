@@ -1,5 +1,6 @@
 package view
 
+import javafx.geometry.Insets
 import tornadofx.*
 
 class IPEwGStyle : Stylesheet() {
@@ -11,7 +12,7 @@ class IPEwGStyle : Stylesheet() {
 
     init {
         buttonBox {
-            padding = CssBox<Dimension<Dimension.LinearUnits>>(5.px, 5.px, 5.px, 5.px)
+            padding = CssBox<Dimension<Dimension.LinearUnits>>(5.px, 10.px, 5.px, 10.px)
         }
 
         labelTag {
@@ -20,7 +21,7 @@ class IPEwGStyle : Stylesheet() {
         }
 
         filterSlider {
-            padding = CssBox<Dimension<Dimension.LinearUnits>>(0.px, 10.px, 0.px, 10.px)
+            padding = CssBox<Dimension<Dimension.LinearUnits>>(10.px, 10.px, 10.px, 10.px)
         }
     }
 }
