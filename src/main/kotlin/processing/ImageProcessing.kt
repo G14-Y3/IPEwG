@@ -1,4 +1,5 @@
 package processing
 
 interface ImageProcessing {
+
 }

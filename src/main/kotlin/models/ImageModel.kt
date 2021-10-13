@@ -1,9 +1,7 @@
 package models
-import controller.ImageController
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
-import tornadofx.*
 import java.io.File
 import java.io.IOException
 import java.net.URI
@@ -20,7 +18,7 @@ class ImageModel(imagePath: String) {
         return this
     }
 
-    fun loadByPath(path: String): ImageModel {
+    fun load(path: String): ImageModel {
         raw = Image("file:///$path")
         result = WritableImage(raw.width.toInt(), raw.height.toInt())
 

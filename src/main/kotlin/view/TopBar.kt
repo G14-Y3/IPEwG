@@ -1,16 +1,14 @@
 package view
 
-import controller.ImageController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
-import javafx.stage.StageStyle
 import models.ImageModel
 import tornadofx.*
 
 class GUIController : Controller() {
     fun show(imageUrl: String) {
         // TODO: refactor this code
-        oriImageView.image = ImageModel(imageUrl).loadByPath(imageUrl).get(raw = true)
+        oriImageView.image = ImageModel(imageUrl).load(imageUrl).get(raw = true)
     }
 }
 
