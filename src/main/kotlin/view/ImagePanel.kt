@@ -1,6 +1,5 @@
 package view
 
-import controller.ImageController
 import javafx.geometry.Insets
 import javafx.scene.image.ImageView
 import models.ImageModel
