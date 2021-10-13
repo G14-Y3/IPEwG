@@ -1,10 +1,16 @@
+import javafx.beans.InvalidationListener
+import javafx.beans.property.DoubleProperty
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Pos
 import javafx.scene.control.Alert
 import javafx.scene.control.TextField
 import javafx.scene.image.ImageView
+import javafx.scene.input.ScrollEvent
+import javafx.scene.input.ZoomEvent
 import javafx.stage.FileChooser
 import javafx.stage.StageStyle
 import tornadofx.*
+
 
 var oriImageView: ImageView by singleAssign()
 
@@ -12,14 +18,35 @@ class GUI : View("IPEwG") {
 
     private val testImageUrl = resources.url("test_image.png").toURI()
 
+    // double value that define the image width, changes as zoom event happens
+    val zoomedWidth: DoubleProperty = SimpleDoubleProperty(MAX_IMAGE_WIDTH)
     override val root = borderpane {
         center {
             vbox {
-                stackpane {
-                    //oriImage
-                    imageview(ImageController().load(testImageUrl).get(raw = true)) {
-                        oriImageView = this
+                vbox {
+                    scrollpane {
+                        // setup zoomProperty to detect zoom in & out action
+                        this.addEventFilter(ZoomEvent.ANY) {
+                            if (it.zoomFactor > 1) {
+                                zoomedWidth.set(zoomedWidth.get() * 1.05)
+                            } else if (it.zoomFactor < 1) {
+                                // only zoom out when image is smaller than original image
+                                if (zoomedWidth.get() > MAX_IMAGE_WIDTH * 1.05) {
+                                    zoomedWidth.set(zoomedWidth.get() / 1.05)
+                                }
+                            }
+                        }
+                        zoomedWidth.addListener(InvalidationListener {
+                            oriImageView.fitWidth = zoomedWidth.get()
+                        })
+                        //oriImage
+                        imageview(ImageController().load(testImageUrl).get(raw = true)) {
+                            oriImageView = this
+                            this.preserveRatioProperty().set(true)
+                        }
                     }
+                    this.maxWidth = MAX_IMAGE_WIDTH
+                    this.maxHeight = MAX_IMAGE_HEIGHT
                 }
                 stackpane {
                     alignment = Pos.CENTER
@@ -53,16 +80,7 @@ class ImportImage : Fragment("Import image..") {
                                             val filter = arrayOf(
                                                 FileChooser.ExtensionFilter(
                                                     "PNG files (*.png)",
-                                                    "*.png"
-                                                ),
-                                                FileChooser.ExtensionFilter(
-                                                    "Bitmap files (*.bmp)",
-                                                    "*.bmp"
-                                                ),
-                                                FileChooser.ExtensionFilter(
-                                                    "JPEG files (*.jpeg, *.jpg)",
-                                                    "*.jpeg",
-                                                    "*.jpg"
+                                                    "*.png", "*.bmp", "*.jpeg", "*.jpg"
                                                 )
                                             )
                                             val dir = chooseFile(
