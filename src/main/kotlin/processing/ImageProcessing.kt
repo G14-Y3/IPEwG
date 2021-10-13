@@ -1,0 +1,4 @@
+package processing
+
+interface ImageProcessing {
+}

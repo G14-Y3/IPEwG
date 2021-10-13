@@ -4,11 +4,13 @@ import controller.ImageController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
 import javafx.stage.StageStyle
+import models.ImageModel
 import tornadofx.*
 
 class GUIController : Controller() {
     fun show(imageUrl: String) {
-        oriImageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
+        // TODO: refactor this code
+        oriImageView.image = ImageModel(imageUrl).loadByPath(imageUrl).get(raw = true)
     }
 }
 
@@ -19,37 +21,7 @@ class TopBar : View() {
         menu("File") {
             item("Import...") {
                 action {
-                    val filter = arrayOf(
-                        FileChooser.ExtensionFilter(
-                            "PNG files (*.png)",
-                            "*.png"
-                        ),
-                        FileChooser.ExtensionFilter(
-                            "Bitmap files (*.bmp)",
-                            "*.bmp"
-                        ),
-                        FileChooser.ExtensionFilter(
-                            "JPEG files (*.jpeg, *.jpg)",
-                            "*.jpeg",
-                            "*.jpg"
-                        )
-                    )
-                    val dir = chooseFile(
-                        "Select image",
-                        filters = filter,
-                        mode = FileChooserMode.Single
-                    )
-
-                    try {
-                        controller.show(if (dir.toString() == "[]") "" else dir[0].toString())
-                    } catch (e: IllegalArgumentException) {
-                        alert(
-                            type = Alert.AlertType.ERROR,
-                            header = "Invalid image path",
-                            content = "The image path you entered is incorrect.\n" +
-                                    "Please check!"
-                        )
-                    }
+                    selectImage()
                 }
             }
             item("Export...")
@@ -62,6 +34,40 @@ class TopBar : View() {
         }
         menu("Help") {
             item("How to")
+        }
+    }
+
+    fun selectImage() {
+        val filter = arrayOf(
+            FileChooser.ExtensionFilter(
+                "PNG files (*.png)",
+                "*.png"
+            ),
+            FileChooser.ExtensionFilter(
+                "Bitmap files (*.bmp)",
+                "*.bmp"
+            ),
+            FileChooser.ExtensionFilter(
+                "JPEG files (*.jpeg, *.jpg)",
+                "*.jpeg",
+                "*.jpg"
+            )
+        )
+        val dir = chooseFile(
+            "Select image",
+            filters = filter,
+            mode = FileChooserMode.Single
+        )
+
+        try {
+            controller.show(if (dir.toString() == "[]") "" else dir[0].toString())
+        } catch (e: IllegalArgumentException) {
+            alert(
+                type = Alert.AlertType.ERROR,
+                header = "Invalid image path",
+                content = "The image path you entered is incorrect.\n" +
+                        "Please check!"
+            )
         }
     }
 }

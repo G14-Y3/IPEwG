@@ -21,7 +21,7 @@ class FilterPanel : View() {
         hbox {
             padding = Insets(0.0, 10.0, 0.0, 10.0)
             basicFilterButtonList.map { s -> hbox {
-                addClass(IPEwGStyle.buttonBox)
+                addClass(CssStyle.buttonBox)
                 button(s)
             }}
         }
@@ -43,12 +43,12 @@ class FilterPanel : View() {
 
             basicFilterSliderList.map { label -> hbox {
                 label(label) {
-                    addClass(IPEwGStyle.labelTag)
+                    addClass(CssStyle.labelTag)
                 }
                 slider {
 
                 }
-                addClass(IPEwGStyle.filterSlider)
+                addClass(CssStyle.filterSlider)
             }}
         }
     }
