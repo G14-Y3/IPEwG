@@ -1,11 +1,12 @@
 import javafx.geometry.Pos
+import javafx.scene.control.Alert
 import javafx.scene.control.TextField
+import javafx.scene.image.ImageView
 import javafx.stage.FileChooser
 import javafx.stage.StageStyle
-import models.*
 import tornadofx.*
 
-//lateinit var oriImage: Image
+var oriImageView: ImageView by singleAssign()
 
 class GUI: View("IPEwG") {
 
@@ -16,7 +17,9 @@ class GUI: View("IPEwG") {
             vbox {
                 stackpane {
                     //oriImage
-                    imageview(ImageController().load(testImageUrl).get(raw = true))
+                    imageview(ImageController().load(testImageUrl).get(raw = true)) {
+                        oriImageView = this
+                    }
                 }
                 stackpane {
                     alignment = Pos.CENTER
@@ -32,8 +35,8 @@ class GUI: View("IPEwG") {
 }
 
 class ImportImage: Fragment("Import image..") {
-    var imageUrlField: TextField by singleAssign()
-    val controller: GUIController by inject()
+    private var imageUrlField: TextField by singleAssign()
+    private val controller: GUIController by inject()
     override val root = borderpane{
         center {
             vbox {
@@ -42,7 +45,7 @@ class ImportImage: Fragment("Import image..") {
                         form {
                             fieldset {
                                 field("Path") {
-                                    textfield() {
+                                    textfield {
                                         imageUrlField = this
                                     }
                                     button("browse..") {
@@ -50,7 +53,7 @@ class ImportImage: Fragment("Import image..") {
                                             val filter = arrayOf(FileChooser.ExtensionFilter("PNG files (*.png)", "*.png"),
                                                 FileChooser.ExtensionFilter("Bitmap files (*.bmp)", "*.bmp"),
                                                 FileChooser.ExtensionFilter("JPEG files (*.jpeg, *.jpg)", "*.jpeg", "*.jpg"))
-                                            var dir = chooseFile("Select image", filters = filter, mode = FileChooserMode.Single)
+                                            val dir = chooseFile("Select image", filters = filter, mode = FileChooserMode.Single)
                                             imageUrlField.text = if (dir.toString() == "[]")  "" else dir[0].toString()
                                         }
                                     }
@@ -59,7 +62,16 @@ class ImportImage: Fragment("Import image..") {
                             alignment = Pos.CENTER
                             button("OK") {
                                 action {
-                                    controller.output(imageUrlField.text)
+                                    try {
+                                        controller.show(imageUrlField.text)
+                                        close()
+                                    } catch (e: IllegalArgumentException) {
+                                        alert(
+                                            type = Alert.AlertType.ERROR,
+                                            header = "Invalid image path",
+                                            content = "The image path you entered is incorrect.\n" +
+                                                    "Please check!")
+                                    }
                                 }
                             }
                         }
@@ -71,7 +83,8 @@ class ImportImage: Fragment("Import image..") {
 }
 
 class GUIController: Controller() {
-    fun output(imageUrl: String) {
-        if (imageUrl != "") println(imageUrl)
+    fun show(imageUrl: String) {
+        //if (imageUrl != "") println(imageUrl)
+        oriImageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
     }
 }
