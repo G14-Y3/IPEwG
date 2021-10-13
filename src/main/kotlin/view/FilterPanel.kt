@@ -1,15 +1,12 @@
-package gui
+package view
 
 import javafx.geometry.Insets
-import javafx.scene.Parent
-import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
-import javafx.stage.StageStyle
 import tornadofx.*
 
 class FilterPanel : View() {
-    val filterButtonList = listOf("Greyscale", "Inverse Color", "Mirror")
-    val filterSliderList = listOf("R", "G", "B", "Brightness", "Contrast", "Saturation")
+    val basicFilterButtonList = listOf("Greyscale", "Inverse Color", "Mirror")
+    val basicFilterSliderList = listOf("R", "G", "B", "Brightness", "Contrast", "Saturation")
     override val root = vbox {
         label("Quick Action") {
             vboxConstraints {
@@ -22,9 +19,10 @@ class FilterPanel : View() {
         }
 
         hbox {
-            filterButtonList.map { s -> hbox {
+            padding = Insets(0.0, 10.0, 0.0, 10.0)
+            basicFilterButtonList.map { s -> hbox {
                 addClass(IPEwGStyle.buttonBox)
-                button("Greyscale")
+                button(s)
             }}
         }
 
@@ -43,7 +41,7 @@ class FilterPanel : View() {
                 margin = Insets(10.0)
             }
 
-            filterSliderList.map { label -> hbox {
+            basicFilterSliderList.map { label -> hbox {
                 label(label) {
                     addClass(IPEwGStyle.labelTag)
                 }

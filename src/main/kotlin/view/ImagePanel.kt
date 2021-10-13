@@ -1,10 +1,8 @@
-package gui
+package view
 
-import ImageController
-import ImportImage
+import controller.ImageController
 import javafx.geometry.Insets
 import javafx.scene.image.ImageView
-import javafx.stage.StageStyle
 import tornadofx.*
 
 var oriImageView: ImageView by singleAssign()

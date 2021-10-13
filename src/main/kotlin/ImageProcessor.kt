@@ -1,4 +1,4 @@
-import gui.IPEwGStyle
+import view.IPEwGStyle
 import tornadofx.*
 
 class ImageProcessor : App(GUI::class, IPEwGStyle::class)
