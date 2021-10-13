@@ -14,10 +14,13 @@ class TopBar : View() {
             item("Export...")
             item("Quit")
         }
-        menu("Edit") {
+        menu("View") {
+            item("Basic Action")
             item("Advanced")
-            item("Paste")
             item("Advanced")
+        }
+        menu("Help") {
+            item("How to")
         }
     }
 }

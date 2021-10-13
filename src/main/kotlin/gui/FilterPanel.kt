@@ -1,14 +1,17 @@
 package gui
 
 import javafx.geometry.Insets
+import javafx.scene.Parent
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import javafx.stage.StageStyle
 import tornadofx.*
 
 class FilterPanel : View() {
+    val filterButtonList = listOf("Greyscale", "Inverse Color", "Mirror")
+    val filterSliderList = listOf("R", "G", "B", "Brightness", "Contrast", "Saturation")
     override val root = vbox {
-        label("Basic Filters") {
+        label("Quick Action") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)
             }
@@ -17,50 +20,38 @@ class FilterPanel : View() {
                 fontSize = Dimension(20.0, Dimension.LinearUnits.px)
             }
         }
+
         hbox {
-            button("Greyscale") {
-                hboxConstraints {
-                    margin = Insets(10.0)
-                }
+            filterButtonList.map { s -> hbox {
+                addClass(IPEwGStyle.buttonBox)
+                button("Greyscale")
+            }}
+        }
+
+        label("Quick Action") {
+            vboxConstraints {
+                margin = Insets(20.0, 20.0, 10.0, 10.0)
             }
-            button("Inverse Color") {
-                hboxConstraints {
-                    margin = Insets(10.0)
-                }
-            }
-            button("filter1") {
-                hboxConstraints {
-                    margin = Insets(10.0)
-                }
+            style {
+                fontWeight = FontWeight.BOLD
+                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
             }
         }
 
-        hbox {
-            button("filter1") {
-                hboxConstraints {
-                    margin = Insets(0.0, 10.0, 10.0, 10.0)
-                }
+        vbox {
+            vboxConstraints {
+                margin = Insets(10.0)
             }
-            button("filter1") {
-                hboxConstraints {
-                    margin = Insets(0.0, 10.0, 10.0, 10.0)
+
+            filterSliderList.map { label -> hbox {
+                label(label) {
+                    addClass(IPEwGStyle.labelTag)
                 }
-            }
-            button("filter1") {
-                hboxConstraints {
-                    margin = Insets(0.0, 10.0, 10.0, 10.0)
+                slider {
+
                 }
-            }
-            button("filter1") {
-                hboxConstraints {
-                    margin = Insets(0.0, 10.0, 10.0, 10.0)
-                }
-            }
-            button("filter1") {
-                hboxConstraints {
-                    margin = Insets(0.0, 10.0, 10.0, 10.0)
-                }
-            }
+                addClass(IPEwGStyle.filterSlider)
+            }}
         }
     }
 }
