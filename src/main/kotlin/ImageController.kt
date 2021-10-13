@@ -18,6 +18,13 @@ class ImageController : Controller() {
         return this
     }
 
+    fun loadByPath(path: String): ImageController {
+        raw = Image("file:///$path")
+        result = WritableImage(raw.width.toInt(), raw.height.toInt())
+
+        return this
+    }
+
     fun save(path: String, format: String = "png"): ImageController {
         val output = File(path)
         val buffer = SwingFXUtils.fromFXImage(result, null)
