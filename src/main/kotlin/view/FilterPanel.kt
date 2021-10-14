@@ -1,5 +1,6 @@
 package view
 
+import controller.ImageController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import tornadofx.*
@@ -7,6 +8,8 @@ import tornadofx.*
 class FilterPanel : View() {
     val basicFilterButtonList = listOf("Greyscale", "Inverse Color", "Mirror")
     val basicFilterSliderList = listOf("R", "G", "B", "Brightness", "Contrast", "Saturation")
+    val imageController: ImageController by inject()
+
     override val root = vbox {
         label("Quick Action") {
             vboxConstraints {
@@ -22,7 +25,11 @@ class FilterPanel : View() {
             padding = Insets(0.0, 10.0, 0.0, 10.0)
             basicFilterButtonList.map { s -> hbox {
                 addClass(CssStyle.buttonBox)
-                button(s)
+                button(s) {
+                    action {
+                        imageController.applyFilter()
+                    }
+                }
             }}
         }
 

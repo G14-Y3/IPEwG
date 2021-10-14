@@ -1,3 +1,5 @@
+import models.IPEwGImage
+import models.ImageModel
 import view.CssStyle
 import tornadofx.*
 import view.FilterPanel
@@ -5,11 +7,14 @@ import view.ImagePanel
 import view.TopBar
 
 class GUI : View("IPEwG") {
-    val sample1 = "../test_image.png"
+//    val sample1 = "../test_image.png"
+//    val model = ImageModel(IPEwGImage("./test_image.png"))
+
     override val root = borderpane {
         top<TopBar>()
         left<FilterPanel>()
-        center = find<ImagePanel>(mapOf(ImagePanel::uri to sample1)).root
+        center<ImagePanel>()
+//        center = find<ImagePanel>(mapOf(ImagePanel::uri to sample1)).root
     }
 }
 

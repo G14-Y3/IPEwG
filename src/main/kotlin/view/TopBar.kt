@@ -1,19 +1,15 @@
 package view
 
+import controller.ImageController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
+import models.IPEwGImage
 import models.ImageModel
 import tornadofx.*
 
-class GUIController : Controller() {
-    fun show(imageUrl: String) {
-        // TODO: refactor this code
-        oriImageView.image = ImageModel(imageUrl).load(imageUrl).get(raw = true)
-    }
-}
 
 class TopBar : View() {
-    private val controller: GUIController by inject()
+    val controller: ImageController by inject()
 
     override val root = menubar {
         menu("File") {
@@ -58,13 +54,13 @@ class TopBar : View() {
         )
 
         try {
-            controller.show(if (dir.toString() == "[]") "" else dir[0].toString())
+            controller.load(if (dir.toString() == "[]") "" else "file:///" + dir[0].toString())
         } catch (e: IllegalArgumentException) {
             alert(
                 type = Alert.AlertType.ERROR,
                 header = "Invalid image path",
                 content = "The image path you entered is incorrect.\n" +
-                        "Please check!"
+                        "Please check!" + e.toString()
             )
         }
     }

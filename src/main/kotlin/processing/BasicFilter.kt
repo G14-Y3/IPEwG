@@ -5,13 +5,15 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 
 class BasicFilter: ImageProcessing {
-    fun greyscaleFilter(image: WritableImage) {
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
+    companion object {
+        fun greyscaleFilter(image: WritableImage) {
+            val reader: PixelReader = image.pixelReader
+            val writer: PixelWriter = image.pixelWriter
 
-        for (i in 0..image.width.toInt()) {
-            for (j in 0..image.height.toInt()) {
-                writer.setColor(i, j, reader.getColor(i, j).grayscale())
+            for (x in 0 until image.width.toInt()) {
+                for (y in 0 until image.height.toInt()) {
+                    writer.setColor(x, y, reader.getColor(x, y).grayscale())
+                }
             }
         }
     }
