@@ -4,22 +4,22 @@ import javafx.scene.image.WritableImage
 import tornadofx.*
 import java.io.File
 import java.io.IOException
-import java.net.URI
+import java.net.URL
 import javax.imageio.ImageIO
 
 class ImageController : Controller() {
     private lateinit var raw: Image
     private lateinit var result: WritableImage
 
-    fun load(uri: URI): ImageController {/**/
-        raw = Image(uri.toString())
-        result = WritableImage(raw.width.toInt(), raw.height.toInt())
+    /* Load the image either by path (String) or by URL. */
+    fun load(path: Any): ImageController {
+        val imagePath = when (path) {
+            is String -> "file:///$path"
+            is URL -> path.toString()
+            else -> throw IllegalArgumentException("Wrong type")
+        }
 
-        return this
-    }
-
-    fun loadByPath(path: String): ImageController {
-        raw = Image("file:///$path")
+        raw = Image(imagePath)
         result = WritableImage(raw.width.toInt(), raw.height.toInt())
 
         return this

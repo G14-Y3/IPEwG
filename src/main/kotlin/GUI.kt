@@ -7,10 +7,9 @@ import javafx.stage.StageStyle
 import tornadofx.*
 
 
-
 class GUI : View("IPEwG") {
     var imageView: ImageView by singleAssign()
-    private val testImageUrl = resources.url("test_image.png").toURI()
+    private val testImageUrl = resources.url("test_image.png")
 
     override val root = borderpane {
         center {
@@ -80,17 +79,9 @@ class ImportImage : Fragment("Import image..") {
                             alignment = Pos.CENTER
                             button("OK") {
                                 action {
-                                    try {
+                                    val returnCode =
                                         controller.show(imageUrlField.text, gui::imageView.invoke())
-                                        close()
-                                    } catch (e: IllegalArgumentException) {
-                                        alert(
-                                            type = Alert.AlertType.ERROR,
-                                            header = "Invalid image path",
-                                            content = "The image path you entered is incorrect.\n" +
-                                                    "Please check!"
-                                        )
-                                    }
+                                    if (returnCode == 0) close()
                                 }
                             }
                         }
@@ -103,9 +94,28 @@ class ImportImage : Fragment("Import image..") {
 
 class GUIController : Controller() {
 
-    /* Show the image with 'imageUrl' onto 'imageView' */
-    fun show(imageUrl: String, imageView: ImageView) {
-        //if (imageUrl != "") println(imageUrl)
-        imageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
+    /* Show the image with 'path' (can be path [String] or URL) onto 'imageView'.
+    * return 0 if success, -1 if failed. */
+    fun show(path: Any, imageView: ImageView): Int {
+        return try {
+            imageView.image = ImageController().load(path.toString()).get(raw = true)
+            //println(path.toString())
+            0
+        } catch (e: IllegalArgumentException) {
+            return try {
+                imageView.image =
+                    ImageController().load(resources.url(path.toString())).get(raw = true)
+                //println(resources.url(path.toString()))
+                0
+            } catch (e: IllegalArgumentException) {
+                alert(
+                    type = Alert.AlertType.ERROR,
+                    header = "Invalid image path",
+                    content = "The image path you entered is incorrect.\n" +
+                            "Please check!"
+                )
+                -1
+            }
+        }
     }
 }
