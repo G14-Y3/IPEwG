@@ -6,10 +6,10 @@ import javafx.stage.FileChooser
 import javafx.stage.StageStyle
 import tornadofx.*
 
-var oriImageView: ImageView by singleAssign()
+
 
 class GUI : View("IPEwG") {
-
+    var imageView: ImageView by singleAssign()
     private val testImageUrl = resources.url("test_image.png").toURI()
 
     override val root = borderpane {
@@ -18,7 +18,7 @@ class GUI : View("IPEwG") {
                 stackpane {
                     //oriImage
                     imageview(ImageController().load(testImageUrl).get(raw = true)) {
-                        oriImageView = this
+                        imageView = this
                     }
                 }
                 stackpane {
@@ -37,6 +37,7 @@ class GUI : View("IPEwG") {
 class ImportImage : Fragment("Import image..") {
     private var imageUrlField: TextField by singleAssign()
     private val controller: GUIController by inject()
+    private val gui: GUI by inject()
     override val root = borderpane {
         center {
             vbox {
@@ -80,7 +81,7 @@ class ImportImage : Fragment("Import image..") {
                             button("OK") {
                                 action {
                                     try {
-                                        controller.show(imageUrlField.text)
+                                        controller.show(imageUrlField.text, gui::imageView.invoke())
                                         close()
                                     } catch (e: IllegalArgumentException) {
                                         alert(
@@ -101,8 +102,10 @@ class ImportImage : Fragment("Import image..") {
 }
 
 class GUIController : Controller() {
-    fun show(imageUrl: String) {
+
+    /* Show the image with 'imageUrl' onto 'imageView' */
+    fun show(imageUrl: String, imageView: ImageView) {
         //if (imageUrl != "") println(imageUrl)
-        oriImageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
+        imageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
     }
 }
