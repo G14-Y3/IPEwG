@@ -15,10 +15,6 @@ import tornadofx.*
 var oriImageView: ImageView by singleAssign()
 // double value that define the image width, changes as zoom event happens
 var zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
-// window x and y value, defining the left up corner position of the image
-var windowX: DoubleProperty = SimpleDoubleProperty(0.0)
-var windowY: DoubleProperty = SimpleDoubleProperty(0.0)
-var image_h_w_ratio: Double = 0.0
 
 class GUI : View("IPEwG") {
 
@@ -29,23 +25,6 @@ class GUI : View("IPEwG") {
             vbox {
                 // todo: zoom in with the mouse position as the zoom center
                 scrollpane {
-                    // listen to scroll property, change the window x y value
-                    this.addEventFilter(ScrollEvent.ANY) {
-
-                        // calculating the view box's left top coordinate's x, y values' upperbound
-                        var xBound = oriImageView.fitWidth - WINDOW_WIDTH
-                        var yBound = 0.0
-                        if (oriImageView.image.height > WINDOW_HEIGHT) {
-                            yBound = oriImageView.fitHeight - WINDOW_HEIGHT
-                        }
-
-                        windowX.set(cast(0.0, xBound, windowX.get() - it.deltaX))
-//                        windowY.set(cast(0.0, yBound, windowY.get() - it.deltaY))
-
-//                        println("x = " + windowX.get())
-//                        println("y = " + windowY.get())
-
-                    }
                     // listen to zoomProperty to detect zoom in & out action
                     this.addEventFilter(ZoomEvent.ANY) {
                         var ratio = 1.0
@@ -60,22 +39,10 @@ class GUI : View("IPEwG") {
                         // update image size and left top coordinate according to the ratio
                         zoomedWidth.set(zoomedWidth.get() * ratio)
                         oriImageView.fitWidth = zoomedWidth.get()
-
-                        println("x = " + oriImageView.image.width)
-                        println("y = " + oriImageView.image.height)
-//                        println("scene = " + oriImageView.scaleX)
-//                        windowX.set(windowX.get() * ratio)
-//                        windowY.set(windowY.get() * ratio)
-                        // update view box's left top coordinate
-//                        oriImageView.viewport = Rectangle2D(windowX.get(), windowY.get(), WINDOW_WIDTH, WINDOW_HEIGHT)
                     }
                     //oriImage
                     imageview(ImageController().load(testImageUrl).get(raw = true)) {
                         oriImageView = this
-                        image_h_w_ratio = oriImageView.y / oriImageView.x
-//                        println(oriImageView.y)
-//                        println(oriImageView.fitHeight)
-//                        println(oriImageView.image.height)
                         oriImageView.fitWidth = zoomedWidth.get()
                         oriImageView.preserveRatioProperty().set(true)
                     }
@@ -160,7 +127,5 @@ class GUIController : Controller() {
     fun show(imageUrl: String) {
         //if (imageUrl != "") println(imageUrl)
         oriImageView.image = ImageController().loadByPath(imageUrl).get(raw = true)
-        windowX.set(0.0)
-        windowY.set(0.0)
     }
 }
