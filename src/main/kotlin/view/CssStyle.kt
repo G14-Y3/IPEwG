@@ -1,17 +1,16 @@
 package view
 
-import javafx.geometry.Insets
 import tornadofx.*
 
 class CssStyle : Stylesheet() {
     companion object {
-        val buttonBox by cssclass()
+        val checkBox by cssclass()
         val labelTag by cssclass()
         val filterSlider by cssclass()
     }
 
     init {
-        buttonBox {
+        checkBox {
             padding = CssBox<Dimension<Dimension.LinearUnits>>(5.px, 5.px, 5.px, 5.px)
         }
 

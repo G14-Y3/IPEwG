@@ -3,8 +3,6 @@ package view
 import controller.ImageController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
-import models.IPEwGImage
-import models.ImageModel
 import tornadofx.*
 
 
@@ -54,7 +52,9 @@ class TopBar : View() {
         )
 
         try {
-            controller.load(if (dir.toString() == "[]") "" else "file:///" + dir[0].toString())
+            if (!dir.isEmpty()) {
+                controller.load("file:///" + dir[0].toString())
+            }
         } catch (e: IllegalArgumentException) {
             alert(
                 type = Alert.AlertType.ERROR,

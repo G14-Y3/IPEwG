@@ -1,13 +1,26 @@
 package view
 
 import controller.ImageController
+import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
+import models.FilterOperation
 import tornadofx.*
 
 class FilterPanel : View() {
-    val basicFilterButtonList = listOf("Greyscale", "Inverse Color", "Mirror")
-    val basicFilterSliderList = listOf("R", "G", "B", "Brightness", "Contrast", "Saturation")
+    val basicFilterButtonList = mapOf(
+        "Inverse Color" to FilterOperation.INVERSE_COLOR,
+        "Greyscale" to FilterOperation.GREYSCALE,
+        "Mirror" to FilterOperation.MIRROR
+    )
+    val basicFilterSliderList = mapOf(
+        "R" to FilterOperation.R,
+        "G" to FilterOperation.G,
+        "B" to FilterOperation.B,
+        "Brightness" to FilterOperation.BRIGHTNESS,
+        "Contrast" to FilterOperation.CONTRAST,
+        "Saturation" to FilterOperation.SATURATION
+    )
     val imageController: ImageController by inject()
 
     override val root = vbox {
@@ -23,14 +36,16 @@ class FilterPanel : View() {
 
         hbox {
             padding = Insets(0.0, 10.0, 0.0, 10.0)
-            basicFilterButtonList.map { s -> hbox {
-                addClass(CssStyle.buttonBox)
-                button(s) {
-                    action {
-                        imageController.applyFilter()
+            basicFilterButtonList.map { (s, op) ->
+                hbox {
+                    addClass(CssStyle.checkBox)
+                    checkbox(s) {
+                        action {
+                            imageController.applyFilter(op)
+                        }
                     }
                 }
-            }}
+            }
         }
 
         label("Quick Action") {
@@ -48,15 +63,21 @@ class FilterPanel : View() {
                 margin = Insets(10.0)
             }
 
-            basicFilterSliderList.map { label -> hbox {
-                label(label) {
-                    addClass(CssStyle.labelTag)
-                }
-                slider {
+            basicFilterSliderList.map { (label, func) ->
+                hbox {
+                    label(label) {
+                        addClass(CssStyle.labelTag)
+                    }
+                    slider {
+                        min = 0.0
+                        max = 100.0
+                        onDragDetected = EventHandler {
 
+                        }
+                    }
+                    addClass(CssStyle.filterSlider)
                 }
-                addClass(CssStyle.filterSlider)
-            }}
+            }
         }
     }
 }
