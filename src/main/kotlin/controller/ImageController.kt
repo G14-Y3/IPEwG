@@ -36,12 +36,13 @@ class ImageController : Controller() {
         activeImage.image.set(im)
     }
 
-    fun applyFilter(op: FilterOperation) {
+    fun applyFilter(op: FilterOperation, value: Double) {
         val raw = resultImage.image
         val image = WritableImage(raw.pixelReader, raw.width.toInt(), raw.height.toInt())
         when (op) {
             FilterOperation.GREYSCALE -> BasicFilter.greyscaleFilter(image)
             FilterOperation.INVERSE_COLOR -> BasicFilter.inverseColorFilter(image)
+            FilterOperation.R -> BasicFilter.RGBColorFilter(rawImage.image, image, value)
         }
         resultImage.image = image
         isRaw = false

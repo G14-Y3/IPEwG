@@ -1,6 +1,8 @@
 package view
 
 import controller.ImageController
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
@@ -41,7 +43,7 @@ class FilterPanel : View() {
                     addClass(CssStyle.checkBox)
                     checkbox(s) {
                         action {
-                            imageController.applyFilter(op)
+                            imageController.applyFilter(op, 0.0)
                         }
                     }
                 }
@@ -63,18 +65,25 @@ class FilterPanel : View() {
                 margin = Insets(10.0)
             }
 
-            basicFilterSliderList.map { (label, func) ->
+            basicFilterSliderList.map { (label, op) ->
                 hbox {
                     label(label) {
                         addClass(CssStyle.labelTag)
                     }
-                    slider {
+                    val slider = slider {
                         min = 0.0
                         max = 100.0
-                        onDragDetected = EventHandler {
-
-                        }
                     }
+                    slider.valueChangingProperty().addListener(object : ChangeListener<Boolean?> {
+                        override fun changed(
+                            source: ObservableValue<out Boolean?>?,
+                            oldValue: Boolean?,
+                            newValue: Boolean?
+                        ) {
+                            println()
+                            imageController.applyFilter(op, slider.value / 100.0)
+                        }
+                    })
                     addClass(CssStyle.filterSlider)
                 }
             }
