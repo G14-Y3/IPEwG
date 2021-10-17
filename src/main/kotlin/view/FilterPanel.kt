@@ -6,22 +6,22 @@ import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
-import models.FilterOperation
+import models.*
 import tornadofx.*
 
 class FilterPanel : View() {
     val basicFilterButtonList = mapOf(
-        "Inverse Color" to FilterOperation.INVERSE_COLOR,
-        "Greyscale" to FilterOperation.GREYSCALE,
-        "Mirror" to FilterOperation.MIRROR
+        "Inverse Color" to InverseColour(),
+        "Greyscale" to GreyScale(),
+        "Mirror" to Mirror()
     )
     val basicFilterSliderList = mapOf(
-        "R" to FilterOperation.R,
-        "G" to FilterOperation.G,
-        "B" to FilterOperation.B,
-        "Brightness" to FilterOperation.BRIGHTNESS,
-        "Contrast" to FilterOperation.CONTRAST,
-        "Saturation" to FilterOperation.SATURATION
+        "R" to RGB(RGB_type.R),
+        "G" to RGB(RGB_type.G),
+        "B" to RGB(RGB_type.B),
+        "Brightness" to Brightness(),
+        "Contrast" to Contrast(),
+        "Saturation" to Satuation()
     )
     val imageController: ImageController by inject()
 
@@ -43,7 +43,7 @@ class FilterPanel : View() {
                     addClass(CssStyle.checkBox)
                     checkbox(s) {
                         action {
-                            imageController.applyFilter(op, 0.0)
+                            imageController.applyFilter(op)
                         }
                     }
                 }
@@ -74,6 +74,7 @@ class FilterPanel : View() {
                         min = 0.0
                         max = 100.0
                     }
+                    slider.value = 100.0
                     slider.valueChangingProperty().addListener(object : ChangeListener<Boolean?> {
                         override fun changed(
                             source: ObservableValue<out Boolean?>?,
@@ -81,7 +82,8 @@ class FilterPanel : View() {
                             newValue: Boolean?
                         ) {
                             println()
-                            imageController.applyFilter(op, slider.value / 100.0)
+                            op.setSlidingVal(slider.value / 100.0)
+                            imageController.applyFilter(op)
                         }
                     })
                     addClass(CssStyle.filterSlider)

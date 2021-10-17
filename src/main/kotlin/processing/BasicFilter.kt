@@ -5,6 +5,7 @@ import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import models.RGB_type
 
 class BasicFilter : ImageProcessing {
     companion object {
@@ -31,14 +32,24 @@ class BasicFilter : ImageProcessing {
             }
         }
 
-        fun RGBColorFilter(raw: Image, result: WritableImage, factor: Double) {
-            val reader: PixelReader = raw.pixelReader
+        fun RGBColorFilter(result: WritableImage, factor: Double, type: RGB_type) {
+            val reader: PixelReader = result.pixelReader
             val writer: PixelWriter = result.pixelWriter
 
-            for (x in 0 until raw.width.toInt()) {
-                for (y in 0 until raw.height.toInt()) {
+            for (x in 0 until result.width.toInt()) {
+                for (y in 0 until result.height.toInt()) {
                     val color : Color = reader.getColor(x, y)
-                    val newColor : Color = Color.color(color.red * factor, color.green, color.blue)
+                    var red = color.red
+                    var green = color.green
+                    var blue = color.blue
+                    if (type == RGB_type.R) {
+                        red *= factor
+                    } else if (type == RGB_type.G) {
+                        green *= factor
+                    } else {
+                        blue *= factor
+                    }
+                    val newColor : Color = Color.color(red, green, blue)
                     writer.setColor(x, y, newColor)
                 }
             }
