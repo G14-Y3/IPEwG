@@ -1,5 +1,6 @@
 package controller
 
+import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import models.FilterOperation
@@ -7,6 +8,9 @@ import models.IPEwGImage
 import models.ImageModel
 import processing.BasicFilter
 import tornadofx.Controller
+import java.io.File
+import java.io.IOException
+import javax.imageio.ImageIO
 
 class ImageController : Controller() {
     var rawImage: IPEwGImage
@@ -51,5 +55,15 @@ class ImageController : Controller() {
     fun toggleActiveImage() {
         isRaw = !isRaw
         activeImage.image.set(if (isRaw) rawImage.image else resultImage.image)
+    }
+
+    fun save(path: String, format: String) {
+        val output = File(path)
+        val buffer = SwingFXUtils.fromFXImage(resultImage.image, null)
+        try {
+            ImageIO.write(buffer, format, output)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
     }
 }
