@@ -40,7 +40,7 @@ class ImageController : Controller() {
         activeImage.image.set(im)
     }
 
-    fun applyFilter(op: FilterOperation, isChecked: Boolean) {
+    fun applyFilter(op: FilterOperation) {
         val raw = resultImage.image
         val image = WritableImage(raw.pixelReader, raw.width.toInt(), raw.height.toInt())
         when (op) {
@@ -50,7 +50,7 @@ class ImageController : Controller() {
         }
         resultImage.image = image
         isRaw = false
-        if (isChecked) activeImage.image.set(resultImage.image) else activeImage.image.set(rawImage.image)
+        activeImage.image.set(resultImage.image)
     }
 
     fun toggleActiveImage() {

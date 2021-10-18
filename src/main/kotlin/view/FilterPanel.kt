@@ -41,7 +41,7 @@ class FilterPanel : View() {
                     addClass(CssStyle.checkBox)
                     checkbox(s) {
                         action {
-                            imageController.applyFilter(op, isSelected)
+                            imageController.applyFilter(op)
                         }
                     }
                 }
