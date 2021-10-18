@@ -45,7 +45,7 @@ class EngineModel(
 
     fun save(path: String, format: String = "png") {
         val output = File(path)
-        val buffer = SwingFXUtils.fromFXImage(originalImage.value, null)
+        val buffer = SwingFXUtils.fromFXImage(transformedImage, null)
         try {
             ImageIO.write(buffer, format, output)
         } catch (e: IOException) {

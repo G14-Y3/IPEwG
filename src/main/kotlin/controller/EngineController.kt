@@ -2,9 +2,7 @@ package controller
 
 import models.EngineModel
 import processing.RGBType
-import processing.filters.Grayscale
-import processing.filters.InverseColour
-import processing.filters.RGBIntensity
+import processing.filters.*
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -29,11 +27,15 @@ class EngineController : Controller() {
 
     fun load(path: String) = engine.load(path)
 
-    fun save(path: String) = engine.save(path)
+    fun save(path: String, format: String) = engine.save(path, format)
 
     fun grayscale() = engine.transform(Grayscale())
 
     fun inverseColour() = engine.transform(InverseColour())
 
     fun rgbFilter(factor: Double, type: RGBType) = engine.transform(RGBIntensity(factor, type))
+
+    fun flipHorizontal() = engine.transform(FlipHorizontal())
+
+    fun flipVertical() = engine.transform(FlipVertical())
 }

@@ -4,19 +4,24 @@ import controller.EngineController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
 import tornadofx.*
+import java.io.File
 
 
 class TopBar : View() {
-    val controller: EngineController by inject()
+    private val controller: EngineController by inject()
 
     override val root = menubar {
         menu("File") {
             item("Import...") {
                 action {
-                    selectImage()
+                    imageOperation(mode = "import")
                 }
             }
-            item("Export...")
+            item("Export...") {
+                action {
+                    imageOperation(mode = "export")
+                }
+            }
             item("Quit")
         }
         menu("View") {
@@ -29,8 +34,13 @@ class TopBar : View() {
         }
     }
 
-    fun selectImage() {
-        val filter = arrayOf(
+    private fun imageOperation(mode: String) {
+
+        var fileSelectorTitle = ""
+        var fileSelectorFilter = emptyArray<FileChooser.ExtensionFilter>()
+        var fileSelectorMode = FileChooserMode.None
+
+        val importFilter = arrayOf(
             FileChooser.ExtensionFilter(
                 "PNG files (*.png)",
                 "*.png"
@@ -45,15 +55,49 @@ class TopBar : View() {
                 "*.jpg"
             )
         )
-        val dir = chooseFile(
-            "Select image",
-            filters = filter,
-            mode = FileChooserMode.Single
+
+        val exportFilter = arrayOf(
+            importFilter[0], importFilter[1],
+            FileChooser.ExtensionFilter(
+                "JPEG files (*.jpg)",
+                "*.jpg"
+            )
         )
 
         try {
-            if (!dir.isEmpty()) {
-                controller.load("file:///" + dir[0].toString())
+            when (mode) {
+                "import" -> {
+                    fileSelectorTitle = "Import image"
+                    fileSelectorFilter = importFilter
+                    fileSelectorMode = FileChooserMode.Single
+                }
+                "export" -> {
+                    fileSelectorTitle = "Export image"
+                    fileSelectorFilter = exportFilter
+                    fileSelectorMode = FileChooserMode.Save
+                }
+            }
+            val dir = chooseFile(
+                title = fileSelectorTitle,
+                filters = fileSelectorFilter,
+                mode = fileSelectorMode
+            ) {
+                initialDirectory = File(File("").canonicalPath)
+                initialFileName = "IPEwG_result_image"
+            }
+            when (mode) {
+                "import" ->
+                    if (dir.isNotEmpty())
+                        controller.load("file:///" + dir[0].toString())
+                "export" ->
+                    if (dir.isNotEmpty())
+                        controller.save(
+                            dir[0].toString(),
+                            dir[0].toString().substring(
+                                dir[0].toString().lastIndexOf(".") + 1,
+                                dir[0].toString().length
+                            )
+                        )
             }
         } catch (e: IllegalArgumentException) {
             alert(

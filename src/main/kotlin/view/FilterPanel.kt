@@ -13,6 +13,8 @@ class FilterPanel : View() {
     private val basicFilterButtonList = mapOf(
         "Inverse Color" to engineController::inverseColour,
         "Greyscale" to engineController::grayscale,
+        "Flip Horizontal" to engineController::flipHorizontal,
+        "Flip Vertical" to engineController::flipVertical,
     )
 
     private val basicFilterSliderList = mapOf(

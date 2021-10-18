@@ -23,7 +23,6 @@ class ImagePanel : View() {
         scrollpane {
             val view = imageview(engine.previewImage) {
                 setOnMouseClicked {
-                    controller.load("")
                 }
             }
 
