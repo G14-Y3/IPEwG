@@ -1,7 +1,7 @@
 package controller
 
 import models.EngineModel
-import models.RGBType
+import processing.RGBType
 import processing.filters.Grayscale
 import processing.filters.InverseColour
 import processing.filters.RGBIntensity

@@ -3,7 +3,7 @@ package view
 import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
-import models.RGBType
+import processing.RGBType
 import tornadofx.*
 
 class FilterPanel : View() {

@@ -4,7 +4,7 @@ import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import models.RGBType
+import processing.RGBType
 import processing.ImageProcessing
 
 class RGBIntensity(private val factor: Double, private val type: RGBType) :
