@@ -1,6 +1,5 @@
 package models
 
-import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
@@ -12,7 +11,6 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 import javax.imageio.ImageIO
-import kotlin.collections.ArrayList
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
@@ -22,7 +20,7 @@ class EngineModel(
     // 'original' here can either be:
     //   1. Image passed in when the class is instantiated or
     //   2. New image loaded using `load`
-    private val originalImage =
+    val originalImage =
         SimpleObjectProperty(this, "originalImage", originalImage)
 
     // Reactive object reference to the transformed image
