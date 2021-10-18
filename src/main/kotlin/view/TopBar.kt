@@ -4,6 +4,7 @@ import controller.ImageController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
 import tornadofx.*
+import java.io.File
 
 
 class TopBar : View() {
@@ -80,7 +81,10 @@ class TopBar : View() {
                 title = fileSelectorTitle,
                 filters = fileSelectorFilter,
                 mode = fileSelectorMode
-            )
+            ) {
+                initialDirectory = File(File("").canonicalPath)
+                initialFileName = "IPEwG_result_image"
+            }
             when (mode) {
                 "import" ->
                     if (dir.isNotEmpty())
