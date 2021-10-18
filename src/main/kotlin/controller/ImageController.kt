@@ -46,6 +46,7 @@ class ImageController : Controller() {
         when (op) {
             FilterOperation.GREYSCALE -> BasicFilter.greyscaleFilter(image)
             FilterOperation.INVERSE_COLOR -> BasicFilter.inverseColorFilter(image)
+            FilterOperation.MIRROR -> BasicFilter.mirrorFilter(image)
         }
         resultImage.image = image
         isRaw = false
