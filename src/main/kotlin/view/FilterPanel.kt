@@ -4,11 +4,13 @@ import controller.EngineController
 import controller.FileController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
+import models.EngineModel
 import processing.RGBType
 import tornadofx.*
 
 class FilterPanel : View() {
 
+    private val engine: EngineModel by inject()
     private val engineController: EngineController by inject()
     private val fileController: FileController by inject()
 
@@ -95,5 +97,21 @@ class FilterPanel : View() {
             button("Undo").setOnAction { fileController.undo() }
             button("Revert").setOnAction { fileController.revert() }
         }
+
+        label("Transformations") {
+            vboxConstraints {
+                margin = Insets(20.0, 20.0, 10.0, 10.0)
+            }
+            style {
+                fontWeight = FontWeight.BOLD
+                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+            }
+        }
+
+        hbox {
+            padding = Insets(0.0, 10.0, 0.0, 10.0)
+            listview(engine.transformations)
+        }
+
     }
 }
