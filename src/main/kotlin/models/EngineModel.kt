@@ -12,25 +12,31 @@ import javax.imageio.ImageIO
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
-    transformedImage: WritableImage = WritableImage(
+) : ViewModel() {
+
+    // Reactive object reference to the 'original' image
+    // 'original' here can either be:
+    //   1. Image passed in when the class is instantiated or
+    //   2. New image loaded using `load`
+    val originalImage =
+        SimpleObjectProperty(this, "originalImage", originalImage)
+
+    // Reactive object reference to the transformed image
+    val previewImage =
+        SimpleObjectProperty(this, "previewImage", originalImage)
+
+    // The copy of the original image that we can work directly on
+    private var transformedImage = WritableImage(
         originalImage.width.toInt(),
         originalImage.height.toInt()
     )
-) : ViewModel() {
-
-    val originalImage = SimpleObjectProperty(this, "originalImage", originalImage)
-
-    val previewImage = SimpleObjectProperty(this, "previewImage", originalImage)
-
-    val transformedImage =
-        SimpleObjectProperty(this, "transformedImage", transformedImage)
 
 
     fun load(path: String) {
         val image = Image(path)
         originalImage.value = image
         previewImage.value = image
-        transformedImage.value = WritableImage(
+        transformedImage = WritableImage(
             image.pixelReader,
             image.width.toInt(),
             image.height.toInt()
@@ -48,7 +54,7 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
-        transformation.process(transformedImage.value)
-        previewImage.value = transformedImage.value
+        transformation.process(transformedImage)
+        previewImage.value = transformedImage
     }
 }

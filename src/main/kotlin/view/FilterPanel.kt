@@ -1,29 +1,40 @@
 package view
 
-import controller.ImageController
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
-import javafx.event.EventHandler
+import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
-import models.*
+import models.RGBType
 import tornadofx.*
 
 class FilterPanel : View() {
-    val basicFilterButtonList = mapOf(
-        "Inverse Color" to InverseColour(),
-        "Greyscale" to GreyScale(),
-        "Mirror" to Mirror()
+
+    private val engineController: EngineController by inject()
+
+    private val basicFilterButtonList = mapOf(
+        "Inverse Color" to engineController::inverseColour,
+        "Greyscale" to engineController::grayscale,
     )
-    val basicFilterSliderList = mapOf(
-        "R" to RGB(RGB_type.R),
-        "G" to RGB(RGB_type.G),
-        "B" to RGB(RGB_type.B),
-        "Brightness" to Brightness(),
-        "Contrast" to Contrast(),
-        "Saturation" to Satuation()
+
+    private val basicFilterSliderList = mapOf(
+        "R" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.R
+            )
+        },
+        "G" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.G
+            )
+        },
+        "B" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.B
+            )
+        },
     )
-    val imageController: ImageController by inject()
 
     override val root = vbox {
         label("Quick Action") {
@@ -38,13 +49,11 @@ class FilterPanel : View() {
 
         hbox {
             padding = Insets(0.0, 10.0, 0.0, 10.0)
-            basicFilterButtonList.map { (s, op) ->
+            basicFilterButtonList.map { (s, callback) ->
                 hbox {
                     addClass(CssStyle.checkBox)
                     checkbox(s) {
-                        action {
-                            imageController.applyFilter(op)
-                        }
+                        action { callback() }
                     }
                 }
             }
@@ -75,17 +84,9 @@ class FilterPanel : View() {
                         max = 100.0
                     }
                     slider.value = 100.0
-                    slider.valueChangingProperty().addListener(object : ChangeListener<Boolean?> {
-                        override fun changed(
-                            source: ObservableValue<out Boolean?>?,
-                            oldValue: Boolean?,
-                            newValue: Boolean?
-                        ) {
-                            println()
-                            op.setSlidingVal(slider.value / 100.0)
-                            imageController.applyFilter(op)
-                        }
-                    })
+                    slider.valueChangingProperty()
+                        .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
+
                     addClass(CssStyle.filterSlider)
                 }
             }

@@ -1,29 +1,32 @@
 package view
 
-import controller.ImageController
+import controller.EngineController
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
 import javafx.scene.control.ScrollPane
 import javafx.scene.input.ZoomEvent
+import models.EngineModel
 import tornadofx.*
 
 const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
 const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 
-var zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
-
 class ImagePanel : View() {
-    private val controller: ImageController by inject()
+    private val zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
+
+    private val engine: EngineModel by inject()
+    private val controller: EngineController by inject()
 
     override val root = vbox {
         scrollpane {
-            val view = imageview(controller.activeImage.image) {
+            val view = imageview(engine.previewImage) {
                 setOnMouseClicked {
-                    controller.toggleActiveImage()
+                    controller.load("")
                 }
             }
+
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0

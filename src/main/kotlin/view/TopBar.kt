@@ -1,13 +1,13 @@
 package view
 
-import controller.ImageController
+import controller.EngineController
 import javafx.scene.control.Alert
 import javafx.stage.FileChooser
 import tornadofx.*
 
 
 class TopBar : View() {
-    val controller: ImageController by inject()
+    val controller: EngineController by inject()
 
     override val root = menubar {
         menu("File") {
