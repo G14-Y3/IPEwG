@@ -8,6 +8,7 @@ import processing.ImageProcessing
 import tornadofx.ViewModel
 import java.io.File
 import java.io.IOException
+import java.util.*
 import javax.imageio.ImageIO
 
 class EngineModel(
@@ -18,7 +19,7 @@ class EngineModel(
     // 'original' here can either be:
     //   1. Image passed in when the class is instantiated or
     //   2. New image loaded using `load`
-    val originalImage =
+    private val originalImage =
         SimpleObjectProperty(this, "originalImage", originalImage)
 
     // Reactive object reference to the transformed image
@@ -27,10 +28,12 @@ class EngineModel(
 
     // The copy of the original image that we can work directly on
     private var transformedImage = WritableImage(
+        originalImage.pixelReader,
         originalImage.width.toInt(),
         originalImage.height.toInt()
     )
 
+    private val snapshots = Stack<WritableImage>()
 
     fun load(path: String) {
         val image = Image(path)
@@ -54,7 +57,30 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
+        snapshots.push(
+            WritableImage(
+                transformedImage.pixelReader,
+                transformedImage.width.toInt(),
+                transformedImage.height.toInt()
+            )
+        )
         transformation.process(transformedImage)
         previewImage.value = transformedImage
     }
+
+    fun undo() {
+        if (snapshots.empty()) return
+
+        transformedImage = snapshots.pop()
+        previewImage.value = transformedImage
+    }
+
+    fun revert() {
+        if (snapshots.empty()) return
+
+        transformedImage = snapshots.first()
+        snapshots.clear()
+        previewImage.value = transformedImage
+    }
+
 }

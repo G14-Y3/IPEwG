@@ -17,14 +17,10 @@ class ImagePanel : View() {
     private val zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
 
     private val engine: EngineModel by inject()
-    private val controller: EngineController by inject()
 
     override val root = vbox {
         scrollpane {
-            val view = imageview(engine.previewImage) {
-                setOnMouseClicked {
-                }
-            }
+            val view = imageview(engine.previewImage)
 
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {

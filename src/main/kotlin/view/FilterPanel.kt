@@ -1,6 +1,7 @@
 package view
 
 import controller.EngineController
+import controller.FileController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import processing.RGBType
@@ -9,8 +10,10 @@ import tornadofx.*
 class FilterPanel : View() {
 
     private val engineController: EngineController by inject()
+    private val fileController: FileController by inject()
 
-    private val basicFilterButtonList = mapOf(
+    private
+    val basicFilterButtonList = mapOf(
         "Inverse Color" to engineController::inverseColour,
         "Greyscale" to engineController::grayscale,
         "Flip Horizontal" to engineController::flipHorizontal,
@@ -51,13 +54,8 @@ class FilterPanel : View() {
 
         hbox {
             padding = Insets(0.0, 10.0, 0.0, 10.0)
-            basicFilterButtonList.map { (s, callback) ->
-                hbox {
-                    addClass(CssStyle.checkBox)
-                    checkbox(s) {
-                        action { callback() }
-                    }
-                }
+            buttonbar {
+                basicFilterButtonList.map { (s, callback) -> button(s).setOnAction { callback() } }
             }
         }
 
@@ -92,6 +90,10 @@ class FilterPanel : View() {
                     addClass(CssStyle.filterSlider)
                 }
             }
+        }
+        buttonbar {
+            button("Undo").setOnAction { fileController.undo() }
+            button("Revert").setOnAction { fileController.revert() }
         }
     }
 }

@@ -21,14 +21,6 @@ class EngineController : Controller() {
 
     private val engine: EngineModel by inject()
 
-    init {
-        load("./test_image.png")
-    }
-
-    fun load(path: String) = engine.load(path)
-
-    fun save(path: String, format: String) = engine.save(path, format)
-
     fun grayscale() = engine.transform(Grayscale())
 
     fun inverseColour() = engine.transform(InverseColour())

@@ -1,14 +1,15 @@
 package view
 
-import controller.EngineController
+import controller.FileController
 import javafx.scene.control.Alert
+import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
 
 
 class TopBar : View() {
-    private val controller: EngineController by inject()
+    private val fileController: FileController by inject()
 
     override val root = menubar {
         menu("File") {
@@ -33,6 +34,7 @@ class TopBar : View() {
             item("How to")
         }
     }
+
 
     private fun imageOperation(mode: String) {
 
@@ -88,10 +90,10 @@ class TopBar : View() {
             when (mode) {
                 "import" ->
                     if (dir.isNotEmpty())
-                        controller.load("file:///" + dir[0].toString())
+                        fileController.load("file:///" + dir[0].toString())
                 "export" ->
                     if (dir.isNotEmpty())
-                        controller.save(
+                        fileController.save(
                             dir[0].toString(),
                             dir[0].toString().substring(
                                 dir[0].toString().lastIndexOf(".") + 1,
