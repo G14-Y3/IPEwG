@@ -5,6 +5,7 @@ import controller.FileController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.HSVType
 import processing.RGBType
 import tornadofx.*
 
@@ -39,6 +40,24 @@ class FilterPanel : View() {
             engineController.rgbFilter(
                 factor,
                 RGBType.B
+            )
+        },
+        "H" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.H
+            )
+        },
+        "S" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.S
+            )
+        },
+        "V" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.V
             )
         },
     )
