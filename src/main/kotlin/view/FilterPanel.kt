@@ -104,7 +104,7 @@ class FilterPanel : View() {
                         min = 0.0
                         max = 100.0
                     }
-                    slider.value = 100.0
+                    slider.value = 50.0
                     slider.valueChangingProperty()
                         .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
 

@@ -26,7 +26,7 @@ class EngineController : Controller() {
 
     fun inverseColour() = engine.transform(InverseColour())
 
-    fun rgbFilter(factor: Double, type: RGBType) = engine.transform(RGBIntensity(factor, type))
+    fun rgbFilter(factor: Double, type: RGBType) = engine.transform(RGBIntensity(factor * 2, type))
 
     fun hsvFilter(factor: Double, type: HSVType) = engine.transform(HSVIntensity(factor * 2, type))
 

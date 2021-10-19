@@ -4,8 +4,8 @@ import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import processing.RGBType
 import processing.ImageProcessing
+import processing.RGBType
 
 class RGBIntensity(private val factor: Double, private val type: RGBType) :
     ImageProcessing {
@@ -16,15 +16,14 @@ class RGBIntensity(private val factor: Double, private val type: RGBType) :
         for (x in 0 until image.width.toInt()) {
             for (y in 0 until image.height.toInt()) {
                 val color: Color = reader.getColor(x, y)
-                var red = color.red
-                var green = color.green
-                var blue = color.blue
-                when (type) {
-                    RGBType.R -> red *= factor
-                    RGBType.G -> green *= factor
-                    else -> blue *= factor
+                val red = color.red
+                val green = color.green
+                val blue = color.blue
+                val newColor: Color = when (type) {
+                    RGBType.R -> Color.color((red * factor).coerceAtMost(1.0), green, blue)
+                    RGBType.G -> Color.color(red, (green * factor).coerceAtMost(1.0), blue)
+                    RGBType.B -> Color.color(red, green, (blue * factor).coerceAtMost(1.0))
                 }
-                val newColor: Color = Color.color(red, green, blue)
                 writer.setColor(x, y, newColor)
             }
         }
