@@ -1,14 +1,15 @@
 package view
 
-import controller.ImageController
+import controller.FileController
 import javafx.scene.control.Alert
+import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
 
 
 class TopBar : View() {
-    val controller: ImageController by inject()
+    private val fileController: FileController by inject()
 
     override val root = menubar {
         menu("File") {
@@ -34,7 +35,7 @@ class TopBar : View() {
         }
     }
 
-    fun imageOperation(mode: String) {
+    private fun imageOperation(mode: String) {
 
         var fileSelectorTitle = ""
         var fileSelectorFilter = emptyArray<FileChooser.ExtensionFilter>()
@@ -85,20 +86,20 @@ class TopBar : View() {
                 initialDirectory = File(File("").canonicalPath)
                 initialFileName = "IPEwG_result_image"
             }
-            when (mode) {
-                "import" ->
-                    if (dir.isNotEmpty())
-                        controller.load("file:///" + dir[0].toString())
-                "export" ->
-                    if (dir.isNotEmpty())
-                        controller.save(
+            if (dir.isNotEmpty())
+                when (mode) {
+                    "import" ->
+                        fileController.load("file:///" + dir[0].toString())
+                    "export" ->
+                        fileController.save(
                             dir[0].toString(),
                             dir[0].toString().substring(
                                 dir[0].toString().lastIndexOf(".") + 1,
                                 dir[0].toString().length
                             )
                         )
-            }
+                }
+
         } catch (e: IllegalArgumentException) {
             alert(
                 type = Alert.AlertType.ERROR,

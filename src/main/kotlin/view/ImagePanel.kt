@@ -1,29 +1,42 @@
 package view
 
-import controller.ImageController
 import javafx.beans.property.DoubleProperty
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.scene.control.ScrollPane
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.input.ZoomEvent
+import models.EngineModel
 import tornadofx.*
 
 const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
 const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 
-var zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
-
 class ImagePanel : View() {
-    private val controller: ImageController by inject()
+    private val zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
+
+    private val engine: EngineModel by inject()
 
     override val root = vbox {
         scrollpane {
-            val view = imageview(controller.activeImage.image) {
+            val stack = stackpane {
+                val oriView = imageview(engine.originalImage) {
+                    isVisible = false
+                    isPreserveRatio = true
+                }
+                val newView = imageview(engine.previewImage)
+
                 setOnMouseClicked {
-                    controller.toggleActiveImage()
+                    oriView.isVisible = !oriView.isVisible
+                    newView.isVisible = !newView.isVisible
                 }
             }
+
+
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0
@@ -31,20 +44,26 @@ class ImagePanel : View() {
                     ratio = 1.01
                 } else if (it.zoomFactor < 1) {
                     // only zoom out when image is smaller than original image
-                    if (zoomedWidth.get() > WINDOW_WIDTH ) {
+                    if (zoomedWidth.get() > WINDOW_WIDTH) {
                         ratio = 1 / 1.01
                     }
                 }
                 // update image size and left top coordinate according to the ratio
-                zoomedWidth.set(zoomedWidth.get() * ratio)
-                view.fitWidth = zoomedWidth.get()
+                zoomedWidth.value = zoomedWidth.value * ratio
             }
 
             this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
             this.vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
 
-            view.fitWidth = zoomedWidth.get()
-            view.preserveRatioProperty().set(true)
+            // TODO: Better way to toggle between the images
+            stack.children.forEach { child ->
+                run {
+                    if (child is ImageView) {
+                        child.fitWidth = zoomedWidth.value
+                        child.isPreserveRatio = true
+                    }
+                }
+            }
 
             this.minWidth = WINDOW_WIDTH
             this.maxWidth = WINDOW_WIDTH
