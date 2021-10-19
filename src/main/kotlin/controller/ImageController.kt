@@ -2,16 +2,18 @@ package controller
 
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
-import models.FilterOperation
 import models.IPEwGImage
 import models.ImageModel
+import models.Instruction
 import processing.BasicFilter
 import tornadofx.Controller
+import java.util.*
 
 class ImageController : Controller() {
     var rawImage: IPEwGImage
     var resultImage: IPEwGImage
     val activeImage = ImageModel(IPEwGImage())
+    var instructions = LinkedList<Instruction>()
     var isRaw = true
 
     init {
@@ -36,14 +38,25 @@ class ImageController : Controller() {
         activeImage.image.set(im)
     }
 
-    fun applyFilter(op: FilterOperation) {
-        val raw = resultImage.image
-        val image = WritableImage(raw.pixelReader, raw.width.toInt(), raw.height.toInt())
-        when (op) {
-            FilterOperation.GREYSCALE -> BasicFilter.greyscaleFilter(image)
-            FilterOperation.INVERSE_COLOR -> BasicFilter.inverseColorFilter(image)
+    fun applyFilter(op: Instruction) {
+        val result = rawImage.image
+        val writableImage = WritableImage(result.pixelReader, result.width.toInt(), result.height.toInt())
+        if (op in instructions) {
+            if (op.exclusive()) {
+                instructions.remove(op)
+            } else {
+                // replace the instruction with new one, which may contain new parameter
+                instructions.remove(op)
+                instructions.add(op)
+            }
+        } else {
+            instructions.add(op)
         }
-        resultImage.image = image
+        for (ins in instructions) {
+            println(ins.toString())
+            ins.apply(writableImage)
+        }
+        resultImage.image = writableImage
         isRaw = false
         activeImage.image.set(resultImage.image)
     }
