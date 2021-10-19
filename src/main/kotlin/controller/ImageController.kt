@@ -1,13 +1,16 @@
 package controller
 
+import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import models.IPEwGImage
 import models.ImageModel
 import models.Instruction
-import processing.BasicFilter
 import tornadofx.Controller
+import java.io.File
+import java.io.IOException
 import java.util.*
+import javax.imageio.ImageIO
 
 class ImageController : Controller() {
     var rawImage: IPEwGImage
@@ -33,14 +36,20 @@ class ImageController : Controller() {
     fun load(path: String) {
         rawImage.load(path)
         val im: Image = rawImage.image
-        resultImage.image = WritableImage(im.pixelReader, im.width.toInt(), im.height.toInt())
+        resultImage.image =
+            WritableImage(im.pixelReader, im.width.toInt(), im.height.toInt())
         isRaw = true
         activeImage.image.set(im)
     }
 
     fun applyFilter(op: Instruction) {
         val result = rawImage.image
-        val writableImage = WritableImage(result.pixelReader, result.width.toInt(), result.height.toInt())
+        val image = WritableImage(
+            result.pixelReader,
+            result.width.toInt(),
+            result.height.toInt()
+        )
+
         if (op in instructions) {
             if (op.exclusive()) {
                 instructions.remove(op)
@@ -54,9 +63,9 @@ class ImageController : Controller() {
         }
         for (ins in instructions) {
             println(ins.toString())
-            ins.apply(writableImage)
+            ins.apply(image)
         }
-        resultImage.image = writableImage
+        resultImage.image = image
         isRaw = false
         activeImage.image.set(resultImage.image)
     }
@@ -64,5 +73,15 @@ class ImageController : Controller() {
     fun toggleActiveImage() {
         isRaw = !isRaw
         activeImage.image.set(if (isRaw) rawImage.image else resultImage.image)
+    }
+
+    fun save(path: String, format: String) {
+        val output = File(path)
+        val buffer = SwingFXUtils.fromFXImage(resultImage.image, null)
+        try {
+            ImageIO.write(buffer, format, output)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
     }
 }

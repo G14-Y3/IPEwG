@@ -1,6 +1,5 @@
 package models
 
-import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import processing.BasicFilter
 
