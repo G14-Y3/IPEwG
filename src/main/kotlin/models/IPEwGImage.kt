@@ -24,10 +24,6 @@ class IPEwGImage(image: Image? = null) {
         }
     }
 
-    fun load(uri: URI) {
-        load(uri.toString())
-    }
-
     fun load(path: String) {
         val image = Image(path)
         this.image = image

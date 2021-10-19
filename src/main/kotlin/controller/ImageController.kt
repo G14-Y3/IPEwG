@@ -3,19 +3,20 @@ package controller
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
-import models.FilterOperation
 import models.IPEwGImage
 import models.ImageModel
-import processing.BasicFilter
+import models.Instruction
 import tornadofx.Controller
 import java.io.File
 import java.io.IOException
+import java.util.*
 import javax.imageio.ImageIO
 
 class ImageController : Controller() {
     var rawImage: IPEwGImage
     var resultImage: IPEwGImage
     val activeImage = ImageModel(IPEwGImage())
+    var instructions = LinkedList<Instruction>()
     var isRaw = true
 
     init {
@@ -35,18 +36,34 @@ class ImageController : Controller() {
     fun load(path: String) {
         rawImage.load(path)
         val im: Image = rawImage.image
-        resultImage.image = WritableImage(im.pixelReader, im.width.toInt(), im.height.toInt())
+        resultImage.image =
+            WritableImage(im.pixelReader, im.width.toInt(), im.height.toInt())
         isRaw = true
         activeImage.image.set(im)
     }
 
-    fun applyFilter(op: FilterOperation) {
-        val raw = resultImage.image
-        val image = WritableImage(raw.pixelReader, raw.width.toInt(), raw.height.toInt())
-        when (op) {
-            FilterOperation.GREYSCALE -> BasicFilter.greyscaleFilter(image)
-            FilterOperation.INVERSE_COLOR -> BasicFilter.inverseColorFilter(image)
-            FilterOperation.MIRROR -> BasicFilter.mirrorFilter(image)
+    fun applyFilter(op: Instruction) {
+        val result = rawImage.image
+        val image = WritableImage(
+            result.pixelReader,
+            result.width.toInt(),
+            result.height.toInt()
+        )
+
+        if (op in instructions) {
+            if (op.exclusive()) {
+                instructions.remove(op)
+            } else {
+                // replace the instruction with new one, which may contain new parameter
+                instructions.remove(op)
+                instructions.add(op)
+            }
+        } else {
+            instructions.add(op)
+        }
+        for (ins in instructions) {
+            println(ins.toString())
+            ins.apply(image)
         }
         resultImage.image = image
         isRaw = false
