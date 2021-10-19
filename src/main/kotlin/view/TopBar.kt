@@ -35,7 +35,6 @@ class TopBar : View() {
         }
     }
 
-
     private fun imageOperation(mode: String) {
 
         var fileSelectorTitle = ""
@@ -87,12 +86,11 @@ class TopBar : View() {
                 initialDirectory = File(File("").canonicalPath)
                 initialFileName = "IPEwG_result_image"
             }
-            when (mode) {
-                "import" ->
-                    if (dir.isNotEmpty())
+            if (dir.isNotEmpty())
+                when (mode) {
+                    "import" ->
                         fileController.load("file:///" + dir[0].toString())
-                "export" ->
-                    if (dir.isNotEmpty())
+                    "export" ->
                         fileController.save(
                             dir[0].toString(),
                             dir[0].toString().substring(
@@ -100,7 +98,8 @@ class TopBar : View() {
                                 dir[0].toString().length
                             )
                         )
-            }
+                }
+
         } catch (e: IllegalArgumentException) {
             alert(
                 type = Alert.AlertType.ERROR,
