@@ -136,11 +136,13 @@ class FilterPanel : View() {
                         prefWidth = 400.0
                     }
                 }
-
-                buttonbar {
-                    padding = Insets(20.0, 10.0, 20.0, 10.0)
-                    button("Undo").setOnAction { fileController.undo() }
-                    button("Revert").setOnAction { fileController.revert() }
+                hbox {
+                    alignment = Pos.CENTER
+                    buttonbar {
+                        padding = Insets(20.0, 10.0, 20.0, 10.0)
+                        button("Undo").setOnAction { fileController.undo() }
+                        button("Revert").setOnAction { fileController.revert() }
+                    }
                 }
             }
             orientation = Orientation.VERTICAL
