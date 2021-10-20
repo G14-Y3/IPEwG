@@ -11,26 +11,32 @@ import java.io.File
 class TopBar : View() {
     private val fileController: FileController by inject()
 
+    private val viewMode: String = "Basic Actions"
+
     override val root = menubar {
-        menu("File") {
-            item("Import...") {
+        menu("_File") {
+            item("_Import...") {
                 action {
                     imageOperation(mode = "import")
                 }
             }
-            item("Export...") {
+            item("_Export...") {
                 action {
                     imageOperation(mode = "export")
                 }
             }
-            item("Quit")
+            item("_Quit")
         }
-        menu("View") {
-            item("Basic Action")
-            item("Advanced")
-            item("Advanced")
-        }
-        menu("Help") {
+//        menu("_View") {
+//            item("_Basic Actions") {
+//                action {
+//
+//                }
+//            }
+//            item("_RGB")
+//            item("_HSV")
+//        }
+        menu("_Help") {
             item("How to")
         }
     }
