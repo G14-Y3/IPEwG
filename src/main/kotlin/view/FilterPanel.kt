@@ -106,11 +106,12 @@ class FilterPanel : View() {
                     }
                     slider.value = 50.0
                     slider.valueChangingProperty()
-                        .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
+                        .addListener(ChangeListener { _, _, _ -> op(slider.value / 50) })
 
                     addClass(CssStyle.filterSlider)
                 }
             }
+            button("Adjust").setOnAction { engineController.submitAdjustment() }
         }
         buttonbar {
             button("Undo").setOnAction { fileController.undo() }
