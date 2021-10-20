@@ -1,5 +1,6 @@
 package view
 
+import javafx.geometry.Pos
 import tornadofx.*
 
 class CssStyle : Stylesheet() {
@@ -21,6 +22,10 @@ class CssStyle : Stylesheet() {
 
         filterSlider {
             padding = CssBox<Dimension<Dimension.LinearUnits>>(0.em, 0.5.em, 0.em, 0.5.em)
+        }
+
+        listCell {
+            alignment = Pos.CENTER
         }
     }
 }
