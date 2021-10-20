@@ -9,6 +9,7 @@ import view.TopBar
 
 class GUI : View("IPEwG") {
     override val root = borderpane {
+        setPrefSize(1100.0, 780.0)
         top<TopBar>()
         left<FilterPanel>()
         center<ImagePanel>()
