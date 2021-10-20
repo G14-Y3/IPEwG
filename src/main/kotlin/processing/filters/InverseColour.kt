@@ -16,4 +16,6 @@ class InverseColour : ImageProcessing {
             }
         }
     }
+
+    override fun toString(): String = "Inverse Colour"
 }

@@ -11,16 +11,16 @@ class CssStyle : Stylesheet() {
 
     init {
         checkBox {
-            padding = CssBox<Dimension<Dimension.LinearUnits>>(5.px, 5.px, 5.px, 5.px)
+            padding = CssBox<Dimension<Dimension.LinearUnits>>(.3.em, .3.em, .3.em, .3.em)
         }
 
         labelTag {
-            padding = CssBox<Dimension<Dimension.LinearUnits>>(0.px, 10.px, 10.px, 10.px)
+            padding = CssBox<Dimension<Dimension.LinearUnits>>(0.em, 0.5.em, 0.5.em, 0.5.em)
             prefWidth = Dimension<Dimension.LinearUnits>(100.0, Dimension.LinearUnits.px)
         }
 
         filterSlider {
-            padding = CssBox<Dimension<Dimension.LinearUnits>>(0.px, 10.px, 0.px, 10.px)
+            padding = CssBox<Dimension<Dimension.LinearUnits>>(0.em, 0.5.em, 0.em, 0.5.em)
         }
     }
 }
