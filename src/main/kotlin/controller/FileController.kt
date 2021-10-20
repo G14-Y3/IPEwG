@@ -13,5 +13,7 @@ class FileController : Controller() {
 
     fun undo() = engine.undo()
 
+    fun redo() = engine.redo()
+
     fun revert() = engine.revert()
 }

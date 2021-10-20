@@ -2,11 +2,15 @@ package view
 
 import controller.EngineController
 import controller.FileController
+import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.ImageProcessing
 import processing.RGBType
 import tornadofx.*
+import javax.swing.event.ChangeListener
+
 
 class FilterPanel : View() {
 
@@ -95,6 +99,7 @@ class FilterPanel : View() {
         }
         buttonbar {
             button("Undo").setOnAction { fileController.undo() }
+            button("Redo").setOnAction { fileController.redo() }
             button("Revert").setOnAction { fileController.revert() }
         }
 
@@ -110,7 +115,12 @@ class FilterPanel : View() {
 
         hbox {
             padding = Insets(0.0, 10.0, 0.0, 10.0)
-            listview(engine.transformations)
+            listview(engine.transformations) {
+                selectionModel.selectedIndexProperty().onChange {
+                    engine.setCurrentIndex(it)
+                }
+                engine.updateListSelection = { selectionModel.select(engine.currIndex) }
+            }
         }
 
     }
