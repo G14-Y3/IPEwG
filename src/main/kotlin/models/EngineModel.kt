@@ -91,7 +91,10 @@ class EngineModel(
     }
 
     fun submitAdjustment() {
-        transform(Adjustment(adjustmentProperties))
+        if (adjustmentProperties.isNotEmpty()) {
+            transform(Adjustment(adjustmentProperties))
+            adjustmentProperties.clear()
+        }
     }
 
     fun undo() {
