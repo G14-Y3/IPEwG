@@ -2,7 +2,6 @@ package view
 
 import controller.FileController
 import javafx.scene.control.Alert
-import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
