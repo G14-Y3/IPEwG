@@ -2,6 +2,7 @@ package view
 
 import controller.FileController
 import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
@@ -22,7 +23,16 @@ class TopBar : View() {
                     imageOperation(mode = "export")
                 }
             }
-            item("_Quit")
+            item("_Quit") {
+                action {
+                    val result = alert(
+                        type = Alert.AlertType.CONFIRMATION,
+                        header = "Confirm Quit",
+                        content = "Are you sure you want to quit?"
+                    ).result
+                    if (result == ButtonType.OK) close()
+                }
+            }
         }
 //        menu("_View") {
 //            item("_Basic Actions") {
@@ -34,7 +44,7 @@ class TopBar : View() {
 //            item("_HSV")
 //        }
         menu("_Help") {
-            item("How to")
+            item("_How to")
         }
     }
 
