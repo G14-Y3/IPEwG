@@ -10,8 +10,6 @@ import java.io.File
 class TopBar : View() {
     private val fileController: FileController by inject()
 
-    private val viewMode: String = "Basic Actions"
-
     override val root = menubar {
         menu("_File") {
             item("_Import...") {

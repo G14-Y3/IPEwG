@@ -3,6 +3,8 @@ package view
 import controller.EngineController
 import controller.FileController
 import javafx.geometry.Insets
+import javafx.geometry.Orientation
+import javafx.geometry.Pos
 import javafx.geometry.Side
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
@@ -47,92 +49,102 @@ class FilterPanel : View() {
     )
 
     override val root = vbox {
-        tabpane {
-            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            side = Side.LEFT
-            tab("Basic Actions") {
-                vbox {
-                    label("Basic Actions") {
-                        vboxConstraints {
-                            margin = Insets(20.0, 20.0, 10.0, 10.0)
-                        }
-                        style {
-                            fontWeight = FontWeight.BOLD
-                            fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-
-                        }
-                    }
-
-                    hbox {
-                        padding = Insets(0.0, 10.0, 0.0, 10.0)
-                        buttonbar {
-                            basicFilterButtonList.map { (s, callback) -> button(s).setOnAction { callback() } }
-                        }
-                    }
-                }
-            }
-            tab("RGB") {
-                vbox {
-                    label("Advanced Actions - RGB") {
-                        vboxConstraints {
-                            margin = Insets(20.0, 20.0, 10.0, 10.0)
-                        }
-                        style {
-                            fontWeight = FontWeight.BOLD
-                            fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                        }
-                    }
-
+        splitpane {
+            tabpane {
+                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                side = Side.LEFT
+                tab("Basic Actions") {
                     vbox {
-                        vboxConstraints {
-                            margin = Insets(10.0)
+                        label("Basic Actions") {
+                            vboxConstraints {
+                                margin = Insets(20.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+
+                            }
                         }
 
-                        basicFilterSliderList.map { (label, op) ->
-                            hbox {
-                                label(label) {
-                                    addClass(CssStyle.labelTag)
-                                }
-                                val slider = slider {
-                                    min = 0.0
-                                    max = 100.0
-                                }
-                                slider.value = 100.0
-                                slider.valueChangingProperty()
-                                    .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
-
-                                addClass(CssStyle.filterSlider)
+                        hbox {
+                            padding = Insets(20.0, 20.0, 10.0, 10.0)
+                            buttonbar {
+                                basicFilterButtonList.map { (s, callback) -> button(s).setOnAction { callback() } }
                             }
                         }
                     }
                 }
+                tab("RGB") {
+                    vbox {
+                        label("Advanced Actions - RGB") {
+                            vboxConstraints {
+                                margin = Insets(20.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
 
-            }
+                        vbox {
+                            vboxConstraints {
+                                margin = Insets(10.0)
+                            }
 
-            tab("HSV") {
+                            basicFilterSliderList.map { (label, op) ->
+                                hbox {
+                                    padding = Insets(20.0, 20.0, 10.0, 10.0)
+                                    label(label) {
+                                        addClass(CssStyle.labelTag)
+                                    }
+                                    val slider = slider {
+                                        min = 0.0
+                                        max = 100.0
+                                    }
+                                    slider.value = 100.0
+                                    slider.valueChangingProperty()
+                                        .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
 
-            }
-        }
-        vbox {
-            buttonbar {
-                button("Undo").setOnAction { fileController.undo() }
-                button("Revert").setOnAction { fileController.revert() }
-            }
+                                    addClass(CssStyle.filterSlider)
+                                }
+                            }
+                        }
+                    }
 
-            label("Transformations") {
-                vboxConstraints {
-                    margin = Insets(20.0, 20.0, 10.0, 10.0)
                 }
-                style {
-                    fontWeight = FontWeight.BOLD
-                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+
+                tab("HSV") {
+
                 }
             }
+            vbox {
+                alignment = Pos.CENTER
+                label("Transformations") {
+                    vboxConstraints {
+                        margin = Insets(10.0, 20.0, 10.0, 10.0)
+                    }
+                    style {
+                        fontWeight = FontWeight.BOLD
+                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                    }
+                }
 
-            hbox {
-                padding = Insets(0.0, 10.0, 0.0, 10.0)
-                listview(engine.transformations)
+                hbox {
+                    alignment = Pos.CENTER
+                    padding = Insets(0.0, 10.0, 0.0, 10.0)
+                    listview(engine.transformations) {
+                        prefWidth = 400.0
+                    }
+                }
+
+                buttonbar {
+                    padding = Insets(20.0, 10.0, 20.0, 10.0)
+                    button("Undo").setOnAction { fileController.undo() }
+                    button("Revert").setOnAction { fileController.revert() }
+                }
             }
+            orientation = Orientation.VERTICAL
+            setDividerPosition(0, 0.4)
         }
     }
 }
