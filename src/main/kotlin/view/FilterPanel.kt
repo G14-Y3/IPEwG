@@ -7,9 +7,11 @@ import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
+import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.HSVType
 import processing.RGBType
 import tornadofx.*
 
@@ -28,7 +30,7 @@ class FilterPanel : View() {
         "Flip Vertical" to engineController::flipVertical,
     )
 
-    private val basicFilterSliderList = mapOf(
+    private val rgbFilterSliderList = mapOf(
         "R" to { factor: Double ->
             engineController.rgbFilter(
                 factor,
@@ -47,6 +49,32 @@ class FilterPanel : View() {
                 RGBType.B
             )
         },
+    )
+
+    private val hsvFilterSliderList = mapOf(
+        "H" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.H
+            )
+        },
+        "S" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.S
+            )
+        },
+        "V" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.V
+            )
+        },
+    )
+
+    private val adjustmentTabs = mapOf(
+        "RGB" to rgbFilterSliderList,
+        "HSV" to hsvFilterSliderList,
     )
 
     override val root = vbox {
@@ -81,89 +109,100 @@ class FilterPanel : View() {
                         }
                     }
                 }
-                tab("RGB") {
-                    vbox {
-                        label("Advanced Actions - RGB") {
-                            vboxConstraints {
-                                margin = Insets(20.0, 20.0, 10.0, 10.0)
-                            }
-                            style {
-                                fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                            }
-                        }
 
+                adjustmentTabs.map { (name, sliderList) ->
+                    tab(name) {
                         vbox {
-                            vboxConstraints {
-                                margin = Insets(10.0)
+                            label(name) {
+                                vboxConstraints {
+                                    margin = Insets(20.0, 20.0, 10.0, 10.0)
+                                }
+                                style {
+                                    fontWeight = FontWeight.BOLD
+                                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                }
                             }
 
-                            basicFilterSliderList.map { (label, op) ->
-                                hbox {
-                                    padding = Insets(20.0, 20.0, 10.0, 10.0)
-                                    label(label) {
-                                        addClass(CssStyle.labelTag)
-                                    }
+                            vbox {
+                                vboxConstraints {
+                                    margin = Insets(10.0)
+                                }
+                                val sliders = ArrayList<Slider>()
+                                sliderList.map { (label, op) ->
+                                    hbox {
+                                        padding = Insets(20.0, 20.0, 10.0, 10.0)
+                                        label(label) {
+                                            addClass(CssStyle.labelTag)
+                                        }
+                                        val slider = slider {
+                                            min = 0.0
+                                            max = 100.0
+                                        }
+                                        sliders += slider
+                                        slider.value = 50.0
+                                        slider.valueChangingProperty()
+                                            .addListener(ChangeListener { _, _, _ -> op(slider.value / 50) })
 
-                                    val slider = slider {
-                                        min = 0.0
-                                        max = 100.0
-                                    }
-                                    slider.value = 100.0
-                                    slider.valueChangingProperty()
-                                        .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
-                                    addClass(CssStyle.filterSlider)
+                                        addClass(CssStyle.filterSlider)
 
-                                    label {
-                                        addClass(CssStyle.labelTag)
-                                        textProperty().bind(
-                                            Bindings.format(
-                                                "%.0f",
-                                                slider.valueProperty()
+                                        label {
+                                            addClass(CssStyle.labelTag)
+                                            textProperty().bind(
+                                                Bindings.format(
+                                                    "%.0f",
+                                                    slider.valueProperty()
+                                                )
                                             )
-                                        )
+                                        }
+                                    }
+
+                                    buttonbar {
+                                        padding = Insets(20.0, 10.0, 20.0, 10.0)
+                                        button("Adjust").setOnAction {
+                                            engineController.submitAdjustment()
+                                            sliders.forEach { it.value = 50.0 }
+                                        }
+                                        button("Reset").setOnAction {
+                                            engineController.resetAdjustment()
+                                            sliders.forEach { it.value = 50.0 }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-
                 }
-
-                tab("HSV") {
-
-                }
-            }
-            vbox {
-                alignment = Pos.CENTER
-                label("Transformations") {
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 10.0, 10.0)
-                    }
-                    style {
-                        fontWeight = FontWeight.BOLD
-                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                    }
-                }
-
-                hbox {
+                vbox {
                     alignment = Pos.CENTER
-                    padding = Insets(0.0, 10.0, 0.0, 10.0)
-                    listview(engine.transformations) {
-                        prefWidth = 400.0
+                    label("Transformations") {
+                        vboxConstraints {
+                            margin = Insets(10.0, 20.0, 10.0, 10.0)
+                        }
+                        style {
+                            fontWeight = FontWeight.BOLD
+                            fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                        }
+                    }
+
+                    hbox {
+                        alignment = Pos.CENTER
+                        padding = Insets(0.0, 10.0, 0.0, 10.0)
+                        listview(engine.transformations) {
+                            prefWidth = 400.0
+                        }
+                    }
+                    hbox {
+                        alignment = Pos.CENTER
+                        buttonbar {
+                            padding = Insets(20.0, 10.0, 20.0, 10.0)
+                            button("Undo").setOnAction { fileController.undo() }
+                            button("Revert").setOnAction { fileController.revert() }
+                        }
                     }
                 }
-                hbox {
-                    alignment = Pos.CENTER
-                    buttonbar {
-                        padding = Insets(20.0, 10.0, 20.0, 10.0)
-                        button("Undo").setOnAction { fileController.undo() }
-                        button("Revert").setOnAction { fileController.revert() }
-                    }
-                }
+                orientation = Orientation.VERTICAL
+                setDividerPosition(0, 0.4)
             }
-            orientation = Orientation.VERTICAL
-            setDividerPosition(0, 0.4)
         }
     }
 }

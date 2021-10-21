@@ -5,12 +5,14 @@ import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
+import processing.filters.Adjustment
 import tornadofx.ViewModel
 import tornadofx.observableListOf
 import java.io.File
 import java.io.IOException
 import java.util.*
 import javax.imageio.ImageIO
+import kotlin.collections.HashMap
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
@@ -33,6 +35,8 @@ class EngineModel(
         originalImage.width.toInt(),
         originalImage.height.toInt()
     )
+
+    var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
     // Pipeline of transformations
     val transformations = observableListOf<ImageProcessing>()
@@ -71,6 +75,33 @@ class EngineModel(
         )
         transformations.add(transformation)
         transformation.process(transformedImage)
+        previewImage.value = transformedImage
+    }
+
+    /**
+     * @param factor a value between 0.0 and 2.0
+     */
+    fun adjust(property: String, factor: Double) {
+        adjustmentProperties[property] = factor
+
+        val preview = WritableImage(
+            transformedImage.pixelReader,
+            transformedImage.width.toInt(),
+            transformedImage.height.toInt()
+        )
+        Adjustment(adjustmentProperties).process(preview)
+        previewImage.value = preview
+    }
+
+    fun submitAdjustment() {
+        if (adjustmentProperties.isNotEmpty()) {
+            transform(Adjustment(adjustmentProperties))
+            adjustmentProperties.clear()
+        }
+    }
+
+    fun resetAdjustment() {
+        adjustmentProperties.clear()
         previewImage.value = transformedImage
     }
 
