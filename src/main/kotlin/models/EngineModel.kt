@@ -3,6 +3,7 @@ package models
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
@@ -28,6 +29,9 @@ class EngineModel(
     // Reactive object reference to the transformed image
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
+
+    var oriView : ImageView? = null
+    var newView : ImageView? = null
 
     // The copy of the original image that we can work directly on
     private var transformedImage = WritableImage(

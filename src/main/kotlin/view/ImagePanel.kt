@@ -24,15 +24,15 @@ class ImagePanel : View() {
     override val root = vbox {
         scrollpane {
             val stack = stackpane {
-                val oriView = imageview(engine.originalImage) {
+                engine.oriView = imageview(engine.originalImage) {
                     isVisible = false
                     isPreserveRatio = true
                 }
-                val newView = imageview(engine.previewImage)
+                engine.newView = imageview(engine.previewImage)
 
                 setOnMouseClicked {
-                    oriView.isVisible = !oriView.isVisible
-                    newView.isVisible = !newView.isVisible
+                    engine.oriView!!.isVisible = !engine.oriView!!.isVisible
+                    engine.newView!!.isVisible = !engine.newView!!.isVisible
                 }
             }
 
@@ -50,6 +50,8 @@ class ImagePanel : View() {
                 }
                 // update image size and left top coordinate according to the ratio
                 zoomedWidth.value = zoomedWidth.value * ratio
+                engine.oriView!!.fitWidth = zoomedWidth.get()
+                engine.newView!!.fitWidth = zoomedWidth.get()
             }
 
             this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
