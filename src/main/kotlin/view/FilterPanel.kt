@@ -155,54 +155,53 @@ class FilterPanel : View() {
                                             )
                                         }
                                     }
-
-                                    buttonbar {
-                                        padding = Insets(20.0, 10.0, 20.0, 10.0)
-                                        button("Adjust").setOnAction {
-                                            engineController.submitAdjustment()
-                                            sliders.forEach { it.value = 50.0 }
-                                        }
-                                        button("Reset").setOnAction {
-                                            engineController.resetAdjustment()
-                                            sliders.forEach { it.value = 50.0 }
-                                        }
+                                }
+                                buttonbar {
+                                    padding = Insets(20.0, 10.0, 20.0, 10.0)
+                                    button("Adjust").setOnAction {
+                                        engineController.submitAdjustment()
+                                        sliders.forEach { it.value = 50.0 }
+                                    }
+                                    button("Reset").setOnAction {
+                                        engineController.resetAdjustment()
+                                        sliders.forEach { it.value = 50.0 }
                                     }
                                 }
                             }
                         }
                     }
                 }
-                vbox {
-                    alignment = Pos.CENTER
-                    label("Transformations") {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 10.0, 10.0)
-                        }
-                        style {
-                            fontWeight = FontWeight.BOLD
-                            fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                        }
+            }
+            vbox {
+                alignment = Pos.CENTER
+                label("Transformations") {
+                    vboxConstraints {
+                        margin = Insets(10.0, 20.0, 10.0, 10.0)
                     }
-
-                    hbox {
-                        alignment = Pos.CENTER
-                        padding = Insets(0.0, 10.0, 0.0, 10.0)
-                        listview(engine.transformations) {
-                            prefWidth = 400.0
-                        }
-                    }
-                    hbox {
-                        alignment = Pos.CENTER
-                        buttonbar {
-                            padding = Insets(20.0, 10.0, 20.0, 10.0)
-                            button("Undo").setOnAction { fileController.undo() }
-                            button("Revert").setOnAction { fileController.revert() }
-                        }
+                    style {
+                        fontWeight = FontWeight.BOLD
+                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                     }
                 }
-                orientation = Orientation.VERTICAL
-                setDividerPosition(0, 0.4)
+
+                hbox {
+                    alignment = Pos.CENTER
+                    padding = Insets(0.0, 10.0, 0.0, 10.0)
+                    listview(engine.transformations) {
+                        prefWidth = 400.0
+                    }
+                }
+                hbox {
+                    alignment = Pos.CENTER
+                    buttonbar {
+                        padding = Insets(20.0, 10.0, 20.0, 10.0)
+                        button("Undo").setOnAction { fileController.undo() }
+                        button("Revert").setOnAction { fileController.revert() }
+                    }
+                }
             }
+            orientation = Orientation.VERTICAL
+            setDividerPosition(0, 0.4)
         }
     }
 }
