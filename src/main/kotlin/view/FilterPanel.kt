@@ -2,6 +2,7 @@ package view
 
 import controller.EngineController
 import controller.FileController
+import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
@@ -69,7 +70,13 @@ class FilterPanel : View() {
                         hbox {
                             padding = Insets(20.0, 20.0, 10.0, 10.0)
                             buttonbar {
-                                basicFilterButtonList.map { (s, callback) -> button(s).setOnAction { callback() } }
+                                basicFilterButtonList.map { (s, callback) ->
+                                    button(s) {
+                                        /* The buttons need enough width to load up all labels
+                                         in them, or the border will change when tabs clicked. */
+                                        prefWidth = 100.0
+                                    }.setOnAction { callback() }
+                                }
                             }
                         }
                     }
@@ -97,6 +104,7 @@ class FilterPanel : View() {
                                     label(label) {
                                         addClass(CssStyle.labelTag)
                                     }
+
                                     val slider = slider {
                                         min = 0.0
                                         max = 100.0
@@ -104,8 +112,17 @@ class FilterPanel : View() {
                                     slider.value = 100.0
                                     slider.valueChangingProperty()
                                         .addListener(ChangeListener { _, _, _ -> op(slider.value / 100) })
-
                                     addClass(CssStyle.filterSlider)
+
+                                    label {
+                                        addClass(CssStyle.labelTag)
+                                        textProperty().bind(
+                                            Bindings.format(
+                                                "%.0f",
+                                                slider.valueProperty()
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
