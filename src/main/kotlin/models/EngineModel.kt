@@ -83,6 +83,9 @@ class EngineModel(
      */
     fun adjust(property: String, factor: Double) {
         adjustmentProperties[property] = factor
+        if (factor == 1.0) {
+            adjustmentProperties.remove(property)
+        }
 
         val preview = WritableImage(
             transformedImage.pixelReader,

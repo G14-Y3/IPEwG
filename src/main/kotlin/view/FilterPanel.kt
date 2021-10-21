@@ -135,13 +135,13 @@ class FilterPanel : View() {
                                             addClass(CssStyle.labelTag)
                                         }
                                         val slider = slider {
-                                            min = 0.0
+                                            min = -100.0
                                             max = 100.0
                                         }
                                         sliders += slider
-                                        slider.value = 50.0
-                                        slider.valueChangingProperty()
-                                            .addListener(ChangeListener { _, _, _ -> op(slider.value / 50) })
+                                        slider.value = 0.0
+                                        slider.valueProperty()
+                                            .addListener(ChangeListener { _, _, _ -> op(slider.value / 100 + 1) })
 
                                         addClass(CssStyle.filterSlider)
 
@@ -160,11 +160,11 @@ class FilterPanel : View() {
                                     padding = Insets(20.0, 10.0, 20.0, 10.0)
                                     button("Adjust").setOnAction {
                                         engineController.submitAdjustment()
-                                        sliders.forEach { it.value = 50.0 }
+                                        sliders.forEach { it.value = 0.0 }
                                     }
                                     button("Reset").setOnAction {
                                         engineController.resetAdjustment()
-                                        sliders.forEach { it.value = 50.0 }
+                                        sliders.forEach { it.value = 0.0 }
                                     }
                                 }
                             }
