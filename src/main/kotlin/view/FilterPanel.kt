@@ -2,6 +2,7 @@ package view
 
 import controller.EngineController
 import controller.FileController
+import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
