@@ -78,6 +78,9 @@ class EngineModel(
         previewImage.value = transformedImage
     }
 
+    /**
+     * @param factor a value between 0.0 and 2.0
+     */
     fun adjust(property: String, factor: Double) {
         adjustmentProperties[property] = factor
 
@@ -95,6 +98,11 @@ class EngineModel(
             transform(Adjustment(adjustmentProperties))
             adjustmentProperties.clear()
         }
+    }
+
+    fun resetAdjustment() {
+        adjustmentProperties.clear()
+        previewImage.value = transformedImage
     }
 
     fun undo() {

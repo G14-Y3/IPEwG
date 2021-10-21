@@ -35,6 +35,8 @@ class EngineController : Controller() {
 
     fun submitAdjustment() = engine.submitAdjustment()
 
+    fun resetAdjustment() = engine.resetAdjustment()
+
     fun flipHorizontal() = engine.transform(FlipHorizontal())
 
     fun flipVertical() = engine.transform(FlipVertical())

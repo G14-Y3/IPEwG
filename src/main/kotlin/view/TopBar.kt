@@ -2,7 +2,7 @@ package view
 
 import controller.FileController
 import javafx.scene.control.Alert
-import javafx.scene.layout.Priority
+import javafx.scene.control.ButtonType
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
@@ -12,26 +12,39 @@ class TopBar : View() {
     private val fileController: FileController by inject()
 
     override val root = menubar {
-        menu("File") {
-            item("Import...") {
+        menu("_File") {
+            item("_Import...") {
                 action {
                     imageOperation(mode = "import")
                 }
             }
-            item("Export...") {
+            item("_Export...") {
                 action {
                     imageOperation(mode = "export")
                 }
             }
-            item("Quit")
+            item("_Quit") {
+                action {
+                    val result = alert(
+                        type = Alert.AlertType.CONFIRMATION,
+                        header = "Confirm Quit",
+                        content = "Are you sure you want to quit?"
+                    ).result
+                    if (result == ButtonType.OK) close()
+                }
+            }
         }
-        menu("View") {
-            item("Basic Action")
-            item("Advanced")
-            item("Advanced")
-        }
-        menu("Help") {
-            item("How to")
+//        menu("_View") {
+//            item("_Basic Actions") {
+//                action {
+//
+//                }
+//            }
+//            item("_RGB")
+//            item("_HSV")
+//        }
+        menu("_Help") {
+            item("_How to")
         }
     }
 
