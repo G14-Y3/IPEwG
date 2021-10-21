@@ -137,6 +137,9 @@ class FilterPanel : View() {
                                         val slider = slider {
                                             min = -100.0
                                             max = 100.0
+                                            isShowTickMarks = true
+                                            majorTickUnit = 50.0
+                                            minorTickCount = 1
                                         }
                                         sliders += slider
                                         slider.value = 0.0
