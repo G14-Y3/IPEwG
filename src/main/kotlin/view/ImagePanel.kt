@@ -1,9 +1,11 @@
 package view
 
+import com.sun.prism.image.ViewPort
 import javafx.geometry.Insets
 import javafx.geometry.Rectangle2D
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
+import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
 import tornadofx.*
@@ -16,7 +18,7 @@ class ImagePanel : View() {
     private val engine: EngineModel by inject()
 
     override val root = vbox {
-        scrollpane {
+        stackpane {
             val stack = stackpane {
                 engine.oriView = imageview(engine.originalImage) {
                     isVisible = false
@@ -30,13 +32,26 @@ class ImagePanel : View() {
                     engine.oriView!!.image.width,
                     engine.oriView!!.image.height,
                 )
-                engine.oriView!!.viewport = viewport
-                engine.newView!!.viewport = viewport
+                updateViewPort(viewport)
 
                 setOnMouseClicked {
                     engine.oriView!!.isVisible = !engine.oriView!!.isVisible
                     engine.newView!!.isVisible = !engine.newView!!.isVisible
                 }
+            }
+
+            this.addEventFilter(ScrollEvent.SCROLL) {
+                var leftTopX = engine.oriView!!.viewport.minX - it.deltaX
+                leftTopX = cast(leftTopX, 0.0, engine.oriView!!.image.width - engine.oriView!!.viewport.width)
+                var leftTopY = engine.oriView!!.viewport.minY - it.deltaY
+                leftTopY = cast(leftTopY, 0.0, engine.oriView!!.image.height - engine.oriView!!.viewport.height)
+                val viewport = Rectangle2D(
+                    leftTopX,
+                    leftTopY,
+                    engine.oriView!!.viewport.width,
+                    engine.oriView!!.viewport.height,
+                )
+                updateViewPort(viewport)
             }
 
 
@@ -55,18 +70,22 @@ class ImagePanel : View() {
                 }
 
                 // update image origin so zoom on the mouse position
+                var leftTopX = oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage
+                leftTopX = cast(leftTopX, 0.0, engine.oriView!!.image.width - engine.oriView!!.viewport.width)
+                var leftTopY = oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage
+                leftTopY = cast(leftTopY, 0.0, engine.oriView!!.image.height - engine.oriView!!.viewport.height)
+
                 val newViewport = Rectangle2D(
-                    oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage,
-                    oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage,
+                    leftTopX,
+                    leftTopY,
                     oldViewport.width / ratio,
                     oldViewport.height / ratio,
                 )
-                engine.oriView!!.viewport = newViewport
-                engine.newView!!.viewport = newViewport
+                updateViewPort(newViewport)
             }
 
-            this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
-            this.vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
+//            this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
+//            this.vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
 
             // TODO: Better way to toggle between the images
             stack.children.forEach { child ->
@@ -87,5 +106,21 @@ class ImagePanel : View() {
                 margin = Insets(20.0)
             }
         }
+    }
+
+    // cast given value in given range
+    private fun cast(value : Double, min : Double, max : Double) : Double {
+        if (value < 0) {
+            return 0.0
+        } else if (value > max) {
+            return max
+        }
+        return value
+    }
+
+    // update both images' viewport in engine
+    private fun updateViewPort(viewPort: Rectangle2D) {
+        engine.oriView!!.viewport = viewPort
+        engine.newView!!.viewport = viewPort
     }
 }
