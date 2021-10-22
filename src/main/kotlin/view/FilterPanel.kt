@@ -2,7 +2,6 @@ package view
 
 import controller.EngineController
 import controller.FileController
-import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
@@ -140,23 +139,31 @@ class FilterPanel : View() {
                                             isShowTickMarks = true
                                             majorTickUnit = 50.0
                                             minorTickCount = 1
+                                            blockIncrement = 1.0
                                         }
                                         sliders += slider
                                         slider.value = 0.0
                                         slider.valueProperty()
                                             .addListener(ChangeListener { _, _, _ -> op(slider.value / 100 + 1) })
-
                                         addClass(CssStyle.filterSlider)
 
-                                        label {
-                                            addClass(CssStyle.labelTag)
-                                            textProperty().bind(
-                                                Bindings.format(
-                                                    "%.0f",
-                                                    slider.valueProperty()
-                                                )
-                                            )
+                                        val spinner = spinner(
+                                            -100.0,
+                                            100.0,
+                                            0.0,
+                                            1.0,
+                                            true,
+                                            doubleProperty(0.0)
+                                        ) {
+                                            maxWidth = 70.0
                                         }
+
+//                                        spinner.valueFactory.converter =
+//                                            (NumberStringConverter("#.0"))
+
+                                        slider.valueProperty().bindBidirectional(
+                                            spinner.valueFactory.valueProperty()
+                                        )
                                     }
                                 }
                                 buttonbar {
