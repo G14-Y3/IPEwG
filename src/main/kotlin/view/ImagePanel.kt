@@ -1,13 +1,11 @@
 package view
 
-import javafx.beans.property.DoubleProperty
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleObjectProperty
+import com.sun.prism.image.ViewPort
 import javafx.geometry.Insets
+import javafx.geometry.Rectangle2D
 import javafx.scene.control.ScrollPane
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
 import tornadofx.*
@@ -17,12 +15,10 @@ const val WINDOW_WIDTH = 600.0
 const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 
 class ImagePanel : View() {
-    private val zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
-
     private val engine: EngineModel by inject()
 
     override val root = vbox {
-        scrollpane {
+        stackpane {
             val stack = stackpane {
                 engine.oriView = imageview(engine.originalImage) {
                     isVisible = false
@@ -30,38 +26,70 @@ class ImagePanel : View() {
                 }
                 engine.newView = imageview(engine.previewImage)
 
+                val viewport = Rectangle2D(
+                    .0,
+                    .0,
+                    engine.oriView!!.image.width,
+                    engine.oriView!!.image.height,
+                )
+                updateViewPort(viewport)
+
                 setOnMouseClicked {
                     engine.oriView!!.isVisible = !engine.oriView!!.isVisible
                     engine.newView!!.isVisible = !engine.newView!!.isVisible
                 }
             }
 
+            this.addEventFilter(ScrollEvent.SCROLL) {
+                var leftTopX = engine.oriView!!.viewport.minX - it.deltaX
+                leftTopX = cast(leftTopX, 0.0, engine.excessWidth)
+                var leftTopY = engine.oriView!!.viewport.minY - it.deltaY
+                leftTopY = cast(leftTopY, 0.0, engine.excessHeight)
+                val viewport = Rectangle2D(
+                    leftTopX,
+                    leftTopY,
+                    engine.oriView!!.viewport.width,
+                    engine.oriView!!.viewport.height,
+                )
+                updateViewPort(viewport)
+            }
+
 
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0
+                val oldViewport = engine.oriView!!.viewport!!
+                val localToImage = width / oldViewport.width
                 if (it.zoomFactor > 1) {
                     ratio = 1.01
                 } else if (it.zoomFactor < 1) {
-                    // only zoom out when image is smaller than original image
-                    if (zoomedWidth.get() > WINDOW_WIDTH) {
+                    // only zoom out when viewport is smaller than original image
+                    if (oldViewport.width < engine.oriView!!.image.width) {
                         ratio = 1 / 1.01
                     }
                 }
-                // update image size and left top coordinate according to the ratio
-                zoomedWidth.value = zoomedWidth.value * ratio
-                engine.oriView!!.fitWidth = zoomedWidth.get()
-                engine.newView!!.fitWidth = zoomedWidth.get()
+
+                // update image origin so zoom on the mouse position
+                var leftTopX = oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage
+                leftTopX = cast(leftTopX, 0.0, engine.excessWidth)
+                var leftTopY = oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage
+                leftTopY = cast(leftTopY, 0.0, engine.excessHeight)
+
+                val newViewport = Rectangle2D(
+                    leftTopX,
+                    leftTopY,
+                    oldViewport.width / ratio,
+                    oldViewport.height / ratio,
+                )
+                updateViewPort(newViewport)
             }
 
-            this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
-            this.vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
 
             // TODO: Better way to toggle between the images
             stack.children.forEach { child ->
                 run {
                     if (child is ImageView) {
-                        child.fitWidth = zoomedWidth.value
+                        child.fitWidth = WINDOW_WIDTH
                         child.isPreserveRatio = true
                     }
                 }
@@ -76,5 +104,23 @@ class ImagePanel : View() {
                 margin = Insets(20.0)
             }
         }
+    }
+
+    // cast given value in given range
+    private fun cast(value : Double, min : Double, max : Double) : Double {
+        if (value < 0) {
+            return 0.0
+        } else if (value > max) {
+            return max
+        }
+        return value
+    }
+
+    // update both images' viewport in engine
+    private fun updateViewPort(viewPort: Rectangle2D) {
+        engine.oriView!!.viewport = viewPort
+        engine.newView!!.viewport = viewPort
+        engine.excessWidth = engine.oriView!!.image.width - viewPort.width
+        engine.excessHeight = engine.oriView!!.image.height - viewPort.height
     }
 }
