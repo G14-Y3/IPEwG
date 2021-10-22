@@ -61,14 +61,16 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+
         transformations.subList(currIndex + 1, transformations.size).clear()
         snapshots.subList(currIndex + 1, snapshots.size).clear()
 
         snapshots.add(
             WritableImage(
-                previewImage.value.pixelReader,
-                previewImage.value.width.toInt(),
-                previewImage.value.height.toInt()
+                previous.pixelReader,
+                previous.width.toInt(),
+                previous.height.toInt()
             )
         )
         transformations.add(transformation)
