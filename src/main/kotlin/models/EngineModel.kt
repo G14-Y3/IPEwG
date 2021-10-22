@@ -33,6 +33,11 @@ class EngineModel(
     var oriView : ImageView? = null
     var newView : ImageView? = null
 
+    // Maximum range the left/top pixel coordinate can take,
+    // calculated as Image height/width - viewport height/width
+    var excessWidth = 0.0
+    var excessHeight = 0.0
+
     // The copy of the original image that we can work directly on
     private var transformedImage = WritableImage(
         originalImage.pixelReader,

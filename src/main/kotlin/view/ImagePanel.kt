@@ -42,9 +42,9 @@ class ImagePanel : View() {
 
             this.addEventFilter(ScrollEvent.SCROLL) {
                 var leftTopX = engine.oriView!!.viewport.minX - it.deltaX
-                leftTopX = cast(leftTopX, 0.0, engine.oriView!!.image.width - engine.oriView!!.viewport.width)
+                leftTopX = cast(leftTopX, 0.0, engine.excessWidth)
                 var leftTopY = engine.oriView!!.viewport.minY - it.deltaY
-                leftTopY = cast(leftTopY, 0.0, engine.oriView!!.image.height - engine.oriView!!.viewport.height)
+                leftTopY = cast(leftTopY, 0.0, engine.excessHeight)
                 val viewport = Rectangle2D(
                     leftTopX,
                     leftTopY,
@@ -71,9 +71,9 @@ class ImagePanel : View() {
 
                 // update image origin so zoom on the mouse position
                 var leftTopX = oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage
-                leftTopX = cast(leftTopX, 0.0, engine.oriView!!.image.width - engine.oriView!!.viewport.width)
+                leftTopX = cast(leftTopX, 0.0, engine.excessWidth)
                 var leftTopY = oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage
-                leftTopY = cast(leftTopY, 0.0, engine.oriView!!.image.height - engine.oriView!!.viewport.height)
+                leftTopY = cast(leftTopY, 0.0, engine.excessHeight)
 
                 val newViewport = Rectangle2D(
                     leftTopX,
@@ -84,8 +84,6 @@ class ImagePanel : View() {
                 updateViewPort(newViewport)
             }
 
-//            this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
-//            this.vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
 
             // TODO: Better way to toggle between the images
             stack.children.forEach { child ->
@@ -122,5 +120,7 @@ class ImagePanel : View() {
     private fun updateViewPort(viewPort: Rectangle2D) {
         engine.oriView!!.viewport = viewPort
         engine.newView!!.viewport = viewPort
+        engine.excessWidth = engine.oriView!!.image.width - viewPort.width
+        engine.excessHeight = engine.oriView!!.image.height - viewPort.height
     }
 }
