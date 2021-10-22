@@ -1,7 +1,5 @@
 package view
 
-import javafx.beans.property.DoubleProperty
-import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
 import javafx.geometry.Rectangle2D
 import javafx.scene.control.ScrollPane
@@ -15,8 +13,6 @@ const val WINDOW_WIDTH = 600.0
 const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 
 class ImagePanel : View() {
-    private val zoomedWidth: DoubleProperty = SimpleDoubleProperty(WINDOW_WIDTH)
-
     private val engine: EngineModel by inject()
 
     override val root = vbox {
@@ -67,9 +63,6 @@ class ImagePanel : View() {
                 )
                 engine.oriView!!.viewport = newViewport
                 engine.newView!!.viewport = newViewport
-
-                // update image size and left top coordinate according to the ratio
-                zoomedWidth.value = zoomedWidth.value * ratio
             }
 
             this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
@@ -79,7 +72,7 @@ class ImagePanel : View() {
             stack.children.forEach { child ->
                 run {
                     if (child is ImageView) {
-                        child.fitWidth = zoomedWidth.value
+                        child.fitWidth = WINDOW_WIDTH
                         child.isPreserveRatio = true
                     }
                 }
