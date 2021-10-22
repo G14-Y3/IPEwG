@@ -1,12 +1,10 @@
 package view
 
 import javafx.beans.property.DoubleProperty
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
+import javafx.geometry.Rectangle2D
 import javafx.scene.control.ScrollPane
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
@@ -30,6 +28,15 @@ class ImagePanel : View() {
                 }
                 engine.newView = imageview(engine.previewImage)
 
+                val viewport = Rectangle2D(
+                    .0,
+                    .0,
+                    engine.oriView!!.image.width,
+                    engine.oriView!!.image.height,
+                )
+                engine.oriView!!.viewport = viewport
+                engine.newView!!.viewport = viewport
+
                 setOnMouseClicked {
                     engine.oriView!!.isVisible = !engine.oriView!!.isVisible
                     engine.newView!!.isVisible = !engine.newView!!.isVisible
@@ -40,18 +47,29 @@ class ImagePanel : View() {
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0
+                val oldViewport = engine.oriView!!.viewport!!
+                val localToImage = width / oldViewport.width
                 if (it.zoomFactor > 1) {
                     ratio = 1.01
                 } else if (it.zoomFactor < 1) {
-                    // only zoom out when image is smaller than original image
-                    if (zoomedWidth.get() > WINDOW_WIDTH) {
+                    // only zoom out when viewport is smaller than original image
+                    if (oldViewport.width < engine.oriView!!.image.width) {
                         ratio = 1 / 1.01
                     }
                 }
+
+                // update image origin so zoom on the mouse position
+                val newViewport = Rectangle2D(
+                    oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage,
+                    oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage,
+                    oldViewport.width / ratio,
+                    oldViewport.height / ratio,
+                )
+                engine.oriView!!.viewport = newViewport
+                engine.newView!!.viewport = newViewport
+
                 // update image size and left top coordinate according to the ratio
                 zoomedWidth.value = zoomedWidth.value * ratio
-                engine.oriView!!.fitWidth = zoomedWidth.get()
-                engine.newView!!.fitWidth = zoomedWidth.get()
             }
 
             this.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER;
