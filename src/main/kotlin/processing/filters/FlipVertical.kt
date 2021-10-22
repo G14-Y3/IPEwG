@@ -22,4 +22,6 @@ class FlipVertical : ImageProcessing {
             }
         }
     }
+
+    override fun toString(): String = "Flip Vertical"
 }

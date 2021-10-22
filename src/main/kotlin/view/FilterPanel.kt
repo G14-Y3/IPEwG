@@ -171,8 +171,13 @@ class FilterPanel : View() {
                 hbox {
                     alignment = Pos.CENTER
                     padding = Insets(0.0, 10.0, 0.0, 10.0)
+
                     listview(engine.transformations) {
                         prefWidth = 400.0
+                        selectionModel.selectedIndexProperty().onChange {
+                            engine.setCurrentIndex(it)
+                        }
+                        engine.updateListSelection = { selectionModel.select(engine.currIndex) }
                     }
                 }
                 hbox {
@@ -180,6 +185,7 @@ class FilterPanel : View() {
                     buttonbar {
                         padding = Insets(20.0, 10.0, 20.0, 10.0)
                         button("Undo").setOnAction { fileController.undo() }
+                        button("Redo").setOnAction { fileController.redo() }
                         button("Revert").setOnAction { fileController.revert() }
                     }
                 }
