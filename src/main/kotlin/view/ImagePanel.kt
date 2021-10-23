@@ -17,39 +17,47 @@ const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 class ImagePanel : View() {
     private val engine: EngineModel by inject()
 
+    private lateinit var oriView : ImageView
+    private lateinit var newView : ImageView
+
+    // Maximum range the left/top pixel coordinate can take,
+    // calculated as Image height/width - viewport height/width
+    private var excessWidth = 0.0
+    var excessHeight = 0.0
+
     override val root = vbox {
         stackpane {
             val stack = stackpane {
-                engine.oriView = imageview(engine.originalImage) {
+                oriView = imageview(engine.originalImage) {
                     isVisible = false
                     isPreserveRatio = true
                 }
-                engine.newView = imageview(engine.previewImage)
+                newView = imageview(engine.previewImage)
 
                 val viewport = Rectangle2D(
                     .0,
                     .0,
-                    engine.oriView!!.image.width,
-                    engine.oriView!!.image.height,
+                    oriView.image.width,
+                    oriView.image.height,
                 )
                 updateViewPort(viewport)
 
                 setOnMouseClicked {
-                    engine.oriView!!.isVisible = !engine.oriView!!.isVisible
-                    engine.newView!!.isVisible = !engine.newView!!.isVisible
+                    oriView.isVisible = !oriView.isVisible
+                    newView.isVisible = !newView.isVisible
                 }
             }
 
             this.addEventFilter(ScrollEvent.SCROLL) {
-                var leftTopX = engine.oriView!!.viewport.minX - it.deltaX
-                leftTopX = cast(leftTopX, 0.0, engine.excessWidth)
-                var leftTopY = engine.oriView!!.viewport.minY - it.deltaY
-                leftTopY = cast(leftTopY, 0.0, engine.excessHeight)
+                var leftTopX = oriView.viewport.minX - it.deltaX
+                leftTopX = cast(leftTopX, 0.0, excessWidth)
+                var leftTopY = oriView.viewport.minY - it.deltaY
+                leftTopY = cast(leftTopY, 0.0, excessHeight)
                 val viewport = Rectangle2D(
                     leftTopX,
                     leftTopY,
-                    engine.oriView!!.viewport.width,
-                    engine.oriView!!.viewport.height,
+                    oriView.viewport.width,
+                    oriView.viewport.height,
                 )
                 updateViewPort(viewport)
             }
@@ -58,22 +66,22 @@ class ImagePanel : View() {
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0
-                val oldViewport = engine.oriView!!.viewport!!
+                val oldViewport = oriView.viewport!!
                 val localToImage = width / oldViewport.width
                 if (it.zoomFactor > 1) {
                     ratio = 1.01
                 } else if (it.zoomFactor < 1) {
                     // only zoom out when viewport is smaller than original image
-                    if (oldViewport.width < engine.oriView!!.image.width) {
+                    if (oldViewport.width < oriView.image.width) {
                         ratio = 1 / 1.01
                     }
                 }
 
                 // update image origin so zoom on the mouse position
                 var leftTopX = oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage
-                leftTopX = cast(leftTopX, 0.0, engine.excessWidth)
+                leftTopX = cast(leftTopX, 0.0, excessWidth)
                 var leftTopY = oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage
-                leftTopY = cast(leftTopY, 0.0, engine.excessHeight)
+                leftTopY = cast(leftTopY, 0.0, excessHeight)
 
                 val newViewport = Rectangle2D(
                     leftTopX,
@@ -108,8 +116,8 @@ class ImagePanel : View() {
 
     // cast given value in given range
     private fun cast(value : Double, min : Double, max : Double) : Double {
-        if (value < 0) {
-            return 0.0
+        if (value < min) {
+            return min
         } else if (value > max) {
             return max
         }
@@ -118,9 +126,9 @@ class ImagePanel : View() {
 
     // update both images' viewport in engine
     private fun updateViewPort(viewPort: Rectangle2D) {
-        engine.oriView!!.viewport = viewPort
-        engine.newView!!.viewport = viewPort
-        engine.excessWidth = engine.oriView!!.image.width - viewPort.width
-        engine.excessHeight = engine.oriView!!.image.height - viewPort.height
+        oriView.viewport = viewPort
+        newView.viewport = viewPort
+        excessWidth = oriView.image.width - viewPort.width
+        excessHeight = oriView.image.height - viewPort.height
     }
 }
