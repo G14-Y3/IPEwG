@@ -2,9 +2,11 @@ package view
 
 import com.sun.prism.image.ViewPort
 import javafx.geometry.Insets
+import javafx.geometry.Point2D
 import javafx.geometry.Rectangle2D
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
@@ -16,6 +18,7 @@ const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 
 class ImagePanel : View() {
     private val engine: EngineModel by inject()
+    private var lastMousePoint: Point2D? = null
 
     private lateinit var oriView : ImageView
     private lateinit var newView : ImageView
@@ -92,6 +95,34 @@ class ImagePanel : View() {
                 updateViewPort(newViewport)
             }
 
+            // Drag image handlers
+            fun stopDrag(event: MouseEvent) {
+                lastMousePoint = null
+            }
+            addEventFilter(MouseEvent.MOUSE_EXITED, ::stopDrag)
+            addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
+            addEventFilter(MouseEvent.MOUSE_PRESSED) { lastMousePoint = Point2D(it.sceneX, it.sceneY) }
+
+            addEventFilter(MouseEvent.MOUSE_DRAGGED) {
+                if (lastMousePoint != null) {
+                    val oldViewport = oriView.viewport
+
+                    var leftTopX = oldViewport.minX - localToImage(it.sceneX - lastMousePoint!!.x)
+                    leftTopX = cast(leftTopX, 0.0, excessWidth)
+                    var leftTopY = oldViewport.minY - localToImage(it.sceneY - lastMousePoint!!.y)
+                    leftTopY = cast(leftTopY, 0.0, excessHeight)
+
+                    val newViewport = Rectangle2D(
+                        leftTopX,
+                        leftTopY,
+                        oldViewport.width,
+                        oldViewport.height,
+                    )
+                    updateViewPort(newViewport)
+
+                    lastMousePoint = Point2D(it.sceneX, it.sceneY)
+                }
+            }
 
             // TODO: Better way to toggle between the images
             stack.children.forEach { child ->
@@ -130,5 +161,13 @@ class ImagePanel : View() {
         newView.viewport = viewPort
         excessWidth = oriView.image.width - viewPort.width
         excessHeight = oriView.image.height - viewPort.height
+    }
+
+    // from scene / screen / stage / view coordinates to image coordinates
+    private fun localToImage(value: Double): Double {
+        val viewport = oriView.viewport!!
+        val localToImage = WINDOW_WIDTH / viewport.width
+
+        return value / localToImage
     }
 }
