@@ -69,11 +69,11 @@ class ImagePanel : View() {
                 val oldViewport = oriView.viewport!!
                 val localToImage = width / oldViewport.width
                 if (it.zoomFactor > 1) {
-                    ratio = 1.01
+                    ratio = 1.035
                 } else if (it.zoomFactor < 1) {
                     // only zoom out when viewport is smaller than original image
                     if (oldViewport.width < oriView.image.width) {
-                        ratio = 1 / 1.01
+                        ratio = 1 / 1.035
                     }
                 }
 
