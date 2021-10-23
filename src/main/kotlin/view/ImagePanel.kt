@@ -96,17 +96,16 @@ class ImagePanel : View() {
             fun stopDrag(event: MouseEvent) {
                 lastMousePoint = null
             }
-            addEventFilter(MouseEvent.MOUSE_EXITED, ::stopDrag)
             addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
-            addEventFilter(MouseEvent.MOUSE_PRESSED) { lastMousePoint = Point2D(it.sceneX, it.sceneY) }
+            addEventFilter(MouseEvent.MOUSE_PRESSED) { lastMousePoint = Point2D(it.screenX, it.screenY) }
 
             addEventFilter(MouseEvent.MOUSE_DRAGGED) {
                 if (lastMousePoint != null) {
                     val oldViewport = oriView.viewport
 
-                    var leftTopX = oldViewport.minX - localToImage(it.sceneX - lastMousePoint!!.x)
+                    var leftTopX = oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
                     leftTopX = cast(leftTopX, 0.0, excessWidth)
-                    var leftTopY = oldViewport.minY - localToImage(it.sceneY - lastMousePoint!!.y)
+                    var leftTopY = oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
                     leftTopY = cast(leftTopY, 0.0, excessHeight)
 
                     val newViewport = Rectangle2D(
@@ -117,7 +116,7 @@ class ImagePanel : View() {
                     )
                     updateViewPort(newViewport)
 
-                    lastMousePoint = Point2D(it.sceneX, it.sceneY)
+                    lastMousePoint = Point2D(it.screenX, it.screenY)
                 }
             }
 
