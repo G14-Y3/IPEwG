@@ -1,6 +1,7 @@
 package controller
 
 import models.EngineModel
+import processing.BlurType
 import processing.HSVType
 import processing.RGBType
 import processing.filters.FlipHorizontal
@@ -40,4 +41,6 @@ class EngineController : Controller() {
     fun flipHorizontal() = engine.transform(FlipHorizontal())
 
     fun flipVertical() = engine.transform(FlipVertical())
+
+    fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 }
