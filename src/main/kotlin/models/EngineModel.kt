@@ -3,13 +3,16 @@ package models
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
+import processing.filters.Adjustment
 import tornadofx.ViewModel
 import tornadofx.observableListOf
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
+import kotlin.collections.HashMap
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
@@ -25,6 +28,8 @@ class EngineModel(
     // Reactive object reference to the transformed image
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
+
+    var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
     // Pipeline of transformations
     val transformations = observableListOf<ImageProcessing>()
@@ -57,14 +62,16 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+
         transformations.subList(currIndex + 1, transformations.size).clear()
         snapshots.subList(currIndex + 1, snapshots.size).clear()
 
         snapshots.add(
             WritableImage(
-                previewImage.value.pixelReader,
-                previewImage.value.width.toInt(),
-                previewImage.value.height.toInt()
+                previous.pixelReader,
+                previous.width.toInt(),
+                previous.height.toInt()
             )
         )
         transformations.add(transformation)
@@ -72,6 +79,34 @@ class EngineModel(
         updateListSelection()
         transformation.process(snapshots[currIndex])
         previewImage.value = snapshots[currIndex]
+    }
+
+    /**
+     * @param factor a value between 0.0 and 2.0
+     */
+    fun adjust(property: String, factor: Double) {
+        adjustmentProperties[property] = factor
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+
+        val preview = WritableImage(
+            previous.pixelReader,
+            previous.width.toInt(),
+            previous.height.toInt()
+        )
+        Adjustment(adjustmentProperties).process(preview)
+        previewImage.value = preview
+    }
+
+    fun submitAdjustment() {
+        if (adjustmentProperties.isNotEmpty()) {
+            transform(Adjustment(HashMap(adjustmentProperties)))
+            adjustmentProperties.clear()
+        }
+    }
+
+    fun resetAdjustment() {
+        adjustmentProperties.clear()
+        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
     }
 
     fun undo() {
