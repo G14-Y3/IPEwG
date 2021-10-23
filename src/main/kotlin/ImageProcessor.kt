@@ -1,7 +1,6 @@
-import tornadofx.App
-import tornadofx.View
-import tornadofx.borderpane
-import tornadofx.launch
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
+import tornadofx.*
 import view.CssStyle
 import view.FilterPanel
 import view.ImagePanel
@@ -14,9 +13,27 @@ class GUI : View("IPEwG") {
         left<FilterPanel>()
         center<ImagePanel>()
     }
+
+    override fun onDock() {
+        currentWindow?.setOnCloseRequest {
+            val result = alert(
+                type = Alert.AlertType.CONFIRMATION,
+                header = "Confirm Quit",
+                content = "Are you sure you want to quit?"
+            ).result
+            if (result != ButtonType.OK) {
+                it.consume()
+            }
+        }
+    }
 }
 
-class ImageProcessor : App(GUI::class, CssStyle::class)
+class ImageProcessor : App(GUI::class, CssStyle::class) {
+    override fun stop() {
+
+        super.stop()
+    }
+}
 
 fun main(args: Array<String>) {
     launch<ImageProcessor>(args)
