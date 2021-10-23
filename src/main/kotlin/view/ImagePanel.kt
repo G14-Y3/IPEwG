@@ -1,10 +1,8 @@
 package view
 
-import com.sun.prism.image.ViewPort
 import javafx.geometry.Insets
 import javafx.geometry.Point2D
 import javafx.geometry.Rectangle2D
-import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
@@ -20,8 +18,8 @@ class ImagePanel : View() {
     private val engine: EngineModel by inject()
     private var lastMousePoint: Point2D? = null
 
-    private lateinit var oriView : ImageView
-    private lateinit var newView : ImageView
+    private lateinit var oriView: ImageView
+    private lateinit var newView: ImageView
 
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
@@ -145,7 +143,7 @@ class ImagePanel : View() {
     }
 
     // cast given value in given range
-    private fun cast(value : Double, min : Double, max : Double) : Double {
+    private fun cast(value: Double, min: Double, max: Double): Double {
         if (value < min) {
             return min
         } else if (value > max) {
