@@ -45,9 +45,9 @@ class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
                     }
                 }
                 val newColor = Color(
-                    sumR.coerceAtMost(1.0),
-                    sumG.coerceAtMost(1.0),
-                    sumB.coerceAtMost(1.0),
+                    sumR.coerceIn(0.0, 1.0),
+                    sumG.coerceIn(0.0, 1.0),
+                    sumB.coerceIn(0.0, 1.0),
                     1.0
                 )
                 writer.setColor(x, y, newColor)

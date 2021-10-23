@@ -156,7 +156,7 @@ class FilterPanel : View() {
                         }
                     }
                 }
-                tab("Blur") {
+                tab("Blur & Sharpen") {
                     vbox {
                         label("Blur") {
                             vboxConstraints {
@@ -206,6 +206,23 @@ class FilterPanel : View() {
                                     engineController.resetAdjustment()
                                     sliders.forEach { it.value = 0.0 }
                                 }
+                            }
+                        }
+                        label("Sharpen") {
+                            vboxConstraints {
+                                margin = Insets(20.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+                        vbox {
+                            vboxConstraints {
+                                margin = Insets(10.0)
+                            }
+                            buttonbar {
+                                button("Sharpen").setOnAction { engineController.sharpen() }
                             }
                         }
                     }
