@@ -70,7 +70,6 @@ class ImagePanel : View() {
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0
                 val oldViewport = oriView.viewport!!
-                val localToImage = width / oldViewport.width
                 if (it.zoomFactor > 1) {
                     ratio = 1.035
                 } else if (it.zoomFactor < 1) {
@@ -81,9 +80,9 @@ class ImagePanel : View() {
                 }
 
                 // update image origin so zoom on the mouse position
-                var leftTopX = oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage
+                var leftTopX = oldViewport.minX + localToImage(it.x * (1 - 1 / ratio))
                 leftTopX = cast(leftTopX, 0.0, excessWidth)
-                var leftTopY = oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage
+                var leftTopY = oldViewport.minY + localToImage(it.y * (1 - 1 / ratio))
                 leftTopY = cast(leftTopY, 0.0, excessHeight)
 
                 val newViewport = Rectangle2D(
