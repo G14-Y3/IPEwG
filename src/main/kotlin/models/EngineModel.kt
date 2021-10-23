@@ -3,6 +3,7 @@ package models
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
