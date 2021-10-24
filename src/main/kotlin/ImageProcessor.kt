@@ -32,12 +32,7 @@ class GUI : View("IPEwG") {
     }
 }
 
-class ImageProcessor : App(GUI::class, CssStyle::class) {
-    override fun stop() {
-
-        super.stop()
-    }
-}
+class ImageProcessor : App(GUI::class, CssStyle::class)
 
 fun main(args: Array<String>) {
     launch<ImageProcessor>(args)
