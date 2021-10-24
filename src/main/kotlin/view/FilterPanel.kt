@@ -10,6 +10,7 @@ import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.BlurType
 import processing.HSVType
 import processing.RGBType
 import tornadofx.*
@@ -155,6 +156,78 @@ class FilterPanel : View() {
                         }
                     }
                 }
+                tab("Blur & Sharpen") {
+                    vbox {
+                        label("Blur") {
+                            vboxConstraints {
+                                margin = Insets(20.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+                        vbox {
+                            vboxConstraints {
+                                margin = Insets(10.0)
+                            }
+                            val sliders = ArrayList<Slider>()
+                            hbox {
+                                padding = Insets(20.0, 20.0, 10.0, 10.0)
+                                val blurList = BlurType.values().toList()
+                                val combobox = combobox(values = blurList)
+                                combobox.value = blurList[0]
+                                val slider = slider {
+                                    min = 0.0
+                                    max = 10.0
+                                }
+                                sliders += slider
+                                slider.value = 0.0
+                                combobox.valueProperty()
+                                    .addListener(ChangeListener { _, _, _ ->
+                                        engineController.resetAdjustment()
+                                        slider.value = 0.0
+                                    })
+                                slider.valueChangingProperty()
+                                    .addListener(ChangeListener { _, _, _ ->
+                                        engineController.blur(slider.value.toInt(), combobox.value)
+                                    })
+
+                                addClass(CssStyle.filterSlider)
+                            }
+
+                            buttonbar {
+                                padding = Insets(20.0, 10.0, 20.0, 10.0)
+                                button("Adjust").setOnAction {
+                                    engineController.submitAdjustment()
+                                    sliders.forEach { it.value = 0.0 }
+                                }
+                                button("Reset").setOnAction {
+                                    engineController.resetAdjustment()
+                                    sliders.forEach { it.value = 0.0 }
+                                }
+                            }
+                        }
+                        label("Sharpen") {
+                            vboxConstraints {
+                                margin = Insets(20.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+                        vbox {
+                            vboxConstraints {
+                                margin = Insets(10.0)
+                            }
+                            buttonbar {
+                                button("Sharpen").setOnAction { engineController.sharpen() }
+                            }
+                        }
+                    }
+                }
+
             }
             vbox {
                 alignment = Pos.CENTER

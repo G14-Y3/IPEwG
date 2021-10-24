@@ -1,12 +1,10 @@
 package controller
 
 import models.EngineModel
+import processing.BlurType
 import processing.HSVType
 import processing.RGBType
-import processing.filters.FlipHorizontal
-import processing.filters.FlipVertical
-import processing.filters.Grayscale
-import processing.filters.InverseColour
+import processing.filters.*
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -40,4 +38,8 @@ class EngineController : Controller() {
     fun flipHorizontal() = engine.transform(FlipHorizontal())
 
     fun flipVertical() = engine.transform(FlipVertical())
+
+    fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
+
+    fun sharpen() = engine.transform(Sharpen())
 }
