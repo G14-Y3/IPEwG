@@ -26,6 +26,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
     implementation("no.tornado:tornadofx:1.7.20")
+    implementation("org.pytorch:pytorch_java_only:1.9.0")
 
     testImplementation(kotlin("test"))
 }
