@@ -12,6 +12,8 @@ import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.HSVType
 import processing.RGBType
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
 import tornadofx.*
 
 class FilterPanel : View() {
@@ -99,6 +101,14 @@ class FilterPanel : View() {
                             buttonbar {
                                 basicFilterButtonList.map { (s, callback) -> button(s).setOnAction { callback() } }
                             }
+                        }
+                    }
+                }
+
+                tab("Style Transfer") {
+                    button("transfer") {
+                        action {
+                            engineController.styleTransfer(NeuralStyles.VAN_GOGH)
                         }
                     }
                 }

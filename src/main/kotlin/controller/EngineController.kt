@@ -7,6 +7,8 @@ import processing.filters.FlipHorizontal
 import processing.filters.FlipVertical
 import processing.filters.Grayscale
 import processing.filters.InverseColour
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -40,4 +42,6 @@ class EngineController : Controller() {
     fun flipHorizontal() = engine.transform(FlipHorizontal())
 
     fun flipVertical() = engine.transform(FlipVertical())
+
+    fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 }
