@@ -28,4 +28,6 @@ class RGBIntensity(private val factor: Double, private val type: RGBType) :
             }
         }
     }
+
+    override fun toString(): String = "${type}=${(factor * 100).toInt()}%"
 }

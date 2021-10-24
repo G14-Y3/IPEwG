@@ -3,6 +3,7 @@ package models
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
@@ -10,7 +11,6 @@ import tornadofx.ViewModel
 import tornadofx.observableListOf
 import java.io.File
 import java.io.IOException
-import java.util.*
 import javax.imageio.ImageIO
 import kotlin.collections.HashMap
 
@@ -29,35 +29,31 @@ class EngineModel(
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
 
-    // The copy of the original image that we can work directly on
-    private var transformedImage = WritableImage(
-        originalImage.pixelReader,
-        originalImage.width.toInt(),
-        originalImage.height.toInt()
-    )
-
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
     // Pipeline of transformations
     val transformations = observableListOf<ImageProcessing>()
 
-    // Stack of historical snapshots for quick undo-ing
-    private val snapshots = Stack<WritableImage>()
+    var updateListSelection: () -> Unit = {}
+
+    // historical snapshots for quick undo-ing
+    private val snapshots = mutableListOf<WritableImage>()
+    var currIndex = -1
 
     fun load(path: String) {
         val image = Image(path)
         originalImage.value = image
         previewImage.value = image
-        transformedImage = WritableImage(
-            image.pixelReader,
-            image.width.toInt(),
-            image.height.toInt()
-        )
+
+        currIndex = -1
+        transformations.clear()
+        snapshots.clear()
     }
 
     fun save(path: String, format: String = "png") {
         val output = File(path)
-        val buffer = SwingFXUtils.fromFXImage(transformedImage, null)
+
+        val buffer = SwingFXUtils.fromFXImage(previewImage.value, null)
         try {
             ImageIO.write(buffer, format, output)
         } catch (e: IOException) {
@@ -66,16 +62,23 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
-        snapshots.push(
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+
+        transformations.subList(currIndex + 1, transformations.size).clear()
+        snapshots.subList(currIndex + 1, snapshots.size).clear()
+
+        snapshots.add(
             WritableImage(
-                transformedImage.pixelReader,
-                transformedImage.width.toInt(),
-                transformedImage.height.toInt()
+                previous.pixelReader,
+                previous.width.toInt(),
+                previous.height.toInt()
             )
         )
         transformations.add(transformation)
-        transformation.process(transformedImage)
-        previewImage.value = transformedImage
+        currIndex++
+        updateListSelection()
+        transformation.process(snapshots[currIndex])
+        previewImage.value = snapshots[currIndex]
     }
 
     /**
@@ -83,14 +86,13 @@ class EngineModel(
      */
     fun adjust(property: String, factor: Double) {
         adjustmentProperties[property] = factor
-        if (factor == 1.0) {
-            adjustmentProperties.remove(property)
-        }
+
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
 
         val preview = WritableImage(
-            transformedImage.pixelReader,
-            transformedImage.width.toInt(),
-            transformedImage.height.toInt()
+            previous.pixelReader,
+            previous.width.toInt(),
+            previous.height.toInt()
         )
         Adjustment(adjustmentProperties).process(preview)
         previewImage.value = preview
@@ -98,32 +100,48 @@ class EngineModel(
 
     fun submitAdjustment() {
         if (adjustmentProperties.isNotEmpty()) {
-            transform(Adjustment(adjustmentProperties))
+            transform(Adjustment(HashMap(adjustmentProperties)))
             adjustmentProperties.clear()
         }
     }
 
     fun resetAdjustment() {
         adjustmentProperties.clear()
-        previewImage.value = transformedImage
+        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
     }
 
     fun undo() {
-        if (snapshots.empty()) return
+        if (currIndex < 0) return
 
-        transformations.removeLast()
-        transformedImage = snapshots.pop()
-        previewImage.value = transformedImage
+        currIndex--
+        updateListSelection()
+        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+    }
+
+    fun redo() {
+        if (currIndex == snapshots.size - 1) return
+
+        currIndex++
+        updateListSelection()
+        previewImage.value = snapshots[currIndex]
+    }
+
+    fun setCurrentIndex(index: Int) {
+        if (index < 0) return
+
+        currIndex = index
+        previewImage.value = snapshots[currIndex]
     }
 
     fun revert() {
-        if (snapshots.empty()) return
+        if (snapshots.isEmpty()) return
 
-        transformedImage = snapshots.first()
         snapshots.clear()
         transformations.clear()
 
-        previewImage.value = transformedImage
+        currIndex = -1
+        updateListSelection()
+        previewImage.value = originalImage.value
     }
 
 }
