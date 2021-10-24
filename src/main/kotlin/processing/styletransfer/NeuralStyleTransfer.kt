@@ -47,9 +47,9 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
         val buf = FloatArray(dimension)
         for (i in 0 until h) {
             for (j in 0 until w) {
-                buf[i * w + j * 3] = pixels[0][i][j].toFloat()
-                buf[i * w + j * 3 + 1] = pixels[1][i][j].toFloat()
-                buf[i * w + j * 3 + 2] = pixels[2][i][j].toFloat()
+                buf[i * w + j] = pixels[0][i][j].toFloat()
+                buf[i * w + j + h*w] = pixels[1][i][j].toFloat()
+                buf[i * w + j + h*w*2] = pixels[2][i][j].toFloat()
             }
         }
 
@@ -59,9 +59,9 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
 
         for (i in 0 until h) {
             for (j in 0 until w) {
-                val r = output[i * 3 + j * h]
-                val g = output[i * 3 + j * h + 1]
-                val b = output[i * 3 + j * h + 2]
+                val r = output[i * w + j]
+                val g = output[i * w + j + h * w]
+                val b = output[i * w + j + h * w * 2]
                 val color = Color(r.toDouble(), g.toDouble(), b.toDouble(), reader.getColor(i, j).opacity)
                 writer.setColor(i, j, color)
             }
