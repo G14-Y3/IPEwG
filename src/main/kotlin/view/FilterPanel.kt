@@ -106,9 +106,14 @@ class FilterPanel : View() {
                 }
 
                 tab("Style Transfer") {
-                    button("transfer") {
-                        action {
-                            engineController.styleTransfer(NeuralStyles.VAN_GOGH)
+                    vbox{
+                        button("transfer") {
+                            vboxConstraints {
+                                margin = Insets(10.0)
+                            }
+                            action {
+                                engineController.styleTransfer(NeuralStyles.VAN_GOGH)
+                            }
                         }
                     }
                 }
