@@ -158,8 +158,10 @@ class FilterPanel : View() {
                                             maxWidth = 70.0
                                         }
 
-//                                        spinner.valueFactory.converter =
-//                                            (NumberStringConverter("#.0"))
+                                        // avoid NPE and set value to old value when user clear the field
+                                        spinner.valueProperty().addListener(ChangeListener { _, old, new ->
+                                            spinner.valueFactory.value = new ?: old
+                                        })
 
                                         slider.valueProperty().bindBidirectional(
                                             spinner.valueFactory.valueProperty()
