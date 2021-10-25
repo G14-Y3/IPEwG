@@ -1,12 +1,15 @@
 package controller
 
 import models.EngineModel
+import processing.FreqProcessRange
+import processing.FreqProcessType
 import processing.HSVType
 import processing.RGBType
 import processing.filters.FlipHorizontal
 import processing.filters.FlipVertical
 import processing.filters.Grayscale
 import processing.filters.InverseColour
+import processing.frequency_domain_transfer.FrequencyFilters
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -40,4 +43,6 @@ class EngineController : Controller() {
     fun flipHorizontal() = engine.transform(FlipHorizontal())
 
     fun flipVertical() = engine.transform(FlipVertical())
+
+    fun frequencyTransfer() = engine.transform(FrequencyFilters(FreqProcessType.Idle, FreqProcessRange.HighPass))
 }

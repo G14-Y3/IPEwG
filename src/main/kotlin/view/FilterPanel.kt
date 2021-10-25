@@ -155,6 +155,11 @@ class FilterPanel : View() {
                         }
                     }
                 }
+                tab("frequency transfer") {
+                    button("transfer").setOnAction {
+                        engineController.frequencyTransfer()
+                    }
+                }
             }
             vbox {
                 alignment = Pos.CENTER
