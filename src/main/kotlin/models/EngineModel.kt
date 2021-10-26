@@ -86,6 +86,7 @@ class EngineModel(
      */
     fun adjust(property: String, factor: Double) {
         adjustmentProperties[property] = factor
+
         val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
 
         val preview = WritableImage(
