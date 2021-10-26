@@ -14,6 +14,7 @@ import processing.HSVType
 import processing.RGBType
 import tornadofx.*
 import java.lang.IllegalArgumentException
+import kotlin.math.roundToInt
 
 class FilterPanel : View() {
 
@@ -171,6 +172,9 @@ class FilterPanel : View() {
                                                 try {
                                                     if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
                                                         spinner.editor.text = old
+                                                    } else {
+                                                        spinner.editor.text =
+                                                            new.toDouble().roundToInt().toString()
                                                     }
                                                 } catch (e: IllegalArgumentException) {
                                                     spinner.editor.text = old
