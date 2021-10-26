@@ -115,14 +115,25 @@ class FilterPanel : View() {
                     }
                 }
 
+                val style_transfer_map = mapOf(
+                    "Van Gogh" to NeuralStyles.VAN_GOGH,
+                    "Picasso" to NeuralStyles.PICASSO,
+                    "Autumn" to NeuralStyles.AUTUMN,
+                    "Google" to NeuralStyles.GOOGLE,
+                    "UKIYOE" to NeuralStyles.UKIYOE,
+                    "Abtract" to NeuralStyles.ABSTRACT
+                )
+
                 tab("Style Transfer") {
                     vbox{
-                        button("transfer") {
-                            vboxConstraints {
-                                margin = Insets(10.0)
-                            }
-                            action {
-                                engineController.styleTransfer(NeuralStyles.VAN_GOGH)
+                        style_transfer_map.map { (str, enum) ->
+                            button(str) {
+                                vboxConstraints {
+                                    margin = Insets(10.0)
+                                }
+                                action {
+                                    engineController.styleTransfer(enum)
+                                }
                             }
                         }
                     }

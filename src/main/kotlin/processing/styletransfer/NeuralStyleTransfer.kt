@@ -14,10 +14,11 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
 
     var styleToPath = mapOf(
         NeuralStyles.VAN_GOGH to "./src/main/resources/style_transfer_model/van_gogh.pt",
-        NeuralStyles.PICASSO to "./src/main/resources/style_transfer_model/picasso.pth",
-        NeuralStyles.UKIYOE to "./src/main/resources/style_transfer_model/japan.pth",
-        NeuralStyles.AUTUMN to "./src/main/resources/style_transfer_model/autumn.pth",
-        NeuralStyles.ABSTRACT to "./src/main/resources/style_transfer_model/abstract.pth"
+        NeuralStyles.PICASSO to "./src/main/resources/style_transfer_model/picasso.pt",
+        NeuralStyles.UKIYOE to "./src/main/resources/style_transfer_model/japan.pt",
+        NeuralStyles.AUTUMN to "./src/main/resources/style_transfer_model/autumn.pt",
+        NeuralStyles.ABSTRACT to "./src/main/resources/style_transfer_model/abstract.pt",
+        NeuralStyles.GOOGLE to "./src/main/resources/style_transfer_model/google.pt"
     )
 
     init {
