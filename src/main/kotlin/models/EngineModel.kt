@@ -3,6 +3,7 @@ package models
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
@@ -85,6 +86,7 @@ class EngineModel(
      */
     fun adjust(property: String, factor: Double) {
         adjustmentProperties[property] = factor
+
         val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
 
         val preview = WritableImage(

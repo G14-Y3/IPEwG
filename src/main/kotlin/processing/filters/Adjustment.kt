@@ -15,6 +15,13 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "H" -> HSVIntensity(v, HSVType.H).process(image)
                 "S" -> HSVIntensity(v, HSVType.S).process(image)
                 "V" -> HSVIntensity(v, HSVType.V).process(image)
+                "BOX" -> BoxBlur(v.toInt()).process(image)
+                "LENS" -> LensBlur(v.toInt()).process(image)
+                "GAUSSIAN" -> GaussianBlur(v.toInt()).process(image)
+                "MOTION_0" -> MotionBlur(v.toInt(), 0.0).process(image)
+                "MOTION_45" -> MotionBlur(v.toInt(), 45.0).process(image)
+                "MOTION_90" -> MotionBlur(v.toInt(), 90.0).process(image)
+                "MOTION_135" -> MotionBlur(v.toInt(), 135.0).process(image)
             }
         }
     }
