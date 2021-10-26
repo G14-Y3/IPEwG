@@ -43,9 +43,21 @@ class ImagePanel : View() {
                 )
                 updateViewPort(viewport)
 
-                setOnMouseClicked {
-                    oriView.isVisible = !oriView.isVisible
-                    newView.isVisible = !newView.isVisible
+                var dragging = false
+                addEventHandler(MouseEvent.ANY) {
+                    if (it.eventType == MouseEvent.MOUSE_PRESSED) {
+                        dragging = false;
+                    }
+                    else if (it.eventType == MouseEvent.DRAG_DETECTED) {
+                        dragging = true;
+                    }
+
+                    else if (it.eventType == MouseEvent.MOUSE_CLICKED) {
+                        if (!dragging) {
+                            oriView.isVisible = !oriView.isVisible
+                            newView.isVisible = !newView.isVisible
+                        }
+                    }
                 }
             }
 
