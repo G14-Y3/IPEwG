@@ -14,6 +14,7 @@ import processing.HSVType
 import processing.RGBType
 import tornadofx.*
 import java.lang.IllegalArgumentException
+import java.lang.NumberFormatException
 import kotlin.math.roundToInt
 
 class FilterPanel : View() {
@@ -177,13 +178,15 @@ class FilterPanel : View() {
                                                             new.toDouble().roundToInt().toString()
                                                     }
                                                 } catch (e: IllegalArgumentException) {
-                                                    spinner.editor.text = old
                                                 }
                                             })
 
-                                        slider.valueProperty().bindBidirectional(
-                                            spinner.valueFactory.valueProperty()
-                                        )
+                                        try {
+                                            slider.valueProperty().bindBidirectional(
+                                                spinner.valueFactory.valueProperty()
+                                            )
+                                        } catch (e: NumberFormatException) {
+                                        }
                                     }
                                 }
                                 buttonbar {
