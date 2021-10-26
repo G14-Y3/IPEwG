@@ -25,6 +25,8 @@ class EngineController : Controller() {
 
     fun grayscale() = engine.transform(Grayscale())
 
+    fun edgeDetection() = engine.transform(EdgeDetection())
+
     fun inverseColour() = engine.transform(InverseColour())
 
     fun rgbFilter(factor: Double, type: RGBType) = engine.adjust(type.name, factor)
