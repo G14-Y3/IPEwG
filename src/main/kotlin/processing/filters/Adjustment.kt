@@ -6,42 +6,32 @@ import processing.ImageProcessing
 import processing.RGBType
 
 class Adjustment(private val properties: Map<String, Double>) : ImageProcessing {
+    var string: String = ""
+
     override fun process(image: WritableImage) {
         for ((k, v) in properties) {
-            when (k) {
-                "R" -> RGBIntensity(v, RGBType.R).process(image)
-                "G" -> RGBIntensity(v, RGBType.G).process(image)
-                "B" -> RGBIntensity(v, RGBType.B).process(image)
-                "H" -> HSVIntensity(v, HSVType.H).process(image)
-                "S" -> HSVIntensity(v, HSVType.S).process(image)
-                "V" -> HSVIntensity(v, HSVType.V).process(image)
-                "BOX" -> BoxBlur(v.toInt()).process(image)
-                "LENS" -> LensBlur(v.toInt()).process(image)
-                "GAUSSIAN" -> GaussianBlur(v.toInt()).process(image)
-                "MOTION_0" -> MotionBlur(v.toInt(), 0.0).process(image)
-                "MOTION_45" -> MotionBlur(v.toInt(), 45.0).process(image)
-                "MOTION_90" -> MotionBlur(v.toInt(), 90.0).process(image)
-                "MOTION_135" -> MotionBlur(v.toInt(), 135.0).process(image)
-            }
-        }
-    }
-
-    override fun toString(): String {
-        var s = ""
-
-        for ((k, v) in properties) {
-            s += when (k) {
+            val adjustment = when (k) {
                 "R" -> RGBIntensity(v, RGBType.R)
                 "G" -> RGBIntensity(v, RGBType.G)
                 "B" -> RGBIntensity(v, RGBType.B)
                 "H" -> HSVIntensity(v, HSVType.H)
                 "S" -> HSVIntensity(v, HSVType.S)
                 "V" -> HSVIntensity(v, HSVType.V)
-                else -> ""
+                "BOX" -> BoxBlur(v.toInt())
+                "LENS" -> LensBlur(v.toInt())
+                "GAUSSIAN" -> GaussianBlur(v.toInt())
+                "MOTION_0" -> MotionBlur(v.toInt(), 0.0)
+                "MOTION_45" -> MotionBlur(v.toInt(), 45.0)
+                "MOTION_90" -> MotionBlur(v.toInt(), 90.0)
+                "MOTION_135" -> MotionBlur(v.toInt(), 135.0)
+                else -> null
             }
-            s += " "
+            string += adjustment.toString() + " "
+            adjustment?.process(image)
         }
+    }
 
-        return s
+    override fun toString(): String {
+        return string
     }
 }

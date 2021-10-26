@@ -39,4 +39,6 @@ class MotionBlur(private val radius: Int, private val angle: Double) : ImageProc
         }
         Convolution(kernel).process(image)
     }
+
+    override fun toString(): String = "Motion Blur with radius $radius and angle $angle"
 }

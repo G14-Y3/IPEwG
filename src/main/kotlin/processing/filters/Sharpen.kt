@@ -12,4 +12,6 @@ class Sharpen : ImageProcessing {
         )
         Convolution(kernel).process(image)
     }
+
+    override fun toString(): String = "Sharpen"
 }

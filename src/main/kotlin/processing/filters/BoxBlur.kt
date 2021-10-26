@@ -18,4 +18,6 @@ class BoxBlur(private val radius: Int) : ImageProcessing {
         }
         Convolution(kernel).process(image)
     }
+
+    override fun toString(): String = "BoxBlur with radius $radius"
 }

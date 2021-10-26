@@ -23,4 +23,6 @@ class GaussianBlur(private val radius: Int) : ImageProcessing {
         }
         Convolution(kernel).process(image)
     }
+
+    override fun toString(): String = "Gaussian Blur with radius $radius"
 }

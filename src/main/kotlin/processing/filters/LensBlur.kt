@@ -30,4 +30,6 @@ class LensBlur(private val radius: Int) : ImageProcessing {
         }
         Convolution(kernel).process(image)
     }
+
+    override fun toString(): String = "Lens blur with radius $radius"
 }
