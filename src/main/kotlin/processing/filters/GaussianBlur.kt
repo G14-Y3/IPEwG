@@ -1,6 +1,9 @@
 package processing.filters
 
+import javafx.scene.image.PixelReader
+import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import processing.ImageProcessing
 import kotlin.math.PI
 import kotlin.math.exp
@@ -23,4 +26,7 @@ class GaussianBlur(private val radius: Int) : ImageProcessing {
         }
         Convolution(kernel).process(image)
     }
+
+
+
 }
