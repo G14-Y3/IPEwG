@@ -10,9 +10,12 @@ class Complex(var real: Double = 0.0, var imag: Double = 0.0) {
     infix operator fun times(y: Double) = Complex(real * y, imag * y)
     infix operator fun div(y: Double) = Complex(real / y, imag / y)
 
-    // todo: implementation differ with online tutorial, might contain bug
-    fun exp() : Complex {
-        return Complex(Math.cos(imag), Math.sin(imag)) * Math.exp(real)
+//    fun exp() : Complex {
+//        return Complex(Math.cos(imag), Math.sin(imag)) * Math.exp(real)
+//    }
+
+    fun exp(): Complex {
+        return Complex(Math.cos(imag), Math.sin(imag)) * (Math.cosh(real) + Math.sinh(real))
     }
 
     fun pow(n: Double) : Complex {
@@ -22,8 +25,15 @@ class Complex(var real: Double = 0.0, var imag: Double = 0.0) {
     }
 
     companion object {
-        // return e^(-2 * pi * i/ n)
+        // return e^(-2 * pi * i / n)
         fun negOmegaN(n: Double) : Complex = (Complex(0.0, -2 * PI) / n).exp()
+        // return e^(2 * pi * i / n)
+        fun posOmegaN(n: Double) : Complex = (Complex(0.0, 2 * PI) / n).exp()
+    }
+
+    // tostring, mainly for debug use
+    override fun toString(): String {
+        return "$real+i$imag"
     }
 
 }
