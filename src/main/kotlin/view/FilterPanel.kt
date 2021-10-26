@@ -13,6 +13,7 @@ import models.EngineModel
 import processing.HSVType
 import processing.RGBType
 import tornadofx.*
+import java.lang.IllegalArgumentException
 
 class FilterPanel : View() {
 
@@ -159,9 +160,22 @@ class FilterPanel : View() {
                                         }
 
                                         // avoid NPE and set value to old value when user clear the field
-                                        spinner.valueProperty().addListener(ChangeListener { _, old, new ->
-                                            spinner.valueFactory.value = new ?: old
-                                        })
+                                        spinner.valueProperty()
+                                            .addListener(ChangeListener { _, old, new ->
+                                                spinner.valueFactory.value = new ?: old
+                                            })
+
+                                        // use Regex to make sure user inputs a double not character string
+                                        spinner.editor.textProperty()
+                                            .addListener(ChangeListener<String> { _, old, new ->
+                                                try {
+                                                    if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
+                                                        spinner.editor.text = old
+                                                    }
+                                                } catch (e: IllegalArgumentException) {
+                                                    spinner.editor.text = old
+                                                }
+                                            })
 
                                         slider.valueProperty().bindBidirectional(
                                             spinner.valueFactory.valueProperty()
