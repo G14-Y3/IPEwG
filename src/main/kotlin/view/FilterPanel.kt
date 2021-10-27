@@ -31,7 +31,8 @@ class FilterPanel : View() {
         "Greyscale" to engineController::grayscale,
         "Flip Horizontal" to engineController::flipHorizontal,
         "Flip Vertical" to engineController::flipVertical,
-    )
+        "Edge Detection" to engineController::edgeDetection,
+        )
 
     private val rgbFilterSliderList = mapOf(
         "R" to { factor: Double ->

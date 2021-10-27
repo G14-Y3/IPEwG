@@ -54,4 +54,37 @@ class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
             }
         }
     }
+
+
+    fun convolutionGreyScaleNegative(image: WritableImage): Array<DoubleArray> {
+        val deviation = kernel.size / 2
+        val width = image.width.toInt()
+        val height = image.height.toInt()
+        val reader: PixelReader = image.pixelReader
+        val original = WritableImage(
+            reader,
+            width,
+            height
+        )
+        val result = Array(width) { DoubleArray(height) }
+
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                var sumR = 0.0
+                for (i in -deviation..deviation) {
+                    for (j in -deviation..deviation) {
+                        val currY = y + i
+                        val currX = x + j
+                        val factor = kernel[i + deviation][j + deviation]
+                        if (currY in 0 until height && currX in 0 until width) {
+                            sumR += factor * original.pixelReader.getColor(currX, currY).red
+                        }
+                    }
+                }
+                result[x][y] = sumR
+            }
+        }
+
+        return result
+    }
 }
