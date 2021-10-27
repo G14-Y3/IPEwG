@@ -13,25 +13,7 @@ import kotlin.math.sqrt
 class FrequencyFilters(private val type : FreqProcessType, private val range : FreqProcessRange) : ImageProcessing{
 
     override fun process(image: WritableImage) {
-        var matrix = Array(2) {Complex()}
-        for (i in 0..1) {
-            matrix[i] = Complex(i.toDouble())
-        }
-        print("original:")
-        for (v in matrix) {
-            print("$v ")
-        }
-        println()
-        print("new: ")
-        matrix = _fft(matrix, Complex.posOmegaN(2.0), 1.0)
-        for (v in matrix) {
-            print("$v ")
-        }
-        println()
-    }
-
-    fun process_real(image: WritableImage) {
-        // 1. multiplt by (-1)^(i+j) to move center
+        // 1. multiplt by (-1)^(i+j) to move top left of image to center
         val reader : PixelReader = image.pixelReader
         val height = image.height.toInt()
         val width = image.width.toInt()
@@ -41,8 +23,8 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
             for (j in 0 until width) {
                 val ratio = (-1.0).pow(i + j)
                 matrix[0][i][j].real = reader.getColor(i, j).red * ratio
-                matrix[1][i][j].real = reader.getColor(i, j).blue * ratio
-                matrix[2][i][j].real = reader.getColor(i, j).green * ratio
+                matrix[1][i][j].real = reader.getColor(i, j).green * ratio
+                matrix[2][i][j].real = reader.getColor(i, j).blue * ratio
             }
         }
 
@@ -59,7 +41,7 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
                 val xDist = abs(x - height / 2).toDouble()
                 val yDist = abs(y - width / 2).toDouble()
                 val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
-                if (distFromCenter < width * 0.4) {
+                if (distFromCenter < width * 0.1) {
                     filter[x][y] = 1.0
                 }
             }
@@ -109,35 +91,25 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
     // fft on 2 dimensional matrix
     // Reference: http://rosettacode.org/wiki/Fast_Fourier_transform#Kotlin
     private fun fft2(matrix: Array<Array<Complex>>): Array<Array<Complex>> =
-        _fft2(matrix, false)
+        _fft2(matrix, Complex.posOmegaPower(), 1.0)
     private fun ifft2(matrix: Array<Array<Complex>>): Array<Array<Complex>> =
-        _fft2(matrix, true)
+        _fft2(matrix, Complex.negOmegaPower(), 2.0)
 
-    private fun _fft2(matrix: Array<Array<Complex>>, isIfft: Boolean): Array<Array<Complex>> {
-        var omega = Complex.negOmegaN(matrix.size.toDouble())
-        var scalar = 2.0
-        if (isIfft) {
-            omega = Complex.negOmegaN(matrix.size.toDouble())
-            scalar = 1.0
-        }
+    private fun _fft2(matrix: Array<Array<Complex>>, omegaPower: Complex, scalar: Double): Array<Array<Complex>> {
         // apply fft to each column
         for (i in 0 until matrix[0].size) {
             var column = Array(matrix.size) {
-                matrix[i][it]
+                matrix[it][i]
             }
-            column = _fft(column, omega, scalar)
+            column = _fft(column, omegaPower, scalar)
             for (j in matrix.indices) {
                 matrix[j][i] = column[j]
             }
         }
 
         // apply fft to each row
-        omega = Complex.posOmegaN(matrix.size.toDouble())
-        if (isIfft) {
-            omega = Complex.posOmegaN(matrix.size.toDouble())
-        }
         for (i in matrix.indices) {
-            matrix[i] = _fft(matrix[i], omega, scalar)
+            matrix[i] = _fft(matrix[i], omegaPower, scalar)
         }
         return matrix
     }
@@ -145,39 +117,26 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
     // return fft result on given array, ASSUMED the length of array is power of 2
     // References: https://www.bilibili.com/video/BV1za411F76U
     // todo: remove the constrain of length of array can only be power of 2
-    // omega = e^(-2 * pi * i / n) or e^(2 * pi * i / n)
-    private fun _fft(array: Array<Complex>, omega: Complex, scalar: Double): Array<Complex> {
-        println("omega$omega")
+    // power = (-2 * pi * i) or (2 * pi * i)
+    private fun _fft(array: Array<Complex>, power: Complex, scalar: Double): Array<Complex> {
         val length = array.size
         if (length == 1) {
             return array
         }
-//        var evens = Array(length / 2) {array[2 * it]}
-//        var odds = Array(length / 2) {array[2 * it + 1]}
-        var (evens, odds) = Pair(emptyArray<Complex>(), emptyArray<Complex>())
-        for (i in array.indices)
-            if (i % 2 == 0) evens += array[i]
-            else odds += array[i]
-        evens = _fft(evens, omega, scalar)
-        odds = _fft(odds, omega, scalar)
+        var evens = Array(length / 2) {array[2 * it]}
+        var odds = Array(length / 2) {array[2 * it + 1]}
+        evens = _fft(evens, power, scalar)
+        odds = _fft(odds, power, scalar)
 
-//        val concatResult = Array(length) {Complex()}
-//        for (i in 0 until length / 2) {
-//            concatResult[i] =
-//                evens[i] / scalar + odds[i] * omega.pow(i.toDouble()) / scalar
-//            concatResult[i + length / 2] =
-//                evens[i] / scalar - odds[i] * omega.pow(i.toDouble()) / scalar
-//        }
-//
-//        return concatResult
-        val pairs = (0 until length / 2).map {
-            val offset = (Complex(0.0, 2.0) * (java.lang.Math.PI * it / length)).exp() * odds[it] / scalar
-            val base = evens[it] / scalar
-            Pair(base + offset, base - offset)
+        val concatResult = Array(length) {Complex()}
+        for (i in 0 until length / 2) {
+            concatResult[i] =
+                evens[i] / scalar + odds[i] * (power * i.toDouble() / length.toDouble()).exp() / scalar
+            concatResult[i + length / 2] =
+                evens[i] / scalar - odds[i] * (power * i.toDouble() / length.toDouble()).exp() / scalar
         }
-        var (left, right) = Pair(emptyArray<Complex>(), emptyArray<Complex>())
-        for ((l, r) in pairs) { left += l; right += r }
-        return left + right
+
+        return concatResult
     }
 
 }

@@ -1,5 +1,5 @@
 % experiment program to implement corss verification of frequency filter
-img = im2double(rgb2gray(imread("test_image.png")));
+img = im2double(imread("test_image.png"));
 [h, w, cnt] = size(img);
 % move left top point to center
 centered_img = zeros(h, w, cnt);
@@ -16,8 +16,8 @@ fft_result = fft2(centered_img);
 H = zeros(h, w, cnt);
 for i = 1:h
     for j = 1:w
-        d = sqrt(x(i, j).^2 + y(i, j).^2);
-        if d < 0.4
+        d = sqrt((i - h / 2).^2 + (j - w / 2).^2);
+        if d < (0.1 * w)
             H(i, j, :) = 1;
         end
     end
@@ -25,8 +25,8 @@ end
 % apply low pass filter to frequency image
 fft_result = fft_result.*H;
 figure(1);
-subplot(1,2,1); title("displaying filtered frequency");
-imshow(fft_result);
+subplot(1,2,1); title("displaying original image");
+imshow(img);
 % ifft to get output
 output = real(ifft2(fft_result));
 % move center back
