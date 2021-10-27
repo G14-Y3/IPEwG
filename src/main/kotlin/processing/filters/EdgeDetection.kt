@@ -9,7 +9,7 @@ import kotlin.math.sqrt
 class EdgeDetection : ImageProcessing {
     override fun process(image: WritableImage) {
         Grayscale().process(image)
-        GaussianBlur(2).process(image)
+        GaussianBlur(4).process(image)
 
 
         // Apply Sobel operator for basic edge detection
@@ -112,5 +112,5 @@ class EdgeDetection : ImageProcessing {
         }
     }
 
-    override fun toString(): String = "Edge detection"
+    override fun toString(): String = "Edge detection (Canny)"
 }
