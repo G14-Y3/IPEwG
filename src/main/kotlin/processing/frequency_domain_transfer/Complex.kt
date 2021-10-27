@@ -11,18 +11,14 @@ class Complex(var real: Double = 0.0, var imag: Double = 0.0) {
     infix operator fun times(y: Double) = Complex(real * y, imag * y)
     infix operator fun div(y: Double) = Complex(real / y, imag / y)
 
-//    fun exp() : Complex {
-//        return Complex(Math.cos(imag), Math.sin(imag)) * Math.exp(real)
-//    }
-
-    fun exp(): Complex {
-        return Complex(Math.cos(imag), Math.sin(imag)) * (Math.cosh(real) + Math.sinh(real))
+    fun exp() : Complex {
+        return Complex(Math.cos(imag), Math.sin(imag)) * Math.exp(real)
     }
 
     // complex number only support integer power
     fun pow(n: Int) : Complex {
-        var magnitude = Math.sqrt(real.pow(2) + imag.pow(2))
-        var theta = Math.atan(imag / real)
+        val magnitude = Math.sqrt(real.pow(2) + imag.pow(2))
+        val theta = Math.atan(imag / real)
         return Complex(Math.cos(theta * n), Math.sin(theta * n)) * magnitude.pow(n)
     }
 
@@ -33,7 +29,7 @@ class Complex(var real: Double = 0.0, var imag: Double = 0.0) {
         fun posOmegaPower() : Complex = (Complex(0.0, 2 * PI))
     }
 
-    // tostring, mainly for debug use
+    // toString, mainly for debug use
     override fun toString(): String {
         val a = "%1.3f".format(real)
         val b = "%1.3f".format(imag)
