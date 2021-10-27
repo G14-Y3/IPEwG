@@ -12,6 +12,7 @@ import kotlin.math.sqrt
 
 abstract class FrequencyFilters: ImageProcessing{
 
+    // get filter matrix for selecting different frequency, implementation depends on type of filter
     abstract fun getFilterMatrix(height: Int, width: Int): Array<Array<Double>>
 
     override fun process(image: WritableImage) {
@@ -36,20 +37,7 @@ abstract class FrequencyFilters: ImageProcessing{
         }
 
         // 3. define filter matrix
-        // todo: change filter based on request from user, currently default as high pass filter
         val filter = getFilterMatrix(height, width)
-
-//        val filter = Array(height) {Array(width) {0.0} }
-//        for (x in 0 until  height) {
-//            for (y in 0 until  width) {
-//                val xDist = abs(x - height / 2).toDouble()
-//                val yDist = abs(y - width / 2).toDouble()
-//                val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
-//                if (distFromCenter < width * 0.1) {
-//                    filter[x][y] = 1.0
-//                }
-//            }
-//        }
 
         // 4. apply filter to frequency matrix
         for (i in 0 .. 2) {

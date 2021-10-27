@@ -26,4 +26,8 @@ class idleFreqFilter(
         }
         return filter
     }
+
+    override fun toString(): String {
+        return "$range idle frequency with boundary $boundary"
+    }
 }
