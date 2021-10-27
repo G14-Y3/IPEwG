@@ -1,10 +1,10 @@
 package view
 
-import com.sun.prism.image.ViewPort
 import javafx.geometry.Insets
+import javafx.geometry.Point2D
 import javafx.geometry.Rectangle2D
-import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
@@ -16,9 +16,10 @@ const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
 
 class ImagePanel : View() {
     private val engine: EngineModel by inject()
+    private var lastMousePoint: Point2D? = null
 
-    private lateinit var oriView : ImageView
-    private lateinit var newView : ImageView
+    private lateinit var oriView: ImageView
+    private lateinit var newView: ImageView
 
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
@@ -42,9 +43,21 @@ class ImagePanel : View() {
                 )
                 updateViewPort(viewport)
 
-                setOnMouseClicked {
-                    oriView.isVisible = !oriView.isVisible
-                    newView.isVisible = !newView.isVisible
+                var dragging = false
+                addEventHandler(MouseEvent.ANY) {
+                    if (it.eventType == MouseEvent.MOUSE_PRESSED) {
+                        dragging = false;
+                    }
+                    else if (it.eventType == MouseEvent.DRAG_DETECTED) {
+                        dragging = true;
+                    }
+
+                    else if (it.eventType == MouseEvent.MOUSE_CLICKED) {
+                        if (!dragging) {
+                            oriView.isVisible = !oriView.isVisible
+                            newView.isVisible = !newView.isVisible
+                        }
+                    }
                 }
             }
 
@@ -67,7 +80,6 @@ class ImagePanel : View() {
             this.addEventFilter(ZoomEvent.ANY) {
                 var ratio = 1.0
                 val oldViewport = oriView.viewport!!
-                val localToImage = width / oldViewport.width
                 if (it.zoomFactor > 1) {
                     ratio = 1.035
                 } else if (it.zoomFactor < 1) {
@@ -78,9 +90,9 @@ class ImagePanel : View() {
                 }
 
                 // update image origin so zoom on the mouse position
-                var leftTopX = oldViewport.minX + it.x * (1 - 1 / ratio) / localToImage
+                var leftTopX = oldViewport.minX + localToImage(it.x * (1 - 1 / ratio))
                 leftTopX = cast(leftTopX, 0.0, excessWidth)
-                var leftTopY = oldViewport.minY + it.y * (1 - 1 / ratio) / localToImage
+                var leftTopY = oldViewport.minY + localToImage(it.y * (1 - 1 / ratio))
                 leftTopY = cast(leftTopY, 0.0, excessHeight)
 
                 val newViewport = Rectangle2D(
@@ -92,6 +104,33 @@ class ImagePanel : View() {
                 updateViewPort(newViewport)
             }
 
+            // Drag image handlers
+            fun stopDrag(event: MouseEvent) {
+                lastMousePoint = null
+            }
+            addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
+            addEventFilter(MouseEvent.MOUSE_PRESSED) { lastMousePoint = Point2D(it.screenX, it.screenY) }
+
+            addEventFilter(MouseEvent.MOUSE_DRAGGED) {
+                if (lastMousePoint != null) {
+                    val oldViewport = oriView.viewport
+
+                    var leftTopX = oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
+                    leftTopX = cast(leftTopX, 0.0, excessWidth)
+                    var leftTopY = oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
+                    leftTopY = cast(leftTopY, 0.0, excessHeight)
+
+                    val newViewport = Rectangle2D(
+                        leftTopX,
+                        leftTopY,
+                        oldViewport.width,
+                        oldViewport.height,
+                    )
+                    updateViewPort(newViewport)
+
+                    lastMousePoint = Point2D(it.screenX, it.screenY)
+                }
+            }
 
             // TODO: Better way to toggle between the images
             stack.children.forEach { child ->
@@ -115,7 +154,7 @@ class ImagePanel : View() {
     }
 
     // cast given value in given range
-    private fun cast(value : Double, min : Double, max : Double) : Double {
+    private fun cast(value: Double, min: Double, max: Double): Double {
         if (value < min) {
             return min
         } else if (value > max) {
@@ -130,5 +169,13 @@ class ImagePanel : View() {
         newView.viewport = viewPort
         excessWidth = oriView.image.width - viewPort.width
         excessHeight = oriView.image.height - viewPort.height
+    }
+
+    // from scene / screen / stage / view coordinates to image coordinates
+    private fun localToImage(value: Double): Double {
+        val viewport = oriView.viewport!!
+        val localToImage = WINDOW_WIDTH / viewport.width
+
+        return value / localToImage
     }
 }
