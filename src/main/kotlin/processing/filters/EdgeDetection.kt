@@ -1,6 +1,7 @@
 package processing.filters
 
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import processing.ImageProcessing
 import java.lang.Math.toDegrees
 import kotlin.math.atan2
@@ -113,4 +114,12 @@ class EdgeDetection : ImageProcessing {
     }
 
     override fun toString(): String = "Edge detection (Canny)"
+}
+
+fun writeGrayImage(input: Array<DoubleArray>, image: WritableImage) {
+    for (x in 0 until image.width.toInt()) {
+        for (y in 0 until image.height.toInt()) {
+            image.pixelWriter.setColor(x, y, Color.color(input[x][y], input[x][y], input[x][y]))
+        }
+    }
 }
