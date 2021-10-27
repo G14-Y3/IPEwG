@@ -8,6 +8,7 @@ import javafx.geometry.Pos
 import javafx.geometry.Side
 import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
+import javafx.scene.image.Image
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.BlurType
@@ -21,7 +22,6 @@ import java.lang.NumberFormatException
 import kotlin.math.roundToInt
 
 class FilterPanel : View() {
-
 
     private val engine: EngineModel by inject()
     private val engineController: EngineController by inject()
@@ -116,19 +116,24 @@ class FilterPanel : View() {
                 }
 
                 val style_transfer_map = mapOf(
-                    "Van Gogh" to NeuralStyles.VAN_GOGH,
+                    "Van_Gogh" to NeuralStyles.VAN_GOGH,
                     "Picasso" to NeuralStyles.PICASSO,
                     "Autumn" to NeuralStyles.AUTUMN,
                     "Google" to NeuralStyles.GOOGLE,
-                    "UKIYOE" to NeuralStyles.UKIYOE,
-                    "Abtract" to NeuralStyles.ABSTRACT
+                    "Japan" to NeuralStyles.UKIYOE,
+                    "Abstract" to NeuralStyles.ABSTRACT
                 )
 
                 tab("Style Transfer") {
-                    vbox{
+                    hbox{
                         style_transfer_map.map { (str, enum) ->
                             button(str) {
-                                vboxConstraints {
+                                val filename = str.lowercase()
+                                imageview(Image("./style_transfer_model/$filename.jpg")) {
+                                    fitWidth = 30.0
+                                    fitHeight = 30.0
+                                }
+                                hboxConstraints {
                                     margin = Insets(10.0)
                                 }
                                 action {
