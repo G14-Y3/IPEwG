@@ -1,4 +1,4 @@
-package processing.frequency_domain_transfer
+package processing.frequency
 
 import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
@@ -10,7 +10,9 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class FrequencyFilters(private val type : FreqProcessType, private val range : FreqProcessRange) : ImageProcessing{
+abstract class FrequencyFilters: ImageProcessing{
+
+    abstract fun getFilterMatrix(height: Int, width: Int): Array<Array<Double>>
 
     override fun process(image: WritableImage) {
         // 1. multiplt by (-1)^(i+j) to move top left of image to center
@@ -18,7 +20,7 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
         val height = image.height.toInt()
         val width = image.width.toInt()
         val matrix : Array<Array<Array<Complex>>>
-            = Array(3) {Array(height) { Array(width) {Complex()}}}
+            = Array(3) {Array(height) { Array(width) { Complex() }}}
         for (i in 0 until height) {
             for (j in 0 until width) {
                 val ratio = (-1.0).pow(i + j)
@@ -35,17 +37,19 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
 
         // 3. define filter matrix
         // todo: change filter based on request from user, currently default as high pass filter
-        val filter = Array(height) {Array(width) {0.0} }
-        for (x in 0 until  height) {
-            for (y in 0 until  width) {
-                val xDist = abs(x - height / 2).toDouble()
-                val yDist = abs(y - width / 2).toDouble()
-                val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
-                if (distFromCenter < width * 0.1) {
-                    filter[x][y] = 1.0
-                }
-            }
-        }
+        val filter = getFilterMatrix(height, width)
+
+//        val filter = Array(height) {Array(width) {0.0} }
+//        for (x in 0 until  height) {
+//            for (y in 0 until  width) {
+//                val xDist = abs(x - height / 2).toDouble()
+//                val yDist = abs(y - width / 2).toDouble()
+//                val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
+//                if (distFromCenter < width * 0.1) {
+//                    filter[x][y] = 1.0
+//                }
+//            }
+//        }
 
         // 4. apply filter to frequency matrix
         for (i in 0 .. 2) {
@@ -81,11 +85,6 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
                 writer.setColor(x, y, newColor)
             }
         }
-    }
-
-    // todo: design a more informative to string
-    override fun toString(): String {
-        return "frequency filter with $type and $range"
     }
 
     // fft on 2 dimensional matrix
@@ -128,7 +127,7 @@ class FrequencyFilters(private val type : FreqProcessType, private val range : F
         evens = _fft(evens, power, scalar)
         odds = _fft(odds, power, scalar)
 
-        val concatResult = Array(length) {Complex()}
+        val concatResult = Array(length) { Complex() }
         for (i in 0 until length / 2) {
             concatResult[i] =
                 evens[i] / scalar + odds[i] * (power * i.toDouble() / length.toDouble()).exp() / scalar

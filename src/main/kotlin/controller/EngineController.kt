@@ -9,7 +9,8 @@ import processing.filters.FlipHorizontal
 import processing.filters.FlipVertical
 import processing.filters.Grayscale
 import processing.filters.InverseColour
-import processing.frequency_domain_transfer.FrequencyFilters
+import processing.frequency.FrequencyFilters
+import processing.frequency.idleFreqFilter
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -44,5 +45,6 @@ class EngineController : Controller() {
 
     fun flipVertical() = engine.transform(FlipVertical())
 
-    fun frequencyTransfer() = engine.transform(FrequencyFilters(FreqProcessType.Idle, FreqProcessRange.HighPass))
+    // todo: support user select different filter type and boundary
+    fun frequencyTransfer() = engine.transform(idleFreqFilter())
 }

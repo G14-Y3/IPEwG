@@ -1,7 +1,6 @@
-package processing.frequency_domain_transfer
+package processing.frequency
 
 import kotlin.math.PI
-import kotlin.math.abs
 import kotlin.math.pow
 
 class Complex(var real: Double = 0.0, var imag: Double = 0.0) {
