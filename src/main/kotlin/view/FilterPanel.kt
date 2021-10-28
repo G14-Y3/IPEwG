@@ -7,6 +7,7 @@ import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
 import javafx.scene.control.ComboBox
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.layout.HBox
@@ -323,6 +324,8 @@ class FilterPanel : View() {
                     .addListener(ChangeListener<Number> { _, _, _ ->
                         this.vvalue = 0.0
                     })
+                vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+                hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
             }
 
             vbox {
