@@ -8,7 +8,7 @@ class ExampleTest {
     }
 
     @Test
-    fun frequencyDomainGenralTest() {
+    fun frequencyDomainGeneralTest() {
 
     }
 }

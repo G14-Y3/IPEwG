@@ -13,8 +13,8 @@ class idleFreqFilter(
 
     override fun getFilterMatrix(height: Int, width: Int): Array<Array<Double>> {
         val filter = Array(height) {Array(width) {0.0} }
-        for (x in 0 until  height) {
-            for (y in 0 until  width) {
+        for (x in 0 until height) {
+            for (y in 0 until width) {
                 val xDist = abs(x - height / 2).toDouble()
                 val yDist = abs(y - width / 2).toDouble()
                 val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
