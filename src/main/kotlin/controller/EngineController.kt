@@ -41,7 +41,7 @@ class EngineController : Controller() {
 
     fun flipVertical() = engine.transform(FlipVertical())
 
-    fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
+    fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
 
     fun sharpen() = engine.transform(Sharpen())
 }

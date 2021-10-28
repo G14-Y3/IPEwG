@@ -2,13 +2,14 @@ package view
 
 import controller.EngineController
 import controller.FileController
-import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
+import javafx.scene.control.ComboBox
 import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
+import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.BlurType
@@ -33,7 +34,7 @@ class FilterPanel : View() {
         "Flip Horizontal" to engineController::flipHorizontal,
         "Flip Vertical" to engineController::flipVertical,
         "Edge Detection" to engineController::edgeDetection,
-        )
+    )
 
     private val rgbFilterSliderList = mapOf(
         "R" to { factor: Double ->
@@ -77,12 +78,125 @@ class FilterPanel : View() {
         },
     )
 
+    private val blurList = BlurType.values().toList()
+    private val blurFilterSliderList = mapOf(
+        BlurType.BOX to { factor: Double ->
+            engineController.blur(
+                factor,
+                BlurType.BOX
+            )
+        }
+    )
+
     private val adjustmentTabs = mapOf(
         "RGB" to rgbFilterSliderList,
         "HSV" to hsvFilterSliderList,
+        "Blur" to blurFilterSliderList,
     )
 
-    override val root = vbox {
+    private fun generateSliderGUI(
+        property: String,
+        name: String,
+        labelOrComboBox: Any,
+        minVal: Double,
+        maxVal: Double,
+        op: (sliderValue: Double) -> Unit,
+        sliders: ArrayList<Slider>
+    ): HBox {
+        var labelName = ""
+        var comboBox = ComboBox<BlurType>()
+        if (labelOrComboBox is String) {
+            labelName = labelOrComboBox.toString()
+        } else if (labelOrComboBox is ComboBox<*>) {
+            comboBox = labelOrComboBox as ComboBox<BlurType>
+        }
+        print(blurFilterSliderList)
+        return hbox {
+            padding = Insets(20.0, 20.0, 10.0, 10.0)
+            spacing = 20.0
+
+            if (property == "withLabel") {
+                label(labelName) {
+                    addClass(CssStyle.labelTag)
+                }
+            } else if (property == "withComboBox") {
+                this.add(comboBox)
+            }
+
+            val slider = slider {
+                min = minVal
+                max = maxVal
+                isShowTickMarks = true
+                majorTickUnit = (maxVal - minVal) / 4
+                minorTickCount = 1
+                blockIncrement = 1.0
+            }
+            sliders += slider
+            slider.value = 0.0
+            if (property == "withComboBox") {
+                comboBox.valueProperty()
+                    .addListener(ChangeListener { _, _, _ ->
+                        engineController.resetAdjustment()
+                        slider.value = 0.0
+                    })
+            }
+            when (name) {
+                "HSV", "RGB" -> slider.valueProperty()
+                    .addListener(ChangeListener { _, _, _ -> op(slider.value / 100 + 1) })
+                "Blur" -> slider.valueProperty()
+                    .addListener(ChangeListener { _, _, _ ->
+                        engineController.blur(
+                            slider.value,
+                            comboBox.value
+                        )
+                    })
+            }
+
+            addClass(CssStyle.filterSlider)
+            addClass(CssStyle.labelTag)
+
+            val spinner = spinner(
+                min = minVal,
+                max = maxVal,
+                initialValue = 0.0,
+                amountToStepBy = 1.0,
+                editable = true,
+                doubleProperty(0.0)
+            ) {
+                maxWidth = 70.0
+            }
+
+            // avoid NPE and set value to old value when user clear the field
+            spinner.valueProperty()
+                .addListener(ChangeListener { _, old, new ->
+                    spinner.valueFactory.value = new ?: old
+                })
+
+            // use Regex to make sure user inputs a double not character string
+            spinner.editor.textProperty()
+                .addListener(ChangeListener<String> { _, old, new ->
+                    try {
+                        if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
+                            spinner.editor.text = old
+                        } else {
+                            spinner.editor.text =
+                                new.toDouble().roundToInt().toString()
+                        }
+                    } catch (e: IllegalArgumentException) {
+                    }
+                })
+
+            try {
+                slider.valueProperty().bindBidirectional(
+                    spinner.valueFactory.valueProperty()
+                )
+            } catch (e: NumberFormatException) {
+            }
+        }
+    }
+
+    override
+    val root = vbox {
         splitpane {
             tabpane {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
@@ -107,7 +221,7 @@ class FilterPanel : View() {
                                     button(s) {
                                         /* The buttons need enough width to load up all labels
                                          in them, or the border will change when tabs clicked. */
-                                        prefWidth = 100.0
+                                        prefWidth = 120.0
                                     }.setOnAction { callback() }
                                 }
                             }
@@ -134,62 +248,35 @@ class FilterPanel : View() {
                                 }
                                 val sliders = ArrayList<Slider>()
                                 sliderList.map { (label, op) ->
-                                    hbox {
-                                        padding = Insets(20.0, 20.0, 10.0, 10.0)
-                                        label(label) {
-                                            addClass(CssStyle.labelTag)
-                                        }
-                                        val slider = slider {
-                                            min = -100.0
-                                            max = 100.0
-                                            isShowTickMarks = true
-                                            majorTickUnit = 50.0
-                                            minorTickCount = 1
-                                            blockIncrement = 1.0
-                                        }
-                                        sliders += slider
-                                        slider.value = 0.0
-                                        slider.valueProperty()
-                                            .addListener(ChangeListener { _, _, _ -> op(slider.value / 100 + 1) })
-                                        addClass(CssStyle.filterSlider)
-
-                                        val spinner = spinner(
-                                            -100.0,
-                                            100.0,
-                                            0.0,
-                                            1.0,
-                                            true,
-                                            doubleProperty(0.0)
-                                        ) {
-                                            maxWidth = 70.0
-                                        }
-
-                                        // avoid NPE and set value to old value when user clear the field
-                                        spinner.valueProperty()
-                                            .addListener(ChangeListener { _, old, new ->
-                                                spinner.valueFactory.value = new ?: old
-                                            })
-
-                                        // use Regex to make sure user inputs a double not character string
-                                        spinner.editor.textProperty()
-                                            .addListener(ChangeListener<String> { _, old, new ->
-                                                try {
-                                                    if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
-                                                        spinner.editor.text = old
-                                                    } else {
-                                                        spinner.editor.text =
-                                                            new.toDouble().roundToInt().toString()
-                                                    }
-                                                } catch (e: IllegalArgumentException) {
-                                                }
-                                            })
-
-                                        try {
-                                            slider.valueProperty().bindBidirectional(
-                                                spinner.valueFactory.valueProperty()
+                                    if (name == "RGB" || name == "HSV") {
+                                        this.children.add(
+                                            generateSliderGUI(
+                                                property = "withLabel",
+                                                name = name,
+                                                labelOrComboBox = label,
+                                                minVal = -100.0,
+                                                maxVal = 100.0,
+                                                op = op,
+                                                sliders = sliders
                                             )
-                                        } catch (e: NumberFormatException) {
-                                        }
+                                        )
+                                    } else if (name == "Blur") {
+                                        val comboBox =
+                                            combobox(values = blurList)
+                                        comboBox.value = blurList[0]
+                                        this.children.add(
+                                            generateSliderGUI(
+                                                property = "withComboBox",
+                                                name = name,
+                                                labelOrComboBox = comboBox,
+                                                minVal = 0.0,
+                                                maxVal = 10.0,
+                                                op = op,
+                                                sliders = sliders
+                                            )
+                                        )
+                                    } else {
+                                        hbox {}
                                     }
                                 }
                                 buttonbar {
@@ -207,65 +294,17 @@ class FilterPanel : View() {
                         }
                     }
                 }
-                tab("Blur & Sharpen") {
+                tab("Sharpen") {
                     vbox {
-                        label("Blur") {
-                            vboxConstraints {
-                                margin = Insets(20.0, 20.0, 10.0, 10.0)
-                            }
-                            style {
-                                fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                            }
-                        }
                         vbox {
-                            vboxConstraints {
-                                margin = Insets(10.0)
-                            }
-                            val sliders = ArrayList<Slider>()
-                            hbox {
-                                padding = Insets(20.0, 20.0, 10.0, 10.0)
-                                val blurList = BlurType.values().toList()
-                                val combobox = combobox(values = blurList)
-                                combobox.value = blurList[0]
-                                val slider = slider {
-                                    min = 0.0
-                                    max = 10.0
+                            label("Sharpen") {
+                                vboxConstraints {
+                                    margin = Insets(20.0, 20.0, 10.0, 10.0)
                                 }
-                                sliders += slider
-                                slider.value = 0.0
-                                combobox.valueProperty()
-                                    .addListener(ChangeListener { _, _, _ ->
-                                        engineController.resetAdjustment()
-                                        slider.value = 0.0
-                                    })
-                                slider.valueChangingProperty()
-                                    .addListener(ChangeListener { _, _, _ ->
-                                        engineController.blur(slider.value.toInt(), combobox.value)
-                                    })
-
-                                addClass(CssStyle.filterSlider)
-                            }
-
-                            buttonbar {
-                                padding = Insets(20.0, 10.0, 20.0, 10.0)
-                                button("Adjust").setOnAction {
-                                    engineController.submitAdjustment()
-                                    sliders.forEach { it.value = 0.0 }
+                                style {
+                                    fontWeight = FontWeight.BOLD
+                                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                                 }
-                                button("Reset").setOnAction {
-                                    engineController.resetAdjustment()
-                                    sliders.forEach { it.value = 0.0 }
-                                }
-                            }
-                        }
-                        label("Sharpen") {
-                            vboxConstraints {
-                                margin = Insets(20.0, 20.0, 10.0, 10.0)
-                            }
-                            style {
-                                fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                             }
                         }
                         vbox {
@@ -301,7 +340,8 @@ class FilterPanel : View() {
                         selectionModel.selectedIndexProperty().onChange {
                             engine.setCurrentIndex(it)
                         }
-                        engine.updateListSelection = { selectionModel.select(engine.currIndex) }
+                        engine.updateListSelection =
+                            { selectionModel.select(engine.currIndex) }
                     }
                 }
                 hbox {
