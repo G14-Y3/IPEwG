@@ -110,7 +110,7 @@ class FilterPanel : View() {
         } else if (labelOrComboBox is ComboBox<*>) {
             comboBox = labelOrComboBox as ComboBox<BlurType>
         }
-        print(blurFilterSliderList)
+        
         return hbox {
             padding = Insets(20.0, 20.0, 10.0, 10.0)
             spacing = 20.0
