@@ -110,7 +110,7 @@ class FilterPanel : View() {
         } else if (labelOrComboBox is ComboBox<*>) {
             comboBox = labelOrComboBox as ComboBox<BlurType>
         }
-        
+
         return hbox {
             padding = Insets(20.0, 20.0, 10.0, 10.0)
             spacing = 20.0
@@ -198,127 +198,133 @@ class FilterPanel : View() {
     override
     val root = vbox {
         splitpane {
-            tabpane {
-                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                //side = Side.LEFT
-                tab("Basic Actions") {
-                    vbox {
-                        label("Basic Actions") {
-                            vboxConstraints {
-                                margin = Insets(20.0, 20.0, 10.0, 10.0)
-                            }
-                            style {
-                                fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-
-                            }
-                        }
-
-                        hbox {
-                            padding = Insets(20.0, 20.0, 10.0, 10.0)
-                            buttonbar {
-                                basicFilterButtonList.map { (s, callback) ->
-                                    button(s) {
-                                        /* The buttons need enough width to load up all labels
-                                         in them, or the border will change when tabs clicked. */
-                                        prefWidth = 120.0
-                                    }.setOnAction { callback() }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                adjustmentTabs.map { (name, sliderList) ->
-                    tab(name) {
+            scrollpane {
+                val tabPane = tabpane {
+                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                    side = Side.LEFT
+                    tab("Basic Actions") {
                         vbox {
-                            label(name) {
+                            label("Basic Actions") {
                                 vboxConstraints {
                                     margin = Insets(20.0, 20.0, 10.0, 10.0)
                                 }
                                 style {
                                     fontWeight = FontWeight.BOLD
                                     fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+
                                 }
                             }
 
+                            hbox {
+                                padding = Insets(20.0, 20.0, 10.0, 10.0)
+                                buttonbar {
+                                    basicFilterButtonList.map { (s, callback) ->
+                                        button(s) {
+                                            /* The buttons need enough width to load up all labels
+                                             in them, or the border will change when tabs clicked. */
+                                            prefWidth = 120.0
+                                        }.setOnAction { callback() }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    adjustmentTabs.map { (name, sliderList) ->
+                        tab(name) {
+                            vbox {
+                                label(name) {
+                                    vboxConstraints {
+                                        margin = Insets(20.0, 20.0, 10.0, 10.0)
+                                    }
+                                    style {
+                                        fontWeight = FontWeight.BOLD
+                                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                    }
+                                }
+
+                                vbox {
+                                    vboxConstraints {
+                                        margin = Insets(10.0)
+                                    }
+                                    val sliders = ArrayList<Slider>()
+                                    sliderList.map { (label, op) ->
+                                        if (name == "RGB" || name == "HSV") {
+                                            this.children.add(
+                                                generateSliderGUI(
+                                                    property = "withLabel",
+                                                    name = name,
+                                                    labelOrComboBox = label,
+                                                    minVal = -100.0,
+                                                    maxVal = 100.0,
+                                                    op = op,
+                                                    sliders = sliders
+                                                )
+                                            )
+                                        } else if (name == "Blur") {
+                                            val comboBox =
+                                                combobox(values = blurList)
+                                            comboBox.value = blurList[0]
+                                            this.children.add(
+                                                generateSliderGUI(
+                                                    property = "withComboBox",
+                                                    name = name,
+                                                    labelOrComboBox = comboBox,
+                                                    minVal = 0.0,
+                                                    maxVal = 10.0,
+                                                    op = op,
+                                                    sliders = sliders
+                                                )
+                                            )
+                                        } else {
+                                            hbox {}
+                                        }
+                                    }
+                                    buttonbar {
+                                        padding = Insets(20.0, 10.0, 20.0, 10.0)
+                                        button("Adjust").setOnAction {
+                                            engineController.submitAdjustment()
+                                            sliders.forEach { it.value = 0.0 }
+                                        }
+                                        button("Reset").setOnAction {
+                                            engineController.resetAdjustment()
+                                            sliders.forEach { it.value = 0.0 }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    tab("Sharpen") {
+                        vbox {
+                            vbox {
+                                label("Sharpen") {
+                                    vboxConstraints {
+                                        margin = Insets(20.0, 20.0, 10.0, 10.0)
+                                    }
+                                    style {
+                                        fontWeight = FontWeight.BOLD
+                                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                    }
+                                }
+                            }
                             vbox {
                                 vboxConstraints {
                                     margin = Insets(10.0)
                                 }
-                                val sliders = ArrayList<Slider>()
-                                sliderList.map { (label, op) ->
-                                    if (name == "RGB" || name == "HSV") {
-                                        this.children.add(
-                                            generateSliderGUI(
-                                                property = "withLabel",
-                                                name = name,
-                                                labelOrComboBox = label,
-                                                minVal = -100.0,
-                                                maxVal = 100.0,
-                                                op = op,
-                                                sliders = sliders
-                                            )
-                                        )
-                                    } else if (name == "Blur") {
-                                        val comboBox =
-                                            combobox(values = blurList)
-                                        comboBox.value = blurList[0]
-                                        this.children.add(
-                                            generateSliderGUI(
-                                                property = "withComboBox",
-                                                name = name,
-                                                labelOrComboBox = comboBox,
-                                                minVal = 0.0,
-                                                maxVal = 10.0,
-                                                op = op,
-                                                sliders = sliders
-                                            )
-                                        )
-                                    } else {
-                                        hbox {}
-                                    }
-                                }
                                 buttonbar {
-                                    padding = Insets(20.0, 10.0, 20.0, 10.0)
-                                    button("Adjust").setOnAction {
-                                        engineController.submitAdjustment()
-                                        sliders.forEach { it.value = 0.0 }
-                                    }
-                                    button("Reset").setOnAction {
-                                        engineController.resetAdjustment()
-                                        sliders.forEach { it.value = 0.0 }
-                                    }
+                                    button("Sharpen").setOnAction { engineController.sharpen() }
                                 }
                             }
                         }
                     }
                 }
-                tab("Sharpen") {
-                    vbox {
-                        vbox {
-                            label("Sharpen") {
-                                vboxConstraints {
-                                    margin = Insets(20.0, 20.0, 10.0, 10.0)
-                                }
-                                style {
-                                    fontWeight = FontWeight.BOLD
-                                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                                }
-                            }
-                        }
-                        vbox {
-                            vboxConstraints {
-                                margin = Insets(10.0)
-                            }
-                            buttonbar {
-                                button("Sharpen").setOnAction { engineController.sharpen() }
-                            }
-                        }
-                    }
-                }
-
+                tabPane.selectionModel.selectedIndexProperty()
+                    .addListener(ChangeListener<Number> { _, _, _ ->
+                        this.vvalue = 0.0
+                    })
             }
+
             vbox {
                 alignment = Pos.CENTER
                 label("Transformations") {
