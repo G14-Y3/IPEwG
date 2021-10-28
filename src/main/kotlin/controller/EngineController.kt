@@ -1,6 +1,10 @@
 package controller
 
 import models.EngineModel
+import processing.FreqProcessRange
+import processing.FreqProcessType
+import processing.frequency.FrequencyFilters
+import processing.frequency.idleFreqFilter
 import processing.BlurType
 import processing.HSVType
 import processing.RGBType
@@ -41,6 +45,9 @@ class EngineController : Controller() {
 
     fun flipVertical() = engine.transform(FlipVertical())
 
+    // todo: support user select different filter type and boundary
+    fun frequencyTransfer() = engine.transform(idleFreqFilter())
+    
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())

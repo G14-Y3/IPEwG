@@ -206,6 +206,11 @@ class FilterPanel : View() {
                         }
                     }
                 }
+                tab("frequency transfer") {
+                    button("transfer").setOnAction {
+                        engineController.frequencyTransfer()
+                    }
+                }
                 tab("Blur & Sharpen") {
                     vbox {
                         label("Blur") {
