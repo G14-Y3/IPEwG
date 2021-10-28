@@ -200,7 +200,7 @@ class FilterPanel : View() {
         splitpane {
             tabpane {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                side = Side.LEFT
+                //side = Side.LEFT
                 tab("Basic Actions") {
                     vbox {
                         label("Basic Actions") {
