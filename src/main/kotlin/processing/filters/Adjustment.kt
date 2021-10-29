@@ -4,6 +4,10 @@ import javafx.scene.image.WritableImage
 import processing.HSVType
 import processing.ImageProcessing
 import processing.RGBType
+import processing.filters.blur.BoxBlur
+import processing.filters.blur.GaussianBlur
+import processing.filters.blur.LensBlur
+import processing.filters.blur.MotionBlur
 
 class Adjustment(private val properties: Map<String, Double>) : ImageProcessing {
     var string: String = ""
