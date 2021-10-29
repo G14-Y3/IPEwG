@@ -22,7 +22,7 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
     )
 
     init {
-        mod = Module.load(styleToPath.get(style))
+        mod = Module.load(styleToPath[style])
     }
 
     override fun process(image: WritableImage) {
@@ -31,14 +31,14 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
         val h = image.height.toInt()
         val w = image.width.toInt()
         val pixels = Array(3) {
-            Array(h) {
+            Array(w) {
                 DoubleArray(
-                    w
+                    h
                 )
             }
         }
-        for (i in 0 until h) {
-            for (j in 0 until w) {
+        for (i in 0 until w) {
+            for (j in 0 until h) {
                 pixels[0][i][j] = reader.getColor(i, j).red
                 pixels[1][i][j] = reader.getColor(i, j).green
                 pixels[2][i][j] = reader.getColor(i, j).blue
@@ -46,11 +46,11 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
         }
         val dimension = 3 * h * w
         val buf = FloatArray(dimension)
-        for (i in 0 until h) {
-            for (j in 0 until w) {
-                buf[i * w + j] = pixels[0][i][j].toFloat()
-                buf[i * w + j + h*w] = pixels[1][i][j].toFloat()
-                buf[i * w + j + h*w*2] = pixels[2][i][j].toFloat()
+        for (i in 0 until w) {
+            for (j in 0 until h) {
+                buf[j * w + i] = pixels[0][i][j].toFloat()
+                buf[j * w + i + h*w] = pixels[1][i][j].toFloat()
+                buf[j * w + i + h*w*2] = pixels[2][i][j].toFloat()
             }
         }
 
@@ -58,11 +58,11 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
         val result = mod.forward(IValue.from(data))
         val output = result.toTensor().dataAsFloatArray
 
-        for (i in 0 until h) {
-            for (j in 0 until w) {
-                val r = output[i * w + j]
-                val g = output[i * w + j + h * w]
-                val b = output[i * w + j + h * w * 2]
+        for (i in 0 until w) {
+            for (j in 0 until h) {
+                val r = output[j * w + i]
+                val g = output[j * w + i + h * w]
+                val b = output[j * w + i + h * w * 2]
                 val color = Color(r.toDouble(), g.toDouble(), b.toDouble(), reader.getColor(i, j).opacity)
                 writer.setColor(i, j, color)
             }
