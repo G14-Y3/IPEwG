@@ -20,10 +20,7 @@ import processing.RGBType
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import tornadofx.*
-import view.component.BasicFilterTab
-import view.component.BlurFilterTab
-import view.component.ColorAdjustTab
-import view.component.SliderWithSpinner
+import view.component.*
 import java.lang.IllegalArgumentException
 import java.lang.NumberFormatException
 import kotlin.math.roundToInt
@@ -64,31 +61,7 @@ class FilterPanel : View() {
                 }
 
                 tab("Style Transfer") {
-                  val style_transfer_map = mapOf(
-                    "Van_Gogh" to NeuralStyles.VAN_GOGH,
-                    "Picasso" to NeuralStyles.PICASSO,
-                    "Autumn" to NeuralStyles.AUTUMN,
-                    "Google" to NeuralStyles.GOOGLE,
-                    "Japan" to NeuralStyles.UKIYOE,
-                    "Abstract" to NeuralStyles.ABSTRACT
-                )
-                    hbox{
-                        style_transfer_map.map { (str, enum) ->
-                            button(str) {
-                                val filename = str.lowercase()
-                                imageview(Image("./style_transfer_model/$filename.jpg")) {
-                                    fitWidth = 30.0
-                                    fitHeight = 30.0
-                                }
-                                hboxConstraints {
-                                    margin = Insets(10.0)
-                                }
-                                action {
-                                    engineController.styleTransfer(enum)
-                                }
-                            }
-                        }
-                    }
+                    content = StyleTransferTab(engineController)
                 }
                 tab("Color Adjust") {
                     content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
