@@ -3,6 +3,7 @@ package processing.filters
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import processing.filters.blur.GaussianBlur
 import java.lang.Math.toDegrees
 import kotlin.math.atan2
 import kotlin.math.sqrt

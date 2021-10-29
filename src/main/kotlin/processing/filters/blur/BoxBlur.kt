@@ -1,7 +1,8 @@
-package processing.filters
+package processing.filters.blur
 
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
+import processing.filters.Convolution
 
 class BoxBlur(private val radius: Int) : ImageProcessing {
     override fun process(image: WritableImage) {

@@ -45,6 +45,8 @@ class EngineController : Controller() {
 
     fun flipVertical() = engine.transform(FlipVertical())
 
+    fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
+    
     // todo: support user select different filter type and boundary
     fun frequencyTransfer() = engine.transform(idleFreqFilter())
     
