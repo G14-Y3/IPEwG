@@ -1,46 +1,56 @@
 package view.component
 
+import controller.EngineController
+import javafx.beans.value.ChangeListener
 import javafx.geometry.Insets
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Slider
+import javafx.scene.control.Spinner
+import javafx.scene.layout.HBox
 import processing.BlurType
 import tornadofx.*
 import view.CssStyle
+import kotlin.math.roundToInt
 
-class SliderWithSpinner(property: String = "",
-                        name: String,
-                        labelOrComboBox: Any,
-                        minVal: Double,
-                        maxVal: Double,
-                        op: (sliderValue: Double) -> Unit,
-                        sliders: ArrayList<Slider>
-) : View() {
+class SliderWithSpinner(
+    private val minVal: Double,
+    private val maxVal: Double,
+    private val op: ChangeListener<Number>) : HBox() {
 
-    private var labelName = ""
-    private var comboBox = ComboBox<BlurType>()
+    private var comboBox: ComboBox<*>? = null
+    private lateinit var slider: Slider
+    private lateinit var spinner: Spinner<Number>
 
     init {
-        if (labelOrComboBox is String) {
-            labelName = labelOrComboBox.toString()
-        } else if (labelOrComboBox is ComboBox<*>) {
-            comboBox = labelOrComboBox as ComboBox<BlurType>
-        }
-    }
-
-    override val root: Parent = hbox {
         padding = Insets(20.0, 20.0, 10.0, 10.0)
         spacing = 20.0
+        addClass(CssStyle.filterSlider)
+        addClass(CssStyle.labelTag)
+    }
 
-        if (property == "withLabel") {
-            label(labelName) {
-                addClass(CssStyle.labelTag)
-            }
-        } else if (property == "withComboBox") {
-            this.add(comboBox)
+    fun withLabel(labelName: String): SliderWithSpinner {
+        val label = label(labelName) {
+            addClass(CssStyle.labelTag)
         }
+        this.add(label)
+        return this
+    }
 
-        val slider = slider {
+    fun withComboBox(comboBox: ComboBox<*>): SliderWithSpinner {
+        this.comboBox = comboBox
+        this.add(comboBox)
+
+        return this
+    }
+
+    fun getSlider(): Slider {
+        return this.slider
+    }
+
+    fun build(): Node {
+        slider = slider {
             min = minVal
             max = maxVal
             isShowTickMarks = true
@@ -48,31 +58,12 @@ class SliderWithSpinner(property: String = "",
             minorTickCount = 1
             blockIncrement = 1.0
         }
-        sliders += slider
+
         slider.value = 0.0
-        if (property == "withComboBox") {
-            comboBox.valueProperty()
-                .addListener(ChangeListener { _, _, _ ->
-                    engineController.resetAdjustment()
-                    slider.value = 0.0
-                })
-        }
-        when (name) {
-            "HSV", "RGB" -> slider.valueProperty()
-                .addListener(ChangeListener { _, _, _ -> op(slider.value / 100 + 1) })
-            "Blur" -> slider.valueProperty()
-                .addListener(ChangeListener { _, _, _ ->
-                    engineController.blur(
-                        slider.value,
-                        comboBox.value
-                    )
-                })
-        }
+        slider.valueProperty().addListener(op)
+        this.add(slider)
 
-        addClass(CssStyle.filterSlider)
-        addClass(CssStyle.labelTag)
-
-        val spinner = spinner(
+        spinner = spinner(
             min = minVal,
             max = maxVal,
             initialValue = 0.0,
@@ -109,5 +100,9 @@ class SliderWithSpinner(property: String = "",
             )
         } catch (e: NumberFormatException) {
         }
+
+        this.add(spinner)
+
+        return this
     }
 }
