@@ -8,6 +8,8 @@ import processing.frequency.idleFreqFilter
 import processing.BlurType
 import processing.HSVType
 import processing.RGBType
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
 import processing.filters.*
 import tornadofx.Controller
 
@@ -44,6 +46,8 @@ class EngineController : Controller() {
     fun flipHorizontal() = engine.transform(FlipHorizontal())
 
     fun flipVertical() = engine.transform(FlipVertical())
+
+    fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
     
