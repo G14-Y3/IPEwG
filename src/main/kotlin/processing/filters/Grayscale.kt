@@ -18,5 +18,4 @@ class Grayscale : ImageProcessing {
     }
 
     override fun toString(): String = "Grayscale"
-
 }

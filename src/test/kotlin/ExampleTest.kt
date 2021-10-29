@@ -6,4 +6,9 @@ class ExampleTest {
     fun successfulTest() {
         // This test should succeed
     }
+
+    @Test
+    fun frequencyDomainGeneralTest() {
+
+    }
 }

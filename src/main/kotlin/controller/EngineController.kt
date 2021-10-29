@@ -1,6 +1,10 @@
 package controller
 
 import models.EngineModel
+import processing.FreqProcessRange
+import processing.FreqProcessType
+import processing.frequency.FrequencyFilters
+import processing.frequency.idleFreqFilter
 import processing.BlurType
 import processing.HSVType
 import processing.RGBType
@@ -27,6 +31,8 @@ class EngineController : Controller() {
 
     fun grayscale() = engine.transform(Grayscale())
 
+    fun edgeDetection() = engine.transform(EdgeDetection())
+
     fun inverseColour() = engine.transform(InverseColour())
 
     fun rgbFilter(factor: Double, type: RGBType) = engine.adjust(type.name, factor)
@@ -43,6 +49,11 @@ class EngineController : Controller() {
 
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
+    fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
+    
+    // todo: support user select different filter type and boundary
+    fun frequencyTransfer() = engine.transform(idleFreqFilter())
+    
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())

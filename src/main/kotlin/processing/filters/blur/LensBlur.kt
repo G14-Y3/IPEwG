@@ -1,7 +1,8 @@
-package processing.filters
+package processing.filters.blur
 
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
+import processing.filters.Convolution
 import kotlin.math.pow
 
 class LensBlur(private val radius: Int) : ImageProcessing {
@@ -30,4 +31,6 @@ class LensBlur(private val radius: Int) : ImageProcessing {
         }
         Convolution(kernel).process(image)
     }
+
+    override fun toString(): String = "Lens blur with radius $radius"
 }
