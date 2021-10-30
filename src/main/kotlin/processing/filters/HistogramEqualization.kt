@@ -8,25 +8,32 @@ import processing.ImageProcessing
 class HistogramEqualization: ImageProcessing {
 
     override fun process(image: WritableImage) {
+        // 0. transfer to grayscale
+        Grayscale().process(image)
+
         // 1. generate pdf of each pixel value, ASSUME image is in gray scale,
         val reader : PixelReader = image.pixelReader
         val height = image.height.toInt()
         val width = image.width.toInt()
         val PIXEL_RANGE = 256
         // element at position i in pdf is count of pixel value i in the image
-        var cdf: Array<Int> = Array(PIXEL_RANGE) {0}
+        val pdf: Array<Int> = Array(PIXEL_RANGE) {0}
         for (i in 0 until height) {
             for (j in 0 until width) {
                 // in this nested for loop, CDF is generated as PDF, transfer to cdf in the next step
-                val pixelVal = reader.getColor(i, j).red * (PIXEL_RANGE - 1) // -1 for avoid index out off bound
-                cdf[pixelVal.toInt()] += 1
+//                val pixel = reader.getColor(j, i).grayscale()
+                val pixel = reader.getColor(j, i)
+                val pixelVal = pixel.red * (PIXEL_RANGE - 1) // -1 for avoid index out off bound
+                pdf[pixelVal.toInt()] += 1
             }
         }
 
         // 2. generate cdf w.r.t. pdf and record the count of pixel value which is the smallest among all pixel values
         var cdfMin = 0
+        val cdf: Array<Int> = Array(PIXEL_RANGE) {0}
+        cdf[0] = pdf[0]
         for (i in 1 until PIXEL_RANGE) {
-            cdf[i] += cdf[i-1]
+            cdf[i] = cdf[i-1] + pdf[i]
             if (cdf[i-1] == 0) {
                 cdfMin = cdf[i]
             }
@@ -42,9 +49,9 @@ class HistogramEqualization: ImageProcessing {
         val writer = image.pixelWriter
         for (i in 0 until height) {
             for (j in 0 until width) {
-                val readPixelVal = reader.getColor(i, j).red * (PIXEL_RANGE - 1)
+                val readPixelVal = reader.getColor(j, i).red * (PIXEL_RANGE - 1)
                 val pixelVal = pixelMap[readPixelVal.toInt()] / PIXEL_RANGE
-                writer.setColor(i, j, Color.color(pixelVal, pixelVal, pixelVal))
+                writer.setColor(j, i, Color.color(pixelVal, pixelVal, pixelVal))
             }
         }
     }
