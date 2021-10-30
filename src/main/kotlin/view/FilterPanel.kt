@@ -51,68 +51,115 @@ class FilterPanel : View() {
 
     private val blurList = BlurType.values().toList()
 
-    override val root = vbox {
-        splitpane {
-            val tabPane = tabpane {
-                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                side = Side.LEFT
-                tab("Basic Actions") {
-                    content = BasicFilterTab(basicFilterButtonList)
-                }
-
-                tab("Style Transfer") {
-                    content = StyleTransferTab(engineController)
-                }
-                tab("Color Adjust") {
-                    content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
-                }
-                tab("frequency transfer") {
-                    button("transfer").setOnAction {
-                        engineController.frequencyTransfer()
-                    }
-                }
-                tab("Blur") {
-                    content = BlurFilterTab(engineController)
-                }
-            }
-
+    override val root = tabpane {
+        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+        tab("Filters") {
             vbox {
-                alignment = Pos.CENTER
-                label("Transformations") {
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 10.0, 10.0)
-                    }
-                    style {
-                        fontWeight = FontWeight.BOLD
-                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                    }
-                }
-
-                hbox {
-                    alignment = Pos.CENTER
-                    padding = Insets(0.0, 10.0, 0.0, 10.0)
-
-                    listview(engine.transformations) {
-                        prefWidth = 400.0
-                        selectionModel.selectedIndexProperty().onChange {
-                            engine.setCurrentIndex(it)
+                splitpane {
+                    val tabPane = tabpane {
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        side = Side.LEFT
+                        tab("Basic Actions") {
+                            content = BasicFilterTab(basicFilterButtonList)
                         }
-                        engine.updateListSelection =
-                            { selectionModel.select(engine.currIndex) }
+
+                        tab("Style Transfer") {
+                            content = StyleTransferTab(engineController)
+                        }
+                        tab("Color Adjust") {
+                            content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
+                        }
+                        tab("frequency transfer") {
+                            button("transfer").setOnAction {
+                                engineController.frequencyTransfer()
+                            }
+                        }
+                        tab("Blur") {
+                            content = BlurFilterTab(engineController)
+                        }
                     }
-                }
-                hbox {
-                    alignment = Pos.CENTER
-                    buttonbar {
-                        padding = Insets(20.0, 10.0, 20.0, 10.0)
-                        button("Undo").setOnAction { fileController.undo() }
-                        button("Redo").setOnAction { fileController.redo() }
-                        button("Revert").setOnAction { fileController.revert() }
+
+                    vbox {
+                        alignment = Pos.CENTER
+                        label("Transformations") {
+                            vboxConstraints {
+                                margin = Insets(10.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+
+                        hbox {
+                            alignment = Pos.CENTER
+                            padding = Insets(0.0, 10.0, 0.0, 10.0)
+
+                            listview(engine.transformations) {
+                                prefWidth = 400.0
+                                selectionModel.selectedIndexProperty().onChange {
+                                    engine.setCurrentIndex(it)
+                                }
+                                engine.updateListSelection =
+                                    { selectionModel.select(engine.currIndex) }
+                            }
+                        }
+                        hbox {
+                            alignment = Pos.CENTER
+                            buttonbar {
+                                padding = Insets(20.0, 10.0, 20.0, 10.0)
+                                button("Undo").setOnAction { fileController.undo() }
+                                button("Redo").setOnAction { fileController.redo() }
+                                button("Revert").setOnAction { fileController.revert() }
+                            }
+                        }
                     }
+                    orientation = Orientation.VERTICAL
+                    setDividerPosition(0, 0.4)
                 }
             }
-            orientation = Orientation.VERTICAL
-            setDividerPosition(0, 0.4)
+        }
+
+        tab("Steganography") {
+            vbox {
+                splitpane {
+                    val tabpane = tabpane {
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        side = Side.LEFT
+                        tab("Encode/Decode Image") {
+
+                        }
+
+                        tab("Encode/Decode Text") {
+
+                        }
+                    }
+
+                    vbox {
+                        hbox {
+                            label("Result/Target Image") {
+                                vboxConstraints {
+                                    margin = Insets(10.0, 20.0, 10.0, 10.0)
+                                }
+                                style {
+                                    fontWeight = FontWeight.BOLD
+                                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                }
+                            }
+                            imageview("test_image.png") {
+                                fitWidth = 300.0
+                                fitHeight = 300.0
+                                hboxConstraints {
+                                    margin = Insets(20.0)
+                                }
+                            }
+                        }
+                    }
+
+                    orientation = Orientation.VERTICAL
+                    setDividerPosition(0, 0.4)
+                }
+            }
         }
     }
 }

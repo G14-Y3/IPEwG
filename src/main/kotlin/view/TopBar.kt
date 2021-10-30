@@ -40,15 +40,18 @@ class TopBar : View() {
                 }
             }
         }
-//        menu("_View") {
-//            item("_Basic Actions") {
-//                action {
-//
-//                }
-//            }
-//            item("_RGB")
-//            item("_HSV")
-//        }
+        menu("View") {
+            item("Basic Filters") {
+                action {
+
+                }
+            }
+            item("Steganography") {
+                action {
+
+                }
+            }
+        }
         menu("_Help") {
             item("_How to")
         }
