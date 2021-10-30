@@ -21,7 +21,6 @@ class HistogramEqualization: ImageProcessing {
         for (i in 0 until height) {
             for (j in 0 until width) {
                 // in this nested for loop, CDF is generated as PDF, transfer to cdf in the next step
-//                val pixel = reader.getColor(j, i).grayscale()
                 val pixel = reader.getColor(j, i)
                 val pixelVal = pixel.red * (PIXEL_RANGE - 1) // -1 for avoid index out off bound
                 pdf[pixelVal.toInt()] += 1
