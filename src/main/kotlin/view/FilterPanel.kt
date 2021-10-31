@@ -128,7 +128,9 @@ class FilterPanel : View() {
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         side = Side.LEFT
                         tab("Encode/Decode Image") {
-                            content = EncodeImageTab()
+                            content = borderpane {
+                                center<EncodeImageTab>()
+                            }
                         }
 
                         tab("Encode/Decode Text") {

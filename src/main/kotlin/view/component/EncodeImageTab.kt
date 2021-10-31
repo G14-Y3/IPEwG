@@ -1,12 +1,17 @@
 package view.component
 
+import controller.FileController
 import javafx.geometry.Insets
-import javafx.scene.layout.HBox
+import javafx.scene.Parent
 import javafx.scene.text.FontWeight
+import models.EngineModel
 import tornadofx.*
 
-class EncodeImageTab: HBox() {
-    init {
+class EncodeImageTab(): View() {
+    private val fileController: FileController by inject()
+    private val engine: EngineModel by inject()
+
+    override val root: Parent =
         hbox {
             vbox {
                 label("Encode/Decode Image") {
@@ -19,7 +24,8 @@ class EncodeImageTab: HBox() {
                     }
                 }
                 hbox {
-                    imageview("test_image.png") {
+                    imageview(engine.encodeImage) {
+                        isPreserveRatio = true
                         fitWidth = 200.0
                         fitHeight = 200.0
                         hboxConstraints {
@@ -28,7 +34,11 @@ class EncodeImageTab: HBox() {
                     }
                     vbox {
                         hbox {
-                            button("Upload")
+                            button("Upload") {
+                                action {
+                                    Utils.imageOperation(mode = "encode", fileController)
+                                }
+                            }
                             label("  an image and encode with the options below") {
                                 hboxConstraints {
                                     marginTop = 5.0
@@ -85,5 +95,4 @@ class EncodeImageTab: HBox() {
                 }
             }
         }
-    }
 }

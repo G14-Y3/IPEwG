@@ -29,6 +29,12 @@ class EngineModel(
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
 
+    val encodeImage =
+        SimpleObjectProperty(this, "encodeImage", originalImage)
+
+    val decodeImage =
+        SimpleObjectProperty(this, "decodeImage", originalImage)
+
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
     // Pipeline of transformations
@@ -50,6 +56,11 @@ class EngineModel(
         snapshots.clear()
     }
 
+    fun loadEncodeImage(path: String) {
+        val image = Image(path)
+        encodeImage.value = image
+    }
+
     fun save(path: String, format: String = "png") {
         val output = File(path)
 
@@ -62,23 +73,36 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
+        transform(transformation, "preview")
+    }
+
+    /* the @param destination here refers to where to put the transformed image: the image panel or the decode panel */
+    fun transform(transformation: ImageProcessing, destination: String) {
         val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        when (destination) {
+            "preview" -> {
+                transformations.subList(currIndex + 1, transformations.size).clear()
+                snapshots.subList(currIndex + 1, snapshots.size).clear()
 
-        transformations.subList(currIndex + 1, transformations.size).clear()
-        snapshots.subList(currIndex + 1, snapshots.size).clear()
-
-        snapshots.add(
-            WritableImage(
-                previous.pixelReader,
-                previous.width.toInt(),
-                previous.height.toInt()
-            )
-        )
-        transformations.add(transformation)
-        currIndex++
-        updateListSelection()
-        transformation.process(snapshots[currIndex])
-        previewImage.value = snapshots[currIndex]
+                snapshots.add(
+                    WritableImage(
+                        previous.pixelReader,
+                        previous.width.toInt(),
+                        previous.height.toInt()
+                    )
+                )
+                transformations.add(transformation)
+                currIndex++
+                updateListSelection()
+                transformation.process(snapshots[currIndex])
+                previewImage.value = snapshots[currIndex]
+            }
+            "decode" -> {
+                val tempDecodeImage: WritableImage = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
+                transformation.process(tempDecodeImage)
+                decodeImage.value = tempDecodeImage
+            }
+        }
     }
 
     /**

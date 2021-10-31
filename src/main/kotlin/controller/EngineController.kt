@@ -53,8 +53,6 @@ class EngineController : Controller() {
     
     // todo: support user select different filter type and boundary
     fun frequencyTransfer() = engine.transform(idleFreqFilter())
-    
-    fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())
 }

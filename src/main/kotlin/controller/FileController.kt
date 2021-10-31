@@ -9,6 +9,8 @@ class FileController : Controller() {
 
     fun load(path: String) = engine.load(path)
 
+    fun loadEncodeImage(path: String) = engine.loadEncodeImage(path)
+
     fun save(path: String, format: String) = engine.save(path, format)
 
     fun undo() = engine.undo()
