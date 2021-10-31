@@ -123,35 +123,35 @@ class FilterPanel : View() {
         tab("Steganography") {
             vbox {
                 splitpane {
+                    prefHeight = 1000.0
                     val tabpane = tabpane {
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         side = Side.LEFT
                         tab("Encode/Decode Image") {
-
+                            content = EncodeImageTab()
                         }
 
                         tab("Encode/Decode Text") {
-
+                            content = EncodeTextTab()
                         }
                     }
 
                     vbox {
-                        hbox {
-                            label("Result/Target Image") {
-                                vboxConstraints {
-                                    margin = Insets(10.0, 20.0, 10.0, 10.0)
-                                }
-                                style {
-                                    fontWeight = FontWeight.BOLD
-                                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                                }
+                        alignment = Pos.CENTER
+                        label("Result/Target Image") {
+                            vboxConstraints {
+                                margin = Insets(5.0, 20.0, 5.0, 10.0)
                             }
-                            imageview("test_image.png") {
-                                fitWidth = 300.0
-                                fitHeight = 300.0
-                                hboxConstraints {
-                                    margin = Insets(20.0)
-                                }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+                        imageview("test_image.png") {
+                            fitWidth = 300.0
+                            fitHeight = 300.0
+                            vboxConstraints {
+                                margin = Insets(20.0)
                             }
                         }
                     }
