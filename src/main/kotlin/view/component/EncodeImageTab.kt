@@ -5,16 +5,20 @@ import controller.FileController
 import javafx.geometry.Insets
 import javafx.scene.Parent
 import javafx.scene.image.WritableImage
+import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import tornadofx.*
 
-class EncodeImageTab(): View() {
-    private val fileController: FileController by inject()
-    private val engine: EngineModel by inject()
-    private val engineController: EngineController by inject()
+class EncodeImageTab(fileController: FileController, engine: EngineModel, engineController: EngineController): HBox() {
 
-    override val root: Parent =
+    private var bits = 4
+    private var key = ""
+    private var isByPixelOrder = false
+    private var isIncludedInMetadata = false
+    private var hasUndone = false
+
+    init {
         hbox {
             vbox {
                 label("Encode/Decode Image") {
@@ -51,7 +55,7 @@ class EncodeImageTab(): View() {
                         }
                         checkbox("with a random key") {
                             action {
-
+                                key = if (this.isSelected) "randomsequence!" else ""
                             }
                         }
                         hbox {
@@ -61,7 +65,12 @@ class EncodeImageTab(): View() {
                                 }
                             }
                             combobox(values = listOf(1, 2, 3, 4)) {
+                                valueProperty()
+                                    .addListener(ChangeListener { _, _, new ->
+                                        bits = new
+                                    })
 
+                                value = 4
                             }
                             label("  lower bits encoded") {
                                 hboxConstraints {
@@ -76,7 +85,11 @@ class EncodeImageTab(): View() {
                                 }
                             }
                             combobox(values = listOf("dimension", "pixel order")) {
-
+                                valueProperty()
+                                    .addListener(ChangeListener { _, _, new ->
+                                        isByPixelOrder = new != "dimension"
+                                    })
+                                value = "dimension"
                             }
                             label("  of the encode image") {
                                 hboxConstraints {
@@ -85,15 +98,24 @@ class EncodeImageTab(): View() {
                             }
                         }
                         checkbox("store encoding information to image metadata") {
-
+                            action {
+                                isIncludedInMetadata = this.isSelected
+                            }
                         }
                         buttonbar {
                             vboxConstraints {
                                 marginTop = 20.0
                             }
-                            button("Encode with Options Above") {
+                            button("Encode") {
                                 action {
-                                    engineController.encodeImage(engine.encodeImage.value, "", 4, false)
+                                    hasUndone = false
+                                    engineController.encodeImage(engine.encodeImage.value, key, bits, isByPixelOrder)
+                                }
+                            }
+                            button("Undo") {
+                                action {
+                                    hasUndone = true
+                                    if (!hasUndone) fileController.undo()
                                 }
                             }
                             button("Decode")
@@ -102,4 +124,5 @@ class EncodeImageTab(): View() {
                 }
             }
         }
+    }
 }

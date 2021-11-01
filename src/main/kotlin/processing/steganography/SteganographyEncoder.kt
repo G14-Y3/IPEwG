@@ -12,8 +12,11 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
     val COLOR_BITS_COUNT = 8
     val ALL_ONE = 0b11111111
 
-    private fun transformBits(origin: Int, encode: Int): Int {
-        return (origin and (ALL_ONE shl bits)) or (encode shr (COLOR_BITS_COUNT - bits))
+    private fun transformBits(origin: Double, encode: Double): Double {
+        val origin_int = (origin * 255).toInt()
+        val encode_int = (encode * 255).toInt()
+        val result = (origin_int and (ALL_ONE shl bits)) or (encode_int shr (COLOR_BITS_COUNT - bits))
+        return result / 255.0
     }
 
     override fun process(image: WritableImage) {
@@ -29,10 +32,10 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
 
                 if (x in 0..encodeImage.width.toInt() && y in 0..encodeImage.height.toInt()) {
                     val encodeColor: Color = encodeReader.getColor(x, y)
-                    val r = transformBits(color.red.toInt(), encodeColor.red.toInt())
-                    val g = transformBits(color.green.toInt(), encodeColor.green.toInt())
-                    val b = transformBits(color.blue.toInt(), encodeColor.blue.toInt())
-                    color = Color.color(r.toDouble(), g.toDouble(), b.toDouble())
+                    val r = transformBits(color.red, encodeColor.red)
+                    val g = transformBits(color.green, encodeColor.green)
+                    val b = transformBits(color.blue, encodeColor.blue)
+                    color = Color.color(r, g, b)
                 }
 
                 writer.setColor(x, y, color)
