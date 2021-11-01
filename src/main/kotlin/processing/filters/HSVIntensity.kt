@@ -16,11 +16,11 @@ class HSVIntensity(private val factor: Double, private val type: HSVType) :
     override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
         when (Runtime.getRuntime().availableProcessors()) {
-            else -> singleThreadedProcess(image)
-//            else -> multiThreadedProcess(
-//                image,
-//                numCores
-//            )
+            1 -> singleThreadedProcess(image)
+            else -> multiThreadedProcess(
+                image,
+                numCores
+            )
         }
     }
 

@@ -21,31 +21,6 @@ class InverseColour : ImageProcessing {
         }
     }
 
-    private fun multiThreadNoCopy(image: WritableImage, num_threads: Int) {
-        val executorService = Executors.newFixedThreadPool(num_threads)
-        val stripeWidth = (image.width / num_threads).roundToInt()
-        println(stripeWidth)
-
-        for (i in 0 until num_threads) {
-            executorService.execute {
-                for (x in i * stripeWidth until minOf(
-                    (i + 1) * stripeWidth,
-                    image.width.toInt()
-                )) {
-                    for (y in 0 until image.height.toInt()) {
-                        image.pixelWriter.setColor(
-                            x,
-                            y,
-                            image.pixelReader.getColor(x, y).invert()
-                        )
-                    }
-                }
-            }
-        }
-        executorService.shutdown()
-        executorService.awaitTermination(1, TimeUnit.MINUTES)
-    }
-
     private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
         val partitions = splitImageVertical(num_threads, image)
         val executorService = Executors.newFixedThreadPool(num_threads)
