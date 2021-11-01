@@ -1,8 +1,10 @@
 package view.component
 
+import controller.EngineController
 import controller.FileController
 import javafx.geometry.Insets
 import javafx.scene.Parent
+import javafx.scene.image.WritableImage
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import tornadofx.*
@@ -10,6 +12,7 @@ import tornadofx.*
 class EncodeImageTab(): View() {
     private val fileController: FileController by inject()
     private val engine: EngineModel by inject()
+    private val engineController: EngineController by inject()
 
     override val root: Parent =
         hbox {
@@ -88,7 +91,11 @@ class EncodeImageTab(): View() {
                             vboxConstraints {
                                 marginTop = 20.0
                             }
-                            button("Encode with Options Above")
+                            button("Encode with Options Above") {
+                                action {
+                                    engineController.encodeImage(engine.encodeImage.value, "", 4, false)
+                                }
+                            }
                             button("Decode")
                         }
                     }
