@@ -13,10 +13,10 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
     val ALL_ONE = 0b11111111
 
     private fun transformBits(origin: Double, encode: Double): Double {
-        val origin_int = (origin * 255).toInt()
-        val encode_int = (encode * 255).toInt()
+        val origin_int = (origin * 256).toInt()
+        val encode_int = (encode * 256).toInt()
         val result = (origin_int and (ALL_ONE shl bits)) or (encode_int shr (COLOR_BITS_COUNT - bits))
-        return result / 255.0
+        return result / 256.0
     }
 
     override fun process(image: WritableImage) {
@@ -26,20 +26,47 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         val encodeReader: PixelReader = encodeImage.pixelReader
 
         // TODO: reduce the dimensionality of encode image if it is larger than original image
+        val arr = mutableListOf<Color>()
+        for (x in 0 until encodeImage.width.toInt()) {
+            for (y in 0 until encodeImage.height.toInt()) {
+                arr.add(encodeReader.getColor(x, y))
+            }
+        }
+
+        var index = 0
         for (x in 0 until image.width.toInt()) {
             for (y in 0 until image.height.toInt()) {
                 var color: Color = reader.getColor(x, y)
+                var encodeColor: Color = color
 
-                if (x in 0..encodeImage.width.toInt() && y in 0..encodeImage.height.toInt()) {
-                    val encodeColor: Color = encodeReader.getColor(x, y)
-                    val r = transformBits(color.red, encodeColor.red)
-                    val g = transformBits(color.green, encodeColor.green)
-                    val b = transformBits(color.blue, encodeColor.blue)
-                    color = Color.color(r, g, b)
+                if (isByPixelOrder) {
+                    encodeColor = arr[index++]
+                } else {
+                    if (x in 0..encodeImage.width.toInt() && y in 0..encodeImage.height.toInt()) {
+                        encodeColor = encodeReader.getColor(x, y)
+                    }
                 }
+
+                val r = transformBits(color.red, encodeColor.red)
+                val g = transformBits(color.green, encodeColor.green)
+                val b = transformBits(color.blue, encodeColor.blue)
+                color = Color.color(r, g, b)
 
                 writer.setColor(x, y, color)
             }
         }
+
+        // TODO: this encoding technique is temporary, better come up with sth smarter than this
+        /* encode metadata for steganography into the first pixel: bits and isByPixelOrder */
+        val first_pixel = reader.getArgb(0, 0)
+        val isByPixelOrder_bit = if (isByPixelOrder) 1 else 0
+        val color = first_pixel or (((isByPixelOrder_bit shl 2) and bits) shl 16)
+        writer.setArgb(0, 0, color)
+
+        /* encode width and height in the second/third pixel */
+        val second_pixel = reader.getArgb(0, 1)
+        writer.setArgb(0, 1, second_pixel and encodeImage.width.toInt())
+        val third_pixel = reader.getArgb(1, 0)
+        writer.setArgb(1, 0, third_pixel and encodeImage.height.toInt())
     }
 }

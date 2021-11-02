@@ -3,11 +3,10 @@ package view.component
 import controller.EngineController
 import controller.FileController
 import javafx.geometry.Insets
-import javafx.scene.Parent
-import javafx.scene.image.WritableImage
 import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.steganography.SteganographyDecoder
 import tornadofx.*
 
 class EncodeImageTab(fileController: FileController, engine: EngineModel, engineController: EngineController): HBox() {
@@ -114,11 +113,15 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
                             }
                             button("Undo") {
                                 action {
-                                    hasUndone = true
                                     if (!hasUndone) fileController.undo()
+                                    hasUndone = true
                                 }
                             }
-                            button("Decode")
+                            button("Decode") {
+                                action {
+                                    engine.transform(SteganographyDecoder(), "decode")
+                                }
+                            }
                         }
                     }
                 }

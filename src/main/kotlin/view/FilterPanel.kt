@@ -147,7 +147,7 @@ class FilterPanel : View() {
                                 fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                             }
                         }
-                        imageview("test_image.png") {
+                        imageview(engine.decodeImage) {
                             fitWidth = 300.0
                             fitHeight = 300.0
                             vboxConstraints {
