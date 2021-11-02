@@ -18,13 +18,17 @@ class ImagePanel : View() {
     private val engine: EngineModel by inject()
     private var lastMousePoint: Point2D? = null
 
-    private lateinit var oriView: ImageView
-    private lateinit var newView: ImageView
+    lateinit var oriView: ImageView
+    lateinit var newView: ImageView
 
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
     private var excessWidth = 0.0
     var excessHeight = 0.0
+
+    init {
+        engine.addImagePanel(this)
+    }
 
     override val root = vbox {
         stackpane {
@@ -164,7 +168,7 @@ class ImagePanel : View() {
     }
 
     // update both images' viewport in engine
-    private fun updateViewPort(viewPort: Rectangle2D) {
+    fun updateViewPort(viewPort: Rectangle2D) {
         oriView.viewport = viewPort
         newView.viewport = viewPort
         excessWidth = oriView.image.width - viewPort.width

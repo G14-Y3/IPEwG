@@ -2,13 +2,16 @@ package models
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
+import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
 import tornadofx.ViewModel
+import tornadofx.imageview
 import tornadofx.observableListOf
+import view.ImagePanel
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
@@ -40,10 +43,27 @@ class EngineModel(
     private val snapshots = mutableListOf<WritableImage>()
     var currIndex = -1
 
+    // all view components using this model, assigned in view port initialization
+    var imagePanels = observableListOf<ImagePanel>()
+
+    fun addImagePanel(imagePanel: ImagePanel) {
+        imagePanels.add(imagePanel)
+    }
+
     fun load(path: String) {
         val image = Image(path)
         originalImage.value = image
         previewImage.value = image
+        for (imagePanel in imagePanels) {
+            // update all image panel view ports, so that previous image viewport will be overwritten
+            val viewport = Rectangle2D(
+                .0,
+                .0,
+                image.width,
+                image.height,
+            )
+            imagePanel.updateViewPort(viewport)
+        }
 
         currIndex = -1
         transformations.clear()
