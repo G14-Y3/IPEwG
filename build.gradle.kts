@@ -33,7 +33,6 @@ dependencies {
     implementation("org.pytorch:pytorch_java_only:1.9.0")
     implementation("com.facebook.soloader:nativeloader:0.10.1")
     implementation("com.facebook.fbjni:fbjni-java-only:0.2.2")
-    implementation("io.wavebeans:lib:0.3.0")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
 
