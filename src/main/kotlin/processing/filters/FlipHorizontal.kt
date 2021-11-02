@@ -13,13 +13,7 @@ import kotlin.math.roundToInt
 class FlipHorizontal : ImageProcessing {
     override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        when (Runtime.getRuntime().availableProcessors()) {
-            1 -> singleThreadedProcess(image)
-            else -> multiThreadedProcess(
-                image,
-                numCores
-            )
-        }
+        multiThreadedProcess(image, numCores)
     }
 
     private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
@@ -50,22 +44,6 @@ class FlipHorizontal : ImageProcessing {
         }
         executorService.shutdown()
         executorService.awaitTermination(1, TimeUnit.MINUTES)
-    }
-
-    private fun singleThreadedProcess(image: WritableImage) {
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
-        for (x in 0 until image.width.toInt() / 2) {
-            for (y in 0 until image.height.toInt()) {
-                val colour = reader.getColor(image.width.toInt() - x - 1, y)
-                writer.setColor(
-                    image.width.toInt() - x - 1,
-                    y,
-                    reader.getColor(x, y)
-                )
-                writer.setColor(x, y, colour)
-            }
-        }
     }
 
     override fun toString(): String = "Flip Horizontal"

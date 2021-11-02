@@ -12,13 +12,7 @@ import java.util.concurrent.TimeUnit
 class Grayscale : ImageProcessing {
     override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        when (Runtime.getRuntime().availableProcessors()) {
-            1 -> singleThreadedProcess(image)
-            else -> multiThreadedProcess(
-                image,
-                numCores
-            )
-        }
+        multiThreadedProcess(image, numCores)
     }
 
     private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
@@ -54,16 +48,6 @@ class Grayscale : ImageProcessing {
                         partition.image.pixelReader.getColor(x, y)
                     )
                 }
-            }
-        }
-    }
-
-    private fun singleThreadedProcess(image: WritableImage) {
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
-        for (x in 0 until image.width.toInt()) {
-            for (y in 0 until image.height.toInt()) {
-                writer.setColor(x, y, reader.getColor(x, y).grayscale())
             }
         }
     }

@@ -4,6 +4,10 @@ import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import kotlin.math.roundToInt
 
+/*
+ * (`x1`, `y1`) denotes the coordinates of the partition relative to
+ * the original image
+ */
 data class ImagePartition(
     val x1: Int,
     val y1: Int,
