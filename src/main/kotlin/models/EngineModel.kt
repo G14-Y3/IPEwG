@@ -98,7 +98,7 @@ class EngineModel(
                 previewImage.value = snapshots[currIndex]
             }
             "decode" -> {
-                val tempDecodeImage: WritableImage = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
+                val tempDecodeImage = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
                 transformation.process(tempDecodeImage)
                 decodeImage.value = tempDecodeImage
             }
