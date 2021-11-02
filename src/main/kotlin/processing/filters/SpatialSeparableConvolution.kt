@@ -19,13 +19,14 @@ class SpatialSeparableConvolution(
     }
 
     override fun process(image: WritableImage) {
-        alterImage(image, kernelCol)
-        alterImage(image, kernelRow)
+        alterImage(image, kernelCol, transpose=true)
+        alterImage(image, kernelRow, transpose=false)
     }
 
     private fun alterImage(
         image: WritableImage,
         vector: Array<Double>,
+        transpose: Boolean
     ) {
         val deviation = vector.size / 2
         val width = image.width.toInt()
@@ -44,22 +45,13 @@ class SpatialSeparableConvolution(
                 var sumG = 0.0
                 var sumB = 0.0
                 for (i in -deviation..deviation) {
-                    val currX = x + i
-                    val currY = y + i
+                    val currX = if (transpose) x + i else x + i
+                    val currY = if (transpose) y + i else y + i
                     val factor = vector[i + deviation]
                     if (currY in 0 until height && currX in 0 until width) {
-                        sumR += factor * original.pixelReader.getColor(
-                            currX,
-                            currY
-                        ).red
-                        sumG += factor * original.pixelReader.getColor(
-                            currX,
-                            currY
-                        ).green
-                        sumB += factor * original.pixelReader.getColor(
-                            currX,
-                            currY
-                        ).blue
+                        sumR += factor * original.pixelReader.getColor(currX, currY).red
+                        sumG += factor * original.pixelReader.getColor(currX, currY).green
+                        sumB += factor * original.pixelReader.getColor(currX, currY).blue
                     }
 
                 }
