@@ -3,14 +3,8 @@ package processing.frequency
 import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import processing.FreqProcessRange
-import processing.FreqProcessType
 import processing.ImageProcessing
-import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.math.sqrt
-import org.pytorch.Tensor
-import io.wavebeans.lib.stream.fft.*
 
 abstract class FrequencyFilters: ImageProcessing{
 
@@ -21,14 +15,14 @@ abstract class FrequencyFilters: ImageProcessing{
         // 1. multiplt by (-1)^(i+j) to move top left of image to center
         //    and pad the image to side length of power of 2
         val reader : PixelReader = image.pixelReader
-        val ori_height = image.height.toInt()
-        val ori_width = image.width.toInt()
-        val height = nextPow2(ori_height)
-        val width = nextPow2(ori_width)
+        val oriHeight = image.height.toInt()
+        val oriWidth = image.width.toInt()
+        val height = nextPow2(oriHeight)
+        val width = nextPow2(oriWidth)
         val matrix : Array<Array<Array<Complex>>>
             = Array(3) {Array(height) { Array(width) { Complex() }}}
-        for (i in 0 until ori_height) {
-            for (j in 0 until ori_width) {
+        for (i in 0 until oriHeight) {
+            for (j in 0 until oriWidth) {
                 val ratio = (-1.0).pow(i + j)
                 matrix[0][i][j].real = reader.getColor(j, i).red * ratio
                 matrix[1][i][j].real = reader.getColor(j, i).green * ratio
@@ -69,8 +63,8 @@ abstract class FrequencyFilters: ImageProcessing{
 
         // 7. write matrix back to image
         val writer = image.pixelWriter
-        for (x in 0 until ori_height) {
-            for (y in 0 until ori_width) {
+        for (x in 0 until oriHeight) {
+            for (y in 0 until oriWidth) {
                 val newColor: Color = Color.color(
                     matrix[0][x][y].real.coerceIn(0.0, 1.0),
                     matrix[1][x][y].real.coerceIn(0.0, 1.0),
