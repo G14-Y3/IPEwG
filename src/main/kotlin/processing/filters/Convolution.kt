@@ -5,6 +5,8 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * @param kernel n*n matrix, with odd n
@@ -38,9 +40,18 @@ class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
                         val currX = x + j
                         val factor = kernel[i + deviation][j + deviation]
                         if (currY in 0 until height && currX in 0 until width) {
-                            sumR += factor * original.pixelReader.getColor(currX, currY).red
-                            sumG += factor * original.pixelReader.getColor(currX, currY).green
-                            sumB += factor * original.pixelReader.getColor(currX, currY).blue
+                            sumR += factor * original.pixelReader.getColor(
+                                currX,
+                                currY
+                            ).red
+                            sumG += factor * original.pixelReader.getColor(
+                                currX,
+                                currY
+                            ).green
+                            sumB += factor * original.pixelReader.getColor(
+                                currX,
+                                currY
+                            ).blue
                         }
                     }
                 }
@@ -54,7 +65,6 @@ class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
             }
         }
     }
-
 
     fun convolutionGreyScaleNegative(image: WritableImage): Array<DoubleArray> {
         val deviation = kernel.size / 2
@@ -77,7 +87,10 @@ class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
                         val currX = x + j
                         val factor = kernel[i + deviation][j + deviation]
                         if (currY in 0 until height && currX in 0 until width) {
-                            sumR += factor * original.pixelReader.getColor(currX, currY).red
+                            sumR += factor * original.pixelReader.getColor(
+                                currX,
+                                currY
+                            ).red
                         }
                     }
                 }

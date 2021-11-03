@@ -3,6 +3,7 @@ package processing.filters.blur
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Convolution
+import processing.filters.SpatialSeparableConvolution
 
 class BoxBlur(private val radius: Int) : ImageProcessing {
     override fun process(image: WritableImage) {
@@ -10,14 +11,11 @@ class BoxBlur(private val radius: Int) : ImageProcessing {
             return
         }
         val kernelSize = radius * 2 + 1
-        val kernel = Array(kernelSize) { Array(kernelSize) { 0.0 } }
-        val total = kernelSize * kernelSize
-        for (i in 0 until kernelSize) {
-            for (j in 0 until kernelSize) {
-                kernel[i][j] = 1.0 / total
-            }
-        }
-        Convolution(kernel).process(image)
+
+        SpatialSeparableConvolution(
+            Array(kernelSize) { 1.0 / (kernelSize * kernelSize) },
+            Array(kernelSize) { 1.0 }
+        ).process(image)
     }
 
     override fun toString(): String = "BoxBlur with radius $radius"
