@@ -42,15 +42,17 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
                 if (isByPixelOrder) {
                     encodeColor = arr[index++]
                 } else {
-                    if (x in 0..encodeImage.width.toInt() && y in 0..encodeImage.height.toInt()) {
+                    if (x in 0 until encodeImage.width.toInt() && y in 0 until encodeImage.height.toInt()) {
                         encodeColor = encodeReader.getColor(x, y)
                     }
                 }
 
-                val r = transformBits(color.red, encodeColor.red)
-                val g = transformBits(color.green, encodeColor.green)
-                val b = transformBits(color.blue, encodeColor.blue)
-                color = Color.color(r, g, b)
+                if (x in 0..encodeImage.width.toInt() && y in 0..encodeImage.height.toInt()) {
+                    val r = transformBits(color.red, encodeColor.red)
+                    val g = transformBits(color.green, encodeColor.green)
+                    val b = transformBits(color.blue, encodeColor.blue)
+                    color = Color.color(r, g, b)
+                }
 
                 writer.setColor(x, y, color)
             }
