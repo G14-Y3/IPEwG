@@ -56,7 +56,7 @@ class HistogramEqualization: ImageProcessing {
     }
 
     override fun toString(): String {
-        return "Applying Histogram Equalization"
+        return "Histogram Equalization"
     }
 
 }
