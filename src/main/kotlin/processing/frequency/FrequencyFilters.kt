@@ -3,12 +3,8 @@ package processing.frequency
 import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import processing.FreqProcessRange
-import processing.FreqProcessType
 import processing.ImageProcessing
-import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.math.sqrt
 
 abstract class FrequencyFilters: ImageProcessing{
 
@@ -17,13 +13,16 @@ abstract class FrequencyFilters: ImageProcessing{
 
     override fun process(image: WritableImage) {
         // 1. multiplt by (-1)^(i+j) to move top left of image to center
+        //    and pad the image to side length of power of 2
         val reader : PixelReader = image.pixelReader
-        val height = image.height.toInt()
-        val width = image.width.toInt()
+        val oriHeight = image.height.toInt()
+        val oriWidth = image.width.toInt()
+        val height = nextPow2(oriHeight)
+        val width = nextPow2(oriWidth)
         val matrix : Array<Array<Array<Complex>>>
             = Array(3) {Array(height) { Array(width) { Complex() }}}
-        for (i in 0 until height) {
-            for (j in 0 until width) {
+        for (i in 0 until oriHeight) {
+            for (j in 0 until oriWidth) {
                 val ratio = (-1.0).pow(i + j)
                 matrix[0][i][j].real = reader.getColor(j, i).red * ratio
                 matrix[1][i][j].real = reader.getColor(j, i).green * ratio
@@ -64,8 +63,8 @@ abstract class FrequencyFilters: ImageProcessing{
 
         // 7. write matrix back to image
         val writer = image.pixelWriter
-        for (x in 0 until  height) {
-            for (y in 0 until  width) {
+        for (x in 0 until oriHeight) {
+            for (y in 0 until oriWidth) {
                 val newColor: Color = Color.color(
                     matrix[0][x][y].real.coerceIn(0.0, 1.0),
                     matrix[1][x][y].real.coerceIn(0.0, 1.0),
@@ -101,9 +100,17 @@ abstract class FrequencyFilters: ImageProcessing{
         return matrix
     }
 
+    // return the value greater or equal to the given value of power 2
+    private fun nextPow2(n: Int): Int{
+        var power = 1
+        while (power < n) {
+            power *= 2
+        }
+        return power
+    }
+
     // return fft result on given array, ASSUMED the length of array is power of 2
     // References: https://www.bilibili.com/video/BV1za411F76U
-    // todo: remove the constrain of length of array can only be power of 2
     // power = (-2 * pi * i) or (2 * pi * i)
     private fun _fft(array: Array<Complex>, power: Complex, scalar: Double): Array<Complex> {
         val length = array.size
