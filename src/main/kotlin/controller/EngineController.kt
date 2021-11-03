@@ -57,4 +57,6 @@ class EngineController : Controller() {
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())
+
+    fun histogramEqualization() = engine.transform(HistogramEqualization())
 }

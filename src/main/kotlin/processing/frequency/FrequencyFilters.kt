@@ -25,9 +25,9 @@ abstract class FrequencyFilters: ImageProcessing{
         for (i in 0 until height) {
             for (j in 0 until width) {
                 val ratio = (-1.0).pow(i + j)
-                matrix[0][i][j].real = reader.getColor(i, j).red * ratio
-                matrix[1][i][j].real = reader.getColor(i, j).green * ratio
-                matrix[2][i][j].real = reader.getColor(i, j).blue * ratio
+                matrix[0][i][j].real = reader.getColor(j, i).red * ratio
+                matrix[1][i][j].real = reader.getColor(j, i).green * ratio
+                matrix[2][i][j].real = reader.getColor(j, i).blue * ratio
             }
         }
 
@@ -70,7 +70,7 @@ abstract class FrequencyFilters: ImageProcessing{
                     matrix[0][x][y].real.coerceIn(0.0, 1.0),
                     matrix[1][x][y].real.coerceIn(0.0, 1.0),
                     matrix[2][x][y].real.coerceIn(0.0, 1.0))
-                writer.setColor(x, y, newColor)
+                writer.setColor(y, x, newColor)
             }
         }
     }
