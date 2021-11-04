@@ -1,8 +1,6 @@
 package processing.filters
 
 
-import javafx.scene.image.PixelReader
-import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
@@ -19,8 +17,8 @@ class SpatialSeparableConvolution(
     }
 
     override fun process(image: WritableImage) {
-        alterImage(image, kernelCol, transpose=true)
-        alterImage(image, kernelRow, transpose=false)
+        alterImage(image, kernelCol, transpose = true)
+        alterImage(image, kernelRow, transpose = false)
     }
 
     private fun alterImage(
@@ -45,8 +43,8 @@ class SpatialSeparableConvolution(
                 var sumG = 0.0
                 var sumB = 0.0
                 for (i in -deviation..deviation) {
-                    val currX = if (transpose) x + i else x + i
-                    val currY = if (transpose) y + i else y + i
+                    val currX = if (!transpose) x + i else x
+                    val currY = if (!transpose) y else y + i
                     val factor = vector[i + deviation]
                     if (currY in 0 until height && currX in 0 until width) {
                         sumR += factor * original.pixelReader.getColor(currX, currY).red
