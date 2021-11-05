@@ -8,8 +8,8 @@ import kotlin.math.pow
 
 class IdleFreqFilter(
     private val range: FreqProcessRange,
-    private val lowerBoundary: Double,
-    private val upperBoundary: Double)
+    private val centerFreq: Double,
+    private val passBound: Double)
     : FrequencyFilters() {
 
     override fun getFilterMatrix(height: Int, width: Int): Array<Array<Double>> {
