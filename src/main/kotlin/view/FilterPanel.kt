@@ -68,9 +68,7 @@ class FilterPanel : View() {
                     content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
                 }
                 tab("frequency transfer") {
-                    button("transfer").setOnAction {
-                        engineController.frequencyTransfer()
-                    }
+                    content = FrequencyTab(engineController)
                 }
                 tab("Blur") {
                     content = BlurFilterTab(engineController)

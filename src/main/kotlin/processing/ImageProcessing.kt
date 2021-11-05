@@ -2,8 +2,8 @@ package processing
 
 import javafx.scene.image.WritableImage
 
-enum class FreqProcessType {Idle}
-enum class FreqProcessRange {HighPass, LowPass}
+enum class FreqProcessType {Idle, Gaussian, ButterWorth}
+enum class FreqProcessRange {BandReject, BandPass}
 enum class RGBType { R, G, B }
 
 enum class HSVType {

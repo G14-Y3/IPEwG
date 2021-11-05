@@ -6,9 +6,10 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 import kotlin.math.pow
 
-class idleFreqFilter(
-    private val boundary: Double = 0.1,
-    private val range: FreqProcessRange = HighPass)
+class IdleFreqFilter(
+    private val range: FreqProcessRange,
+    private val lowerBoundary: Double,
+    private val upperBoundary: Double)
     : FrequencyFilters() {
 
     override fun getFilterMatrix(height: Int, width: Int): Array<Array<Double>> {
@@ -27,7 +28,12 @@ class idleFreqFilter(
         return filter
     }
 
+    // determine if the pixel falls in the range of pass
+    private fun pass(dist: Double, lower: Double, upper: Double, range: FreqProcessRange) {
+
+    }
+
     override fun toString(): String {
-        return "$range idle frequency with boundary $boundary"
+        return "$range idle frequency with boundary $lowerBoundary - $upperBoundary"
     }
 }
