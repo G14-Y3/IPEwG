@@ -89,7 +89,8 @@ class SliderWithSpinner(
                         spinner.editor.text = old
                     } else {
                         spinner.editor.text =
-                            new.toDouble().roundToInt().toString()
+                            "%.2f".format(new.toDouble())
+//                            new.toDouble().roundToInt().toString()
                     }
                 } catch (e: IllegalArgumentException) {
                 }

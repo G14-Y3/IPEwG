@@ -4,12 +4,14 @@ import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 abstract class FrequencyFilters: ImageProcessing{
 
-    // get filter matrix for selecting different frequency, implementation depends on type of filter
-    abstract fun getFilterMatrix(height: Int, width: Int): Array<Array<Double>>
+    // get filter matrix pixel according to filter's type and distance of the pixel from center
+    abstract fun getFilterPixel(dist: Double): Double
 
     override fun process(image: WritableImage) {
         // 1. multiplt by (-1)^(i+j) to move top left of image to center
@@ -36,7 +38,17 @@ abstract class FrequencyFilters: ImageProcessing{
         }
 
         // 3. define filter matrix
-        val filter = getFilterMatrix(height, width)
+        val filter = Array(height) {Array(width) {0.0} }
+        val halfWidth = width / 2
+        val halfHeight = height / 2
+        for (x in 0 until height) {
+            for (y in 0 until width) {
+                val xDist = abs(x - halfHeight).toDouble() / halfHeight
+                val yDist = abs(y - halfHeight).toDouble() / halfWidth
+                val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
+                filter[x][y] = getFilterPixel(distFromCenter)
+            }
+        }
 
         // 4. apply filter to frequency matrix
         for (i in 0 .. 2) {
