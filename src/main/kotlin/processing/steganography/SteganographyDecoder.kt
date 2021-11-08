@@ -5,11 +5,13 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import kotlin.math.min
 
 class SteganographyDecoder: ImageProcessing {
 
     override fun process(image: WritableImage) {
         val reader: PixelReader = image.pixelReader
+        val writer: PixelWriter = image.pixelWriter
 
         /* read metadata for encoding from the first pixel */
         val first_pixel = reader.getArgb(0, 0)
@@ -22,35 +24,37 @@ class SteganographyDecoder: ImageProcessing {
         val width = reader.getArgb(0, 1) and ENCODE_BITS
         val height = reader.getArgb(1, 0) and ENCODE_BITS
 
-        val result_image = WritableImage(width, height)
-        val writer: PixelWriter = result_image.pixelWriter
-
         val pixel_arr = mutableListOf<List<Color>>()
 
         if (isByPixelOrder) {
+            val pixel_arr_temp = mutableListOf<Color>()
             var count = 0
-            loop@ for (x in 0 until image.width.toInt()) {
-                val column = mutableListOf<Color>()
+            loop@for (x in 0 until image.width.toInt()) {
                 for (y in 0 until image.height.toInt()) {
-                    if (count > width*height) break@loop
-                    column.add(reader.getColor(x, y))
+                    pixel_arr_temp.add(reader.getColor(x, y))
+                    if (count++ >= width * height) break@loop
+                }
+            }
+            count = 0
+            for (x in 0 until min(width, image.width.toInt())) {
+                val column = mutableListOf<Color>()
+                for (y in 0 until min(height, image.height.toInt())) {
+                    column.add(pixel_arr_temp[count++])
                 }
                 pixel_arr.add(column)
             }
-        } else {
-            for (x in 0 until width) {
-                for (y in 0 until height) {
-                    var decode = reader.getColor(x, y)
+        }
 
-//                if (isByPixelOrder) decode = pixel_arr[x][y]
+        for (x in 0 until min(width, image.width.toInt())) {
+            for (y in 0 until min(height, image.height.toInt())) {
+                val decode = if (!isByPixelOrder) reader.getColor(x, y) else pixel_arr[x][y]
 
-                    val r = ((decode.red * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
-                    val g = ((decode.green * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
-                    val b = ((decode.blue * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
-                    var color: Color = Color.color(r, g, b)
+                val r = ((decode.red * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
+                val g = ((decode.green * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
+                val b = ((decode.blue * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
+                val color: Color = Color.color(r, g, b)
 
-                    writer.setColor(x, y, color)
-                }
+                writer.setColor(x, y, color)
             }
         }
     }

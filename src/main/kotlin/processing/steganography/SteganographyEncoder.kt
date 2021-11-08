@@ -6,6 +6,7 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import kotlin.math.min
 
 class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: Int, val isByPixelOrder: Boolean): ImageProcessing {
 
@@ -24,11 +25,13 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         val writer: PixelWriter = image.pixelWriter
 
         val encodeReader: PixelReader = encodeImage.pixelReader
+        val encode_width = encodeImage.width.toInt()
+        val encode_height = encodeImage.height.toInt()
 
         // TODO: reduce the dimensionality of encode image if it is larger than original image
         val arr = mutableListOf<Color>()
-        for (x in 0 until encodeImage.width.toInt()) {
-            for (y in 0 until encodeImage.height.toInt()) {
+        for (x in 0 until min(encode_width, image.width.toInt())) {
+            for (y in 0 until min(encode_height, image.height.toInt())) {
                 arr.add(encodeReader.getColor(x, y))
             }
         }
@@ -40,14 +43,17 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
                 var encodeColor: Color = color
 
                 if (isByPixelOrder) {
-                    encodeColor = arr[index++]
+                    if (index < encode_width * encode_height) {
+                        encodeColor = arr[index++]
+                    }
                 } else {
-                    if (x in 0 until encodeImage.width.toInt() && y in 0 until encodeImage.height.toInt()) {
+                    if (x in 0 until encode_width && y in 0 until encode_height) {
                         encodeColor = encodeReader.getColor(x, y)
                     }
                 }
 
-                if (x in 0..encodeImage.width.toInt() && y in 0..encodeImage.height.toInt()) {
+                if ((isByPixelOrder && index < encode_width * encode_height) ||
+                    (!isByPixelOrder && x in 0 until encode_width && y in 0 until encode_height)) {
                     val r = transformBits(color.red, encodeColor.red)
                     val g = transformBits(color.green, encodeColor.green)
                     val b = transformBits(color.blue, encodeColor.blue)
@@ -68,8 +74,8 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         /* encode width and height in the second/third pixel */
         val TOP_BITS = 0b11111111000000000000000000000000
         val second_pixel = reader.getArgb(0, 1)
-        writer.setArgb(0, 1, encodeImage.width.toInt() or (second_pixel and TOP_BITS.toInt()))
+        writer.setArgb(0, 1, encode_width or (second_pixel and TOP_BITS.toInt()))
         val third_pixel = reader.getArgb(1, 0)
-        writer.setArgb(1, 0, encodeImage.height.toInt() or (third_pixel and TOP_BITS.toInt()))
+        writer.setArgb(1, 0, encode_height or (third_pixel and TOP_BITS.toInt()))
     }
 }
