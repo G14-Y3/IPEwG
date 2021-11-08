@@ -1,12 +1,10 @@
 package processing.steganography
 
-import javafx.scene.image.Image
 import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
-import kotlin.math.min
 
 class SteganographyDecoder(private var result_image: WritableImage? = null): ImageProcessing {
     override fun process(image: WritableImage) {
@@ -14,9 +12,8 @@ class SteganographyDecoder(private var result_image: WritableImage? = null): Ima
 
         /* read metadata for encoding from the first pixel */
         val first_pixel = reader.getArgb(0, 0)
-        val r = (first_pixel shr 16) and 0b11111111
-        val bits = (r and 0b11) + 1
-        val isByPixelOrder = ((r and 0b100) shr 2) == 1
+        val bits = (first_pixel and 0b11) + 1
+        val isByPixelOrder = ((first_pixel shr 16) and 0b1) == 1
 
         /* read width and height from second/third pixel */
         val ENCODE_BITS = 0b111111111111111111111111

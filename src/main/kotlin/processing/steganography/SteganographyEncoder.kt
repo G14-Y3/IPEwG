@@ -67,7 +67,7 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         /* encode metadata for steganography into the first pixel: bits and isByPixelOrder */
         val first_pixel = reader.getArgb(0, 0)
         val isByPixelOrder_bit = if (isByPixelOrder) 1 else 0
-        val color = first_pixel and (0b11111111000000001111111111111111.toInt() or (((isByPixelOrder_bit shl 2) or (bits - 1)) shl 16))
+        val color = 0b11111111000000001111111100000000.toInt() or (((bits - 1) or (isByPixelOrder_bit shl 16)))
         writer.setArgb(0, 0, color)
 
         /* encode width and height in the second/third pixel */

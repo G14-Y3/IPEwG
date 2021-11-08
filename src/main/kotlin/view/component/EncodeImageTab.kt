@@ -120,10 +120,10 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
                                             content = "The encode image size is bigger than the original image",
                                             ButtonType.OK
                                         )
+                                    } else {
+                                        hasUndone = false
+                                        engineController.encodeImage(encode_image, key, bits, isByPixelOrder)
                                     }
-
-                                    hasUndone = false
-                                    engineController.encodeImage(encode_image, key, bits, isByPixelOrder)
                                 }
                             }
                             button("Undo") {
