@@ -28,10 +28,9 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         val encode_width = encodeImage.width.toInt()
         val encode_height = encodeImage.height.toInt()
 
-        // TODO: reduce the dimensionality of encode image if it is larger than original image
         val arr = mutableListOf<Color>()
-        for (x in 0 until min(encode_width, image.width.toInt())) {
-            for (y in 0 until min(encode_height, image.height.toInt())) {
+        for (x in 0 until encode_width) {
+            for (y in 0 until encode_height) {
                 arr.add(encodeReader.getColor(x, y))
             }
         }

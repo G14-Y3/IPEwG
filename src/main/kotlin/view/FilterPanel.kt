@@ -148,6 +148,7 @@ class FilterPanel : View() {
                             }
                         }
                         imageview(engine.decodeImage) {
+                            isPreserveRatio = true
                             fitWidth = 300.0
                             fitHeight = 300.0
                             vboxConstraints {

@@ -1,5 +1,6 @@
 package processing.steganography
 
+import javafx.scene.image.Image
 import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
@@ -7,11 +8,9 @@ import javafx.scene.paint.Color
 import processing.ImageProcessing
 import kotlin.math.min
 
-class SteganographyDecoder: ImageProcessing {
-
+class SteganographyDecoder(private var result_image: WritableImage? = null): ImageProcessing {
     override fun process(image: WritableImage) {
         val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
 
         /* read metadata for encoding from the first pixel */
         val first_pixel = reader.getArgb(0, 0)
@@ -23,6 +22,9 @@ class SteganographyDecoder: ImageProcessing {
         val ENCODE_BITS = 0b111111111111111111111111
         val width = reader.getArgb(0, 1) and ENCODE_BITS
         val height = reader.getArgb(1, 0) and ENCODE_BITS
+
+        result_image = WritableImage(width, height)
+        val writer: PixelWriter = result_image!!.pixelWriter
 
         val pixel_arr = mutableListOf<List<Color>>()
 
@@ -36,17 +38,17 @@ class SteganographyDecoder: ImageProcessing {
                 }
             }
             count = 0
-            for (x in 0 until min(width, image.width.toInt())) {
+            for (x in 0 until width) {
                 val column = mutableListOf<Color>()
-                for (y in 0 until min(height, image.height.toInt())) {
+                for (y in 0 until height) {
                     column.add(pixel_arr_temp[count++])
                 }
                 pixel_arr.add(column)
             }
         }
 
-        for (x in 0 until min(width, image.width.toInt())) {
-            for (y in 0 until min(height, image.height.toInt())) {
+        for (x in 0 until width) {
+            for (y in 0 until height) {
                 val decode = if (!isByPixelOrder) reader.getColor(x, y) else pixel_arr[x][y]
 
                 val r = ((decode.red * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
@@ -57,5 +59,9 @@ class SteganographyDecoder: ImageProcessing {
                 writer.setColor(x, y, color)
             }
         }
+    }
+
+    fun get_result_image(): WritableImage {
+        return result_image!!
     }
 }

@@ -3,10 +3,10 @@ package models
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
+import processing.steganography.SteganographyDecoder
 import tornadofx.ViewModel
 import tornadofx.observableListOf
 import java.io.File
@@ -98,9 +98,11 @@ class EngineModel(
                 previewImage.value = snapshots[currIndex]
             }
             "decode" -> {
-                val tempDecodeImage = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
-                transformation.process(tempDecodeImage)
-                decodeImage.value = tempDecodeImage
+                if (transformation is SteganographyDecoder) {
+                    val decoder: SteganographyDecoder = transformation
+                    transformation.process(previous as WritableImage)
+                    decodeImage.value = decoder.get_result_image()
+                }
             }
         }
     }

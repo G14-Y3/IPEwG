@@ -3,6 +3,9 @@ package view.component
 import controller.EngineController
 import controller.FileController
 import javafx.geometry.Insets
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.ButtonType
 import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
@@ -107,8 +110,20 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
                             }
                             button("Encode") {
                                 action {
+                                    val encode_image = engine.encodeImage.value
+                                    val original_image = engine.originalImage.value
+
+                                    if (isByPixelOrder && encode_image.width * encode_image.height > original_image.width * original_image.height) {
+                                        alert(
+                                            type = Alert.AlertType.ERROR,
+                                            header = "Could not encode the image by pixel order",
+                                            content = "The encode image size is bigger than the original image",
+                                            ButtonType.OK
+                                        )
+                                    }
+
                                     hasUndone = false
-                                    engineController.encodeImage(engine.encodeImage.value, key, bits, isByPixelOrder)
+                                    engineController.encodeImage(encode_image, key, bits, isByPixelOrder)
                                 }
                             }
                             button("Undo") {
