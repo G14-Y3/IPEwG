@@ -17,6 +17,7 @@ class IdleFreqFilter(
     private val bandWidth: Double)
     : FilterGenerator() {
 
+    // Reference: http://faculty.salina.k-state.edu/tim/mVision/freq-domain/freq_filters.html
     override fun getFilterPixel(dist: Double): Double {
         val rangeToBool = when (range) {
             LowPass -> dist <= passStopBound

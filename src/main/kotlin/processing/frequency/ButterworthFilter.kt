@@ -15,6 +15,7 @@ class ButterworthFilter(
     private val order: Int)
     : FilterGenerator() {
 
+    // Reference: http://faculty.salina.k-state.edu/tim/mVision/freq-domain/freq_filters.html
     override fun getFilterPixel(dist: Double): Double {
         val baseVal = when (range) {
             LowPass, HighPass ->
