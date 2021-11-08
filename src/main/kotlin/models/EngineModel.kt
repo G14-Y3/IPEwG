@@ -4,18 +4,17 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.filters.Adjustment
-import tornadofx.ViewModel
-import tornadofx.imageview
-import tornadofx.observableListOf
+import processing.jsonFormatter
+import tornadofx.*
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-import kotlin.collections.HashMap
+import kotlin.collections.set
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
@@ -99,6 +98,8 @@ class EngineModel(
         updateListSelection()
         transformation.process(snapshots[currIndex])
         previewImage.value = snapshots[currIndex]
+
+        printJson()
     }
 
     /**
@@ -123,6 +124,10 @@ class EngineModel(
             transform(Adjustment(HashMap(adjustmentProperties)))
             adjustmentProperties.clear()
         }
+    }
+
+    fun printJson() {
+        println(jsonFormatter.encodeToString(ArrayList(transformations)))
     }
 
     fun resetAdjustment() {

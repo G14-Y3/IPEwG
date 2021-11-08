@@ -2,17 +2,19 @@ package processing.styletransfer
 
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.Tensor
 import processing.ImageProcessing
-import java.io.File
-import java.util.*
 
-class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
-    var mod: Module
+@Serializable
+@SerialName("NeuralStyleTransfer")
+class NeuralStyleTransfer(val style: NeuralStyles) : ImageProcessing {
 
-    var styleToPath = mapOf(
+    private val styleToPath = mapOf(
         NeuralStyles.VAN_GOGH to "./src/main/resources/style_transfer_model/van_gogh.pt",
         NeuralStyles.PICASSO to "./src/main/resources/style_transfer_model/picasso.pt",
         NeuralStyles.UKIYOE to "./src/main/resources/style_transfer_model/japan.pt",
@@ -21,9 +23,8 @@ class NeuralStyleTransfer(style: NeuralStyles) : ImageProcessing {
         NeuralStyles.GOOGLE to "./src/main/resources/style_transfer_model/google.pt"
     )
 
-    init {
-        mod = Module.load(styleToPath[style])
-    }
+    @Transient
+    val mod: Module = Module.load(styleToPath[style])
 
     override fun process(image: WritableImage) {
         val reader = image.pixelReader

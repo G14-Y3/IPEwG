@@ -6,24 +6,17 @@ import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
-import javafx.scene.control.ComboBox
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
-import javafx.scene.image.Image
-import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
-import processing.BlurType
-import processing.HSVType
-import processing.RGBType
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
+import processing.filters.BlurType
+import processing.filters.HSVType
+import processing.filters.RGBType
 import tornadofx.*
-import view.component.*
-import java.lang.IllegalArgumentException
-import java.lang.NumberFormatException
-import kotlin.math.roundToInt
+import view.component.BasicFilterTab
+import view.component.BlurFilterTab
+import view.component.ColorAdjustTab
+import view.component.StyleTransferTab
 
 class FilterPanel : View() {
 
@@ -54,7 +47,7 @@ class FilterPanel : View() {
 
     override val root = vbox {
         splitpane {
-            val tabPane = tabpane {
+            tabpane {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                 side = Side.LEFT
                 tab("Basic Actions") {

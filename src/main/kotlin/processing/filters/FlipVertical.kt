@@ -3,12 +3,15 @@ package processing.filters
 import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
-import processing.multithread.splitImageVertical
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
+@Serializable
+@SerialName("FlipVertical")
 class FlipVertical : ImageProcessing {
     override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()

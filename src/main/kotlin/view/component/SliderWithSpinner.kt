@@ -1,15 +1,12 @@
 package view.component
 
-import controller.EngineController
 import javafx.beans.value.ChangeListener
 import javafx.geometry.Insets
 import javafx.scene.Node
-import javafx.scene.Parent
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Slider
 import javafx.scene.control.Spinner
 import javafx.scene.layout.HBox
-import processing.BlurType
 import tornadofx.*
 import view.CssStyle
 import kotlin.math.roundToInt
@@ -76,13 +73,13 @@ class SliderWithSpinner(
 
         // avoid NPE and set value to old value when user clear the field
         spinner.valueProperty()
-            .addListener(ChangeListener { _, old, new ->
+            .addListener { _, old, new ->
                 spinner.valueFactory.value = new ?: old
-            })
+            }
 
         // use Regex to make sure user inputs a double not character string
         spinner.editor.textProperty()
-            .addListener(ChangeListener<String> { _, old, new ->
+            .addListener { _, old, new ->
                 try {
                     if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
                         spinner.editor.text = old
@@ -92,7 +89,7 @@ class SliderWithSpinner(
                     }
                 } catch (e: IllegalArgumentException) {
                 }
-            })
+            }
 
         try {
             slider.valueProperty().bindBidirectional(

@@ -1,17 +1,11 @@
 package controller
 
 import models.EngineModel
-import processing.FreqProcessRange
-import processing.FreqProcessType
-import processing.frequency.FrequencyFilters
-import processing.frequency.idleFreqFilter
-import processing.BlurType
-import processing.HSVType
-import processing.RGBType
+import processing.filters.*
+import processing.frequency.IdleFreqFilter
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
-import processing.filters.*
-import tornadofx.Controller
+import tornadofx.*
 
 /** IMPORTANT:
  *
@@ -50,9 +44,9 @@ class EngineController : Controller() {
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
-    
+
     // todo: support user select different filter type and boundary
-    fun frequencyTransfer() = engine.transform(idleFreqFilter())
+    fun frequencyTransfer() = engine.transform(IdleFreqFilter())
     
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
