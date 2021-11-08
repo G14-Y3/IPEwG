@@ -132,7 +132,7 @@ class FilterPanel : View() {
                         }
 
                         tab("Encode/Decode Text") {
-                            content = EncodeTextTab()
+                            content = EncodeTextTab(fileController, engine, engineController)
                         }
                     }
 

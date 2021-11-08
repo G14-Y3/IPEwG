@@ -6,9 +6,16 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
-import kotlin.math.min
 
-class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: Int, val isByPixelOrder: Boolean): ImageProcessing {
+class SteganographyEncoder(
+    val isEncodeImage: Boolean, val encodeText: String, val onlyRChannel: Boolean, val encodeImage: Image?,
+    val key: String, val bits: Int, val isByPixelOrder: Boolean): ImageProcessing {
+
+    constructor(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean)
+            : this(true, "", false, encodeImage, key, bits, isByPixelOrder)
+
+    constructor(encodeText: String, onlyRChannel: Boolean, key: String, bits: Int)
+            : this(false, encodeText, onlyRChannel, null, key, bits, false)
 
     val COLOR_BITS_COUNT = 8
     val ALL_ONE = 0b11111111
@@ -20,11 +27,26 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         return result / 255.0
     }
 
+    private fun transformBits(origin: Double, encode: Int): Double {
+        val origin_int = (origin * 255).toInt()
+        val encode_int = encode
+        val result = (origin_int and (ALL_ONE shl bits)) or encode_int
+        return result / 255.0
+    }
+
     override fun process(image: WritableImage) {
+        if (isEncodeImage) {
+            encodeImage(image)
+        } else {
+            encodeText(image)
+        }
+    }
+
+    private fun encodeImage(image: WritableImage) {
         val reader: PixelReader = image.pixelReader
         val writer: PixelWriter = image.pixelWriter
 
-        val encodeReader: PixelReader = encodeImage.pixelReader
+        val encodeReader: PixelReader = encodeImage!!.pixelReader
         val encode_width = encodeImage.width.toInt()
         val encode_height = encodeImage.height.toInt()
 
@@ -76,5 +98,30 @@ class SteganographyEncoder(val encodeImage: Image, val key: String, val bits: In
         writer.setArgb(0, 1, encode_width or (second_pixel and TOP_BITS.toInt()))
         val third_pixel = reader.getArgb(1, 0)
         writer.setArgb(1, 0, encode_height or (third_pixel and TOP_BITS.toInt()))
+    }
+
+    private fun encodeText(image: WritableImage) {
+        /* encode text into the RGBA channels of the image */
+        val reader: PixelReader = image.pixelReader
+        val writer: PixelWriter = image.pixelWriter
+
+        var count = 0
+        for (x in 0 until image.width.toInt()) {
+            for (y in 0 until image.height.toInt()) {
+                var color = reader.getColor(x, y)
+                if (count < encodeText.length) {
+                    val ch1 = encodeText[count++]
+                    val ch2 = encodeText[count++]
+                    val r = transformBits(color.red, ch1.code and 0b1111)
+                    val g = transformBits(color.green, (ch1.code shr 4) and 0b1111)
+                    val b = transformBits(color.blue, ch2.code and 0b1111)
+                    val a = transformBits(color.opacity, (ch2.code shr 4) and 0b1111)
+                    color = Color.color(r, g, b, a)
+                }
+                writer.setColor(x, y, color)
+            }
+        }
+
+        writer.setArgb(image.width.toInt() - 1, image.height.toInt() - 1, encodeText.length or 0b11111111000000000000000000000000.toInt())
     }
 }

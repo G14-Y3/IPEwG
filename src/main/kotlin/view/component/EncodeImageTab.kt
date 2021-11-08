@@ -17,7 +17,6 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
     private var bits = 4
     private var key = ""
     private var isByPixelOrder = false
-    private var isIncludedInMetadata = false
     private var hasUndone = false
 
     init {
@@ -55,7 +54,8 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
                                 }
                             }
                         }
-                        checkbox("with a random key") {
+                        checkbox("with a random key (not supported yet)") {
+                            isDisable = true
                             action {
                                 key = if (this.isSelected) "randomsequence!" else ""
                             }
@@ -99,11 +99,6 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
                                 }
                             }
                         }
-                        checkbox("store encoding information to image metadata") {
-                            action {
-                                isIncludedInMetadata = this.isSelected
-                            }
-                        }
                         buttonbar {
                             vboxConstraints {
                                 marginTop = 20.0
@@ -134,7 +129,7 @@ class EncodeImageTab(fileController: FileController, engine: EngineModel, engine
                             }
                             button("Decode") {
                                 action {
-                                    engine.transform(SteganographyDecoder(), "decode")
+                                    engine.transform(SteganographyDecoder(true), "decode")
                                 }
                             }
                         }

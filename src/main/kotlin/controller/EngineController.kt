@@ -58,4 +58,7 @@ class EngineController : Controller() {
 
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
         engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
+
+    fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
+        engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
 }

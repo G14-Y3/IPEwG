@@ -1,11 +1,24 @@
 package view.component
 
+import controller.EngineController
+import controller.FileController
 import javafx.geometry.Insets
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
+import models.EngineModel
+import processing.steganography.SteganographyDecoder
 import tornadofx.*
 
-class EncodeTextTab : HBox() {
+class EncodeTextTab(fileController: FileController, engine: EngineModel, engineController: EngineController) : HBox() {
+
+    private var bits = 4
+    private var key = ""
+    private var hasUndone = false
+    private var onlyRChannel = false
+    private var original_text = ""
+
     init {
         hbox {
             vbox {
@@ -31,6 +44,7 @@ class EncodeTextTab : HBox() {
                             }
                         }
                         checkbox("with a random key") {
+                            isDisable = true
                             action {
 
                             }
@@ -42,7 +56,12 @@ class EncodeTextTab : HBox() {
                                 }
                             }
                             combobox(values = listOf(1, 2, 3, 4)) {
+                                valueProperty()
+                                    .addListener(ChangeListener { _, _, new ->
+                                        bits = new
+                                    })
 
+                                value = 4
                             }
                             label("  lower bits encoded") {
                                 hboxConstraints {
@@ -50,30 +69,44 @@ class EncodeTextTab : HBox() {
                                 }
                             }
                         }
-                        hbox {
-                            label("encode by the  ") {
-                                hboxConstraints {
-                                    marginTop = 5.0
-                                }
+                        checkbox("Only use a single(R) channel (Default is to use all three channels)") {
+                            action {
+                                onlyRChannel = this.isSelected
                             }
-                            combobox(values = listOf("dimension", "pixel order")) {
-
-                            }
-                            label("  of the encode image") {
-                                hboxConstraints {
-                                    marginTop = 5.0
-                                }
-                            }
-                        }
-                        checkbox("store encoding information to image metadata") {
-
                         }
                         buttonbar {
                             vboxConstraints {
                                 marginTop = 20.0
                             }
-                            button("Encode")
-                            button("Decode")
+                            button("Encode") {
+                                action {
+                                    val encode_image = engine.encodeImage.value
+                                    val original_image = engine.originalImage.value
+
+                                    if (original_text.length > original_image.width * original_image.height) {
+                                        alert(
+                                            type = Alert.AlertType.ERROR,
+                                            header = "Could not encode the text",
+                                            content = "The text length exceeds the maximum amount of information that the original image can hold",
+                                            ButtonType.OK
+                                        )
+                                    } else {
+                                        hasUndone = false
+                                        engineController.encodeText(original_text, key, bits, onlyRChannel)
+                                    }
+                                }
+                            }
+                            button("Undo") {
+                                action {
+                                    if (!hasUndone) fileController.undo()
+                                    hasUndone = true
+                                }
+                            }
+                            button("Decode") {
+                                action {
+                                    engine.transform(SteganographyDecoder(false))
+                                }
+                            }
                         }
                     }
                     textarea {
@@ -83,10 +116,13 @@ class EncodeTextTab : HBox() {
                                 margin = Insets(10.0)
                             }
                         }
+                        isWrapText = true
+                        textProperty().addListener(ChangeListener { _, _, newValue ->
+                            original_text = newValue
+                        })
                     }
                 }
             }
         }
-
     }
 }

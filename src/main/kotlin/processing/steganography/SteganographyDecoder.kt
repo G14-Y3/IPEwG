@@ -5,9 +5,42 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
-class SteganographyDecoder(private var result_image: WritableImage? = null): ImageProcessing {
+class SteganographyDecoder(private val isDecodeImage: Boolean, private var result_image: WritableImage? = null): ImageProcessing {
     override fun process(image: WritableImage) {
+        if (isDecodeImage) {
+            decodeImage(image)
+        } else {
+            decodeText(image)
+        }
+    }
+
+    private fun decodeText(image: WritableImage) {
+        val reader: PixelReader = image.pixelReader
+        var str = ""
+        var length = reader.getArgb(image.width.toInt() - 1, image.height.toInt() - 1) and 0b111111111111111111111111
+        loop@for (x in 0 until image.width.toInt()) {
+            for (y in 0 until image.height.toInt()) {
+                if (length <= 0) break@loop
+                val color = reader.getColor(x, y)
+                val ch1 = ((((color.green * 255).toInt() and 0b1111) shl 4) or ((color.red * 255).toInt() and 0b1111))
+                val ch2 = ((((color.opacity * 255).toInt() and 0b1111) shl 4) or ((color.blue * 255).toInt() and 0b1111))
+                println(color.green * 255)
+                println(color.red * 255)
+                println(color.opacity * 255)
+                println(color.blue * 255)
+                str = str.plus(ch1.toChar()).plus(ch2.toChar())
+                length -= 2
+            }
+        }
+
+        println(str)
+    }
+
+    private fun decodeImage(image: WritableImage) {
         val reader: PixelReader = image.pixelReader
 
         /* read metadata for encoding from the first pixel */
