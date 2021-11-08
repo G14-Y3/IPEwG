@@ -1,24 +1,28 @@
 package processing.frequency
 
+import javafx.scene.image.ImageView
+import javafx.scene.image.WritableImage
 import processing.FreqProcessRange.*
 import processing.FreqProcessRange
+import processing.filters.writeGrayImage
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.sqrt
 import kotlin.math.pow
 
 class IdleFreqFilter(
+    override val filterImageView: ImageView,
     private val range: FreqProcessRange,
     private val passStopBound: Double,
     private val bandWidth: Double)
-    : FrequencyFilters() {
+    : FilterGenerator() {
 
     override fun getFilterPixel(dist: Double): Double {
         val rangeToBool = when (range) {
             LowPass -> dist <= passStopBound
-            HighPass -> dist > passStopBound
+            HighPass -> dist >= passStopBound
             BandPass -> passStopBound - bandWidth / 2.0 <= dist && dist <= passStopBound + bandWidth / 2.0
-            BandReject -> dist < passStopBound - bandWidth / 2.0 || passStopBound + bandWidth / 2.0 < dist
+            BandReject -> dist <= passStopBound - bandWidth / 2.0 || passStopBound + bandWidth / 2.0 <= dist
         }
 
         if (rangeToBool) {

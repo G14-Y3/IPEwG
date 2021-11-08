@@ -1,8 +1,13 @@
 package view.component
 
 import controller.EngineController
-import javafx.event.EventType
 import javafx.geometry.Insets
+import javafx.geometry.Pos
+import javafx.scene.Scene
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.ButtonType
+import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
@@ -63,7 +68,7 @@ class FrequencyTab(
             editable = true
         )
         val orderBox = HBox(
-            label("order"),
+            label("order") {addClass(CssStyle.labelTag)},
             orderSpinner
         )
         this.children.add(orderBox)
@@ -72,6 +77,16 @@ class FrequencyTab(
         filterType.valueProperty().addListener(ChangeListener { _, _, typeName ->
             orderBox.isVisible = typeName == FreqProcessType.ButterWorth
         })
+
+        // imageView for showing filter, updated by passing to processing filter instance
+        val filterImageView = imageview {
+            fitHeight = 60.0
+            preserveRatioProperty().set(true)
+        }
+        this.children.add(HBox(
+            label("filter image:") {addClass(CssStyle.labelTag)},
+            filterImageView
+        ))
 
         buttonbar {
             padding = Insets(20.0, 10.0, 20.0, 10.0)
@@ -83,17 +98,19 @@ class FrequencyTab(
                 if (filterType.value != null && filterRange.value != null) {
 
                     // construct the corresponding filter
-                    val filter = when (filterType.value) {
-                        FreqProcessType.Idle -> IdleFreqFilter(filterRange.value, passStopBound, bandWidth)
-                        FreqProcessType.Gaussian -> GaussianFilter(filterRange.value, passStopBound, bandWidth)
+                    val filterGenerator = when (filterType.value) {
+                        FreqProcessType.Idle -> IdleFreqFilter(filterImageView, filterRange.value, passStopBound, bandWidth)
+                        FreqProcessType.Gaussian -> GaussianFilter(filterImageView, filterRange.value, passStopBound, bandWidth)
                         FreqProcessType.ButterWorth -> ButterworthFilter(
+                            filterImageView,
                             filterRange.value,
                             passStopBound,
                             bandWidth,
                             order = orderSpinner.value.toInt()
                         )
                     }
-                    engineController.frequencyTransfer(filter)
+
+                    engineController.frequencyTransfer(filterGenerator)
                 }
             }
             button("Reset").setOnAction {

@@ -1,23 +1,26 @@
 package processing.frequency
 
+import javafx.scene.image.ImageView
+import javafx.scene.image.WritableImage
 import processing.FreqProcessRange
 import processing.FreqProcessRange.*
 import kotlin.math.exp
 import kotlin.math.pow
 
 class ButterworthFilter(
+    override val filterImageView: ImageView,
     private val range: FreqProcessRange,
     private val passStopBound: Double,
     private val bandWidth: Double,
     private val order: Int)
-    : FrequencyFilters() {
+    : FilterGenerator() {
 
     override fun getFilterPixel(dist: Double): Double {
         val baseVal = when (range) {
             LowPass, HighPass ->
-                1 / (1 + (passStopBound / dist).pow(2 * order))
+                1 / (1 + (dist / passStopBound).pow(2 * order))
             BandPass, BandReject ->
-                1 / (1 + (dist * bandWidth / dist.pow(2) - passStopBound.pow(2)).pow(2*order))
+                1 / (1 + (dist * bandWidth / (dist.pow(2) - passStopBound.pow(2))).pow(2*order))
         }
 
         if (range == HighPass || range == BandReject) {
