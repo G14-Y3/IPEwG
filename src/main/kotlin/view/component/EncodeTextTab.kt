@@ -5,6 +5,7 @@ import controller.FileController
 import javafx.geometry.Insets
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
+import javafx.scene.control.TextArea
 import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
@@ -20,6 +21,7 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
     private var original_text = ""
 
     init {
+        var decode_textarea: TextArea? = null
         hbox {
             vbox {
                 label("Encode/Decode Text") {
@@ -70,6 +72,7 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                             }
                         }
                         checkbox("Only use a single(R) channel (Default is to use all three channels)") {
+                            isDisable = true
                             action {
                                 onlyRChannel = this.isSelected
                             }
@@ -80,7 +83,6 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                             }
                             button("Encode") {
                                 action {
-                                    val encode_image = engine.encodeImage.value
                                     val original_image = engine.originalImage.value
 
                                     if (original_text.length > original_image.width * original_image.height) {
@@ -104,12 +106,14 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                             }
                             button("Decode") {
                                 action {
-                                    engine.transform(SteganographyDecoder(false))
+                                    val decoder = SteganographyDecoder(false)
+                                    engine.transform(decoder)
+                                    decode_textarea!!.text = decoder.get_result_text()
                                 }
                             }
                         }
                     }
-                    textarea {
+                    decode_textarea = textarea {
                         prefWidth = 300.0
                         hboxConstraints {
                             hboxConstraints {

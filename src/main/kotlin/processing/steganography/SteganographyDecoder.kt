@@ -9,7 +9,11 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-class SteganographyDecoder(private val isDecodeImage: Boolean, private var result_image: WritableImage? = null): ImageProcessing {
+class SteganographyDecoder(private val isDecodeImage: Boolean): ImageProcessing {
+
+    private var result_image: WritableImage? = null
+    private var result_text: String = ""
+
     override fun process(image: WritableImage) {
         if (isDecodeImage) {
             decodeImage(image)
@@ -27,17 +31,20 @@ class SteganographyDecoder(private val isDecodeImage: Boolean, private var resul
                 if (length <= 0) break@loop
                 val color = reader.getColor(x, y)
                 val ch1 = ((((color.green * 255).toInt() and 0b1111) shl 4) or ((color.red * 255).toInt() and 0b1111))
-                val ch2 = ((((color.opacity * 255).toInt() and 0b1111) shl 4) or ((color.blue * 255).toInt() and 0b1111))
-                println(color.green * 255)
-                println(color.red * 255)
-                println(color.opacity * 255)
-                println(color.blue * 255)
-                str = str.plus(ch1.toChar()).plus(ch2.toChar())
-                length -= 2
+                var res = "${ch1.toChar()}"
+                length--
+                if (length > 0) {
+                    val ch2 = ((((color.opacity * 255).toInt() and 0b1111) shl 4) or ((color.blue * 255).toInt() and 0b1111))
+                    length--
+                    res = res.plus(ch2.toChar())
+                }
+                str = str.plus(res)
             }
         }
 
         println(str)
+
+        result_text = str
     }
 
     private fun decodeImage(image: WritableImage) {
@@ -93,5 +100,9 @@ class SteganographyDecoder(private val isDecodeImage: Boolean, private var resul
 
     fun get_result_image(): WritableImage {
         return result_image!!
+    }
+
+    fun get_result_text(): String {
+        return result_text
     }
 }

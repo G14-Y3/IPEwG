@@ -39,6 +39,7 @@ class SteganographyEncoder(
             encodeImage(image)
         } else {
             encodeText(image)
+            encodeText(image)
         }
     }
 
@@ -106,18 +107,22 @@ class SteganographyEncoder(
         val writer: PixelWriter = image.pixelWriter
 
         var count = 0
-        for (x in 0 until image.width.toInt()) {
+        loop@for (x in 0 until image.width.toInt()) {
             for (y in 0 until image.height.toInt()) {
+                if (count >= encodeText.length) break@loop
                 var color = reader.getColor(x, y)
-                if (count < encodeText.length) {
-                    val ch1 = encodeText[count++]
-                    val ch2 = encodeText[count++]
-                    val r = transformBits(color.red, ch1.code and 0b1111)
-                    val g = transformBits(color.green, (ch1.code shr 4) and 0b1111)
-                    val b = transformBits(color.blue, ch2.code and 0b1111)
-                    val a = transformBits(color.opacity, (ch2.code shr 4) and 0b1111)
-                    color = Color.color(r, g, b, a)
+                val ch1 = encodeText[count++]
+                val r = transformBits(color.red, ch1.code and 0b1111)
+                val g = transformBits(color.green, (ch1.code shr 4) and 0b1111)
+                if (count >= encodeText.length) {
+                    color = Color.color(r, g, color.blue, color.opacity)
+                    writer.setColor(x, y, color)
+                    break@loop
                 }
+                val ch2 = encodeText[count++]
+                val b = transformBits(color.blue, ch2.code and 0b1111)
+                val a = transformBits(color.opacity, (ch2.code shr 4) and 0b1111)
+                color = Color.color(r, g, b, a)
                 writer.setColor(x, y, color)
             }
         }
