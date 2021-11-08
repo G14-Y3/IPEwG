@@ -14,6 +14,7 @@ import processing.frequency.IdleFreqFilter
 import processing.styletransfer.NeuralStyleTransfer
 
 val jsonFormatter = Json {
+    prettyPrint = true
     serializersModule = SerializersModule {
         polymorphic(ImageProcessing::class) {
             // Declare all image processors here
