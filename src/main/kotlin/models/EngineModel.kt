@@ -33,7 +33,7 @@ class EngineModel(
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
 
-    val parallelImage =
+    var parallelImage =
         SimpleObjectProperty(this, "parallelImage", originalImage)
 
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
@@ -134,6 +134,7 @@ class EngineModel(
         updateListSelection()
         transformation.process(snapshots[currIndex])
         previewImage.value = snapshots[currIndex]
+        parallelImage.value = previewImage.value
     }
 
     /**
