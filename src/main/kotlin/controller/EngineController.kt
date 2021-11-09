@@ -55,10 +55,12 @@ class EngineController : Controller() {
     fun frequencyTransfer() = engine.transform(idleFreqFilter())
 
     fun sharpen() = engine.transform(Sharpen())
-
+    
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
         engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
+    
+    fun histogramEqualization() = engine.transform(HistogramEqualization())
 }

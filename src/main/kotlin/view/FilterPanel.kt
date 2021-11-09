@@ -37,7 +37,8 @@ class FilterPanel : View() {
         "Flip Horizontal" to engineController::flipHorizontal,
         "Flip Vertical" to engineController::flipVertical,
         "Edge Detection" to engineController::edgeDetection,
-        "Sharpen" to engineController::sharpen
+        "Sharpen" to engineController::sharpen,
+        "Histogram Equalization" to engineController::histogramEqualization
     )
 
     private val colorAdjustmentSliderList = mapOf(
