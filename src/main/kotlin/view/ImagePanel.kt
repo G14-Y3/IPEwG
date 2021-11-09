@@ -41,7 +41,7 @@ class ImagePanel : View() {
                     isVisible = false
                     isPreserveRatio = true
                 }
-                newView = imageview(engine.previewImage)
+                newView = imageview(engine.parallelImage)
 
                 val slider = slider {
                     prefWidth = oriView.image.width

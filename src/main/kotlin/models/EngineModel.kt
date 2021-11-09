@@ -33,6 +33,9 @@ class EngineModel(
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
 
+    val parallelImage =
+        SimpleObjectProperty(this, "parallelImage", originalImage)
+
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
     // Pipeline of transformations
@@ -110,7 +113,7 @@ class EngineModel(
                 }
             }
         }
-        previewImage.value = output
+        parallelImage.value = output
     }
 
     fun transform(transformation: ImageProcessing) {
