@@ -6,6 +6,9 @@ import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
+import javafx.scene.chart.AreaChart
+import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.Slider
@@ -17,6 +20,7 @@ import models.EngineModel
 import processing.BlurType
 import processing.HSVType
 import processing.RGBType
+import processing.filters.HistogramEqualization
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import tornadofx.*
@@ -38,7 +42,6 @@ class FilterPanel : View() {
         "Flip Vertical" to engineController::flipVertical,
         "Edge Detection" to engineController::edgeDetection,
         "Sharpen" to engineController::sharpen,
-        "Histogram Equalization" to engineController::histogramEqualization
     )
 
     private val colorAdjustmentSliderList = mapOf(
@@ -160,6 +163,42 @@ class FilterPanel : View() {
 
                     orientation = Orientation.VERTICAL
                     setDividerPosition(0, 0.4)
+                }
+            }
+        }
+
+        tab("Hist Equalization") {
+            vbox{
+                splitpane() {
+                    prefHeight = 1000.0
+                    orientation = Orientation.VERTICAL
+                    setDividerPosition(0, 0.4)
+                    var originalCdf: Array<Int> = Array(256) {0}
+                    var resultCdf: Array<Int> = Array(256) {0}
+                    var chart: AreaChart<Number, Number>? = null
+                    vbox {
+                        button("something") {
+                            action {
+                                val hist = HistogramEqualization()
+                                engineController.histogramEqualization(hist)
+                                originalCdf = hist.getOriginalCdf()
+                                resultCdf = hist.getResultCdf()
+                                val originalCdfSeries: XYChart.Series<Number, Number> = XYChart.Series()
+                                val resultCdfSeries: XYChart.Series<Number, Number> = XYChart.Series()
+                                for (i in 0..255) {
+                                    originalCdfSeries.data.add(XYChart.Data(i, originalCdf[i]))
+                                    resultCdfSeries.data.add(XYChart.Data(i, resultCdf[i]))
+                                }
+                                chart!!.data.addAll(originalCdfSeries)
+                                chart!!.data.addAll(resultCdfSeries)
+                            }
+                        }
+                    }
+                    splitpane {
+                        chart = areachart("soemthing", NumberAxis(), NumberAxis()) {
+
+                        }
+                    }
                 }
             }
         }
