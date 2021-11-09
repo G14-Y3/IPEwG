@@ -1,9 +1,8 @@
 package controller
 
+import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
 import models.EngineModel
-import processing.FreqProcessRange
-import processing.FreqProcessType
-import processing.frequency.FrequencyFilters
 import processing.frequency.idleFreqFilter
 import processing.BlurType
 import processing.HSVType
@@ -11,6 +10,7 @@ import processing.RGBType
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import processing.filters.*
+import processing.steganography.SteganographyEncoder
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -53,10 +53,14 @@ class EngineController : Controller() {
     
     // todo: support user select different filter type and boundary
     fun frequencyTransfer() = engine.transform(idleFreqFilter())
-    
-    fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())
+    
+    fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
+        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
 
+    fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
+        engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
+    
     fun histogramEqualization() = engine.transform(HistogramEqualization())
 }

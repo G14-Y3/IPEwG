@@ -4,10 +4,10 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import processing.ImageProcessing
 import processing.filters.Adjustment
+import processing.steganography.SteganographyDecoder
 import tornadofx.ViewModel
 import tornadofx.imageview
 import tornadofx.observableListOf
@@ -31,6 +31,12 @@ class EngineModel(
     // Reactive object reference to the transformed image
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
+
+    val encodeImage =
+        SimpleObjectProperty(this, "encodeImage", originalImage)
+
+    val decodeImage =
+        SimpleObjectProperty(this, "decodeImage", originalImage)
 
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
@@ -70,6 +76,11 @@ class EngineModel(
         snapshots.clear()
     }
 
+    fun loadEncodeImage(path: String) {
+        val image = Image(path)
+        encodeImage.value = image
+    }
+
     fun save(path: String, format: String = "png") {
         val output = File(path)
 
@@ -82,23 +93,38 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
+        transform(transformation, "preview")
+    }
+
+    /* the @param destination here refers to where to put the transformed image: the image panel or the decode panel */
+    fun transform(transformation: ImageProcessing, destination: String) {
         val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        when (destination) {
+            "preview" -> {
+                transformations.subList(currIndex + 1, transformations.size).clear()
+                snapshots.subList(currIndex + 1, snapshots.size).clear()
 
-        transformations.subList(currIndex + 1, transformations.size).clear()
-        snapshots.subList(currIndex + 1, snapshots.size).clear()
-
-        snapshots.add(
-            WritableImage(
-                previous.pixelReader,
-                previous.width.toInt(),
-                previous.height.toInt()
-            )
-        )
-        transformations.add(transformation)
-        currIndex++
-        updateListSelection()
-        transformation.process(snapshots[currIndex])
-        previewImage.value = snapshots[currIndex]
+                snapshots.add(
+                    WritableImage(
+                        previous.pixelReader,
+                        previous.width.toInt(),
+                        previous.height.toInt()
+                    )
+                )
+                transformations.add(transformation)
+                currIndex++
+                updateListSelection()
+                transformation.process(snapshots[currIndex])
+                previewImage.value = snapshots[currIndex]
+            }
+            "decode" -> {
+                if (transformation is SteganographyDecoder) {
+                    val decoder: SteganographyDecoder = transformation
+                    transformation.process(previous as WritableImage)
+                    decodeImage.value = decoder.get_result_image()
+                }
+            }
+        }
     }
 
     /**
