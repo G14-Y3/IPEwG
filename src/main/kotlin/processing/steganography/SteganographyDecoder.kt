@@ -7,6 +7,7 @@ import javafx.scene.paint.Color
 import processing.ImageProcessing
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class SteganographyDecoder(private val isDecodeImage: Boolean): ImageProcessing {
@@ -84,8 +85,8 @@ class SteganographyDecoder(private val isDecodeImage: Boolean): ImageProcessing 
             }
         }
 
-        for (x in 0 until width) {
-            for (y in 0 until height) {
+        for (x in 0 until if (isByPixelOrder) width else min(width, image.width.toInt())) {
+            for (y in 0 until if (isByPixelOrder) height else min(height, image.height.toInt())) {
                 val decode = if (!isByPixelOrder) reader.getColor(x, y) else pixel_arr[x][y]
 
                 val r = ((decode.red * 255).toInt() shl (8 - bits) and 0b11110000) / 255.0
