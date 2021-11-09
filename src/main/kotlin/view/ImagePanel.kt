@@ -1,14 +1,18 @@
 package view
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Point2D
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.ImageView
+import javafx.scene.image.WritableImage
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
+import processing.multithread.splitImageHorizontal
 import tornadofx.*
+import java.util.concurrent.Executors
 
 const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
@@ -24,7 +28,7 @@ class ImagePanel : View() {
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
     private var excessWidth = 0.0
-    var excessHeight = 0.0
+    private var excessHeight = 0.0
 
     init {
         engine.addImagePanel(this)
@@ -39,6 +43,18 @@ class ImagePanel : View() {
                 }
                 newView = imageview(engine.previewImage)
 
+                val slider = slider {
+                    prefWidth = oriView.image.width
+                    min = 0.0
+                    max = oriView.image.width
+                    blockIncrement = 1.0
+                }
+
+                slider.value = oriView.image.width
+                slider.valueProperty().addListener(ChangeListener { _, _, new ->
+                    engine.parallelView(new.toDouble())
+                })
+
                 val viewport = Rectangle2D(
                     .0,
                     .0,
@@ -51,12 +67,9 @@ class ImagePanel : View() {
                 addEventHandler(MouseEvent.ANY) {
                     if (it.eventType == MouseEvent.MOUSE_PRESSED) {
                         dragging = false;
-                    }
-                    else if (it.eventType == MouseEvent.DRAG_DETECTED) {
+                    } else if (it.eventType == MouseEvent.DRAG_DETECTED) {
                         dragging = true;
-                    }
-
-                    else if (it.eventType == MouseEvent.MOUSE_CLICKED) {
+                    } else if (it.eventType == MouseEvent.MOUSE_CLICKED) {
                         if (!dragging) {
                             oriView.isVisible = !oriView.isVisible
                             newView.isVisible = !newView.isVisible
@@ -113,7 +126,9 @@ class ImagePanel : View() {
                 lastMousePoint = null
             }
             addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
-            addEventFilter(MouseEvent.MOUSE_PRESSED) { lastMousePoint = Point2D(it.screenX, it.screenY) }
+            addEventFilter(MouseEvent.MOUSE_PRESSED) {
+                lastMousePoint = Point2D(it.screenX, it.screenY)
+            }
 
             addEventFilter(MouseEvent.MOUSE_DRAGGED) {
                 if (lastMousePoint != null) {
@@ -156,6 +171,8 @@ class ImagePanel : View() {
             }
         }
     }
+
+
 
     // cast given value in given range
     private fun cast(value: Double, min: Double, max: Double): Double {

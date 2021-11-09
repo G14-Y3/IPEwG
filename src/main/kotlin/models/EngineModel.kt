@@ -6,6 +6,7 @@ import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import processing.ImageProcessing
 import processing.filters.Adjustment
 import tornadofx.ViewModel
@@ -79,6 +80,37 @@ class EngineModel(
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    fun parallelView(splitWidth: Double) {
+        val output = WritableImage(
+            previewImage.get().width.toInt(),
+            previewImage.get().height.toInt()
+        )
+        val oriImageReader = originalImage.get().pixelReader
+        val newImageReader = previewImage.get().pixelReader
+        val outputWriter = output.pixelWriter
+
+        for (x in 0 until splitWidth.toInt() - 1) {
+            for (y in 0 until previewImage.get().height.toInt()) {
+                outputWriter.setColor(x, y, newImageReader.getColor(x, y))
+            }
+        }
+
+        if (splitWidth.toInt() != 0) {
+            for (y in 0 until previewImage.get().height.toInt()) {
+                outputWriter.setColor(splitWidth.toInt() - 1, y, Color.BLACK)
+            }
+        }
+
+        if (splitWidth.toInt() != previewImage.get().width.toInt()) {
+            for (x in splitWidth.toInt() until originalImage.get().width.toInt() - 1) {
+                for (y in 0 until originalImage.get().height.toInt()) {
+                    outputWriter.setColor(x, y, oriImageReader.getColor(x, y))
+                }
+            }
+        }
+        previewImage.value = output
     }
 
     fun transform(transformation: ImageProcessing) {
