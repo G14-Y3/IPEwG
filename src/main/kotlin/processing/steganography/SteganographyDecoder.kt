@@ -105,4 +105,8 @@ class SteganographyDecoder(private val isDecodeImage: Boolean): ImageProcessing 
     fun get_result_text(): String {
         return result_text
     }
+
+    override fun toString(): String {
+        return "Decoded target " + if (isDecodeImage) "image" else "text"
+    }
 }

@@ -41,12 +41,7 @@ class TopBar : View() {
             }
         }
         menu("View") {
-            item("Basic Filters") {
-                action {
-
-                }
-            }
-            item("Steganography") {
+            item("Something") {
                 action {
 
                 }

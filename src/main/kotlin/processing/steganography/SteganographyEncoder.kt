@@ -129,4 +129,8 @@ class SteganographyEncoder(
 
         writer.setArgb(image.width.toInt() - 1, image.height.toInt() - 1, encodeText.length or 0b11111111000000000000000000000000.toInt())
     }
+
+    override fun toString(): String {
+        return "Encoded target " + if (isEncodeImage) "image" else "text"
+    }
 }
