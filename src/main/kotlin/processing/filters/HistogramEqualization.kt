@@ -4,10 +4,12 @@ import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import kotlin.math.max
 
 class HistogramEqualization: ImageProcessing {
     val PIXEL_RANGE = 256
     val cdf: Array<Int> = Array(PIXEL_RANGE) {0}
+    val pdf: Array<Int> = Array(PIXEL_RANGE) {0}
     val pixelMap: Array<Double> = Array(PIXEL_RANGE) {0.0}
 
     override fun process(image: WritableImage) {
@@ -20,7 +22,7 @@ class HistogramEqualization: ImageProcessing {
         val width = image.width.toInt()
 
         // element at position i in pdf is count of pixel value i in the image
-        val pdf: Array<Int> = Array(PIXEL_RANGE) {0}
+
         for (i in 0 until height) {
             for (j in 0 until width) {
                 // in this nested for loop, CDF is generated as PDF, transfer to cdf in the next step
@@ -65,13 +67,15 @@ class HistogramEqualization: ImageProcessing {
     }
 
     fun getResultCdf(): Array<Int> {
-        val ret : Array<Int> = Array(PIXEL_RANGE) {0}
-        ret[0] = pixelMap[0].toInt()
-        for (i in 1 until PIXEL_RANGE) {
-            ret[i] = ret[i-1] + pixelMap[i].toInt()
-        }
+        val newCount = Array(PIXEL_RANGE) {0}
 
-        return ret
+        for(i in 0..255)
+            newCount[pixelMap[i].toInt()] = cdf[i]
+
+        for(i in 1..255)
+            newCount[i] = max(newCount[i], newCount[i-1])
+
+        return newCount
     }
 
 }
