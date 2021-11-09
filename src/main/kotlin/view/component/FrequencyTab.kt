@@ -22,6 +22,48 @@ import view.CssStyle
 class FrequencyTab(
     private val engineController: EngineController) : VBox() {
 
+    // type select combobox
+    val filterType = combobox(values = FreqProcessType.values().toList()) {
+        // display order input box only when type is butterworth
+        valueProperty().addListener(ChangeListener { _, _, typeName ->
+            orderBox.isVisible = typeName == FreqProcessType.ButterWorth
+        })
+    }
+    // range select combobox
+    val filterRange = combobox(values = FreqProcessRange.values().toList()) {
+        // display bandwidth sliders only when required by the selected filter type/range
+        valueProperty().addListener(ChangeListener { _, _, rangeName ->
+            bandWidthSlider.isVisible = rangeName == FreqProcessRange.BandPass || rangeName == FreqProcessRange.BandReject
+        })
+    }
+
+    // slider for adjusting filter parameters, initialize to invisible
+    val passStopBoundSlider =
+        SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
+            .withLabel("Cutoff Frequency")
+    val bandWidthSlider =
+        SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
+            .withLabel("Band Width")
+
+    // input box for butterworth order
+    val orderSpinner = spinner(
+        min = 0.0,
+        max = 10.0,
+        initialValue = 0.0,
+        amountToStepBy = 1.0,
+        editable = true
+    )
+    val orderBox = HBox(
+        label("order") {addClass(CssStyle.labelTag)},
+        orderSpinner
+    )
+
+    // imageView for showing filter, updated by passing to processing filter instance
+    val filterImageView = imageview {
+        fitHeight = 150.0
+        preserveRatioProperty().set(true)
+    }
+
     init {
         label("Frequency Filtering ") {
             vboxConstraints {
@@ -32,62 +74,29 @@ class FrequencyTab(
                 fontSize = Dimension(20.0, Dimension.LinearUnits.px)
             }
         }
+        hbox {
+            vbox {
+                this.minWidth = 400.0
+                hbox {
+                    label("filter type ") { addClass(CssStyle.labelTag) }
+                    this.children.add(filterType)
+                }
 
-        // type select combobox
-        val filterType = combobox(values = FreqProcessType.values().toList())
-        this.children.add(HBox(label("filter type ") {addClass(CssStyle.labelTag)}, filterType))
+                hbox {label("filter range") { addClass(CssStyle.labelTag) }
+                    this.children.add(filterRange)
+                }
 
-        // range select combobox
-        val filterRange = combobox(values = FreqProcessRange.values().toList())
-        this.children.add(HBox(label("filter range") {addClass(CssStyle.labelTag)}, filterRange))
+                this.children.add(passStopBoundSlider.build())
+                this.children.add(bandWidthSlider.build())
 
+                this.children.add(orderBox)
+            }
 
-        // slider for adjusting filter parameters, initialize to invisible
-        val passStopBoundSlider =
-            SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
-                .withLabel("Cutoff Frequency")
-        val bandWidthSlider =
-            SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
-                .withLabel("Band Width")
-
-        // display bandwidth sliders only when required by the selected filter type/range
-        filterRange.valueProperty().addListener(ChangeListener { _, _, rangeName ->
-            bandWidthSlider.isVisible = rangeName == FreqProcessRange.BandPass || rangeName == FreqProcessRange.BandReject
-        })
-
-        this.children.add(passStopBoundSlider.build())
-        this.children.add(bandWidthSlider.build())
-
-
-        // input box for butterworth order
-        val orderSpinner = spinner(
-            min = 0.0,
-            max = 10.0,
-            initialValue = 0.0,
-            amountToStepBy = 1.0,
-            editable = true
-        )
-        val orderBox = HBox(
-            label("order") {addClass(CssStyle.labelTag)},
-            orderSpinner
-        )
-        this.children.add(orderBox)
-
-        // display order input box only when type is butterworth
-        filterType.valueProperty().addListener(ChangeListener { _, _, typeName ->
-            orderBox.isVisible = typeName == FreqProcessType.ButterWorth
-        })
-
-        // imageView for showing filter, updated by passing to processing filter instance
-        val filterImageView = imageview {
-            fitHeight = 60.0
-            preserveRatioProperty().set(true)
+            hbox {
+                label("filter image:") {addClass(CssStyle.labelTag)}
+                this.children.add(filterImageView)
+            }
         }
-        this.children.add(HBox(
-            label("filter image:") {addClass(CssStyle.labelTag)},
-            filterImageView
-        ))
-
         buttonbar {
             padding = Insets(20.0, 10.0, 20.0, 10.0)
             button("Adjust").setOnAction {
@@ -99,8 +108,18 @@ class FrequencyTab(
 
                     // construct the corresponding filter
                     val filterGenerator = when (filterType.value) {
-                        FreqProcessType.Idle -> IdleFreqFilter(filterImageView, filterRange.value, passStopBound, bandWidth)
-                        FreqProcessType.Gaussian -> GaussianFilter(filterImageView, filterRange.value, passStopBound, bandWidth)
+                        FreqProcessType.Idle -> IdleFreqFilter(
+                            filterImageView,
+                            filterRange.value,
+                            passStopBound,
+                            bandWidth
+                        )
+                        FreqProcessType.Gaussian -> GaussianFilter(
+                            filterImageView,
+                            filterRange.value,
+                            passStopBound,
+                            bandWidth
+                        )
                         FreqProcessType.ButterWorth -> ButterworthFilter(
                             filterImageView,
                             filterRange.value,
