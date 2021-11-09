@@ -55,7 +55,7 @@ task<Download>("downloadLibtorch") {
     } else if (Os.isFamily(Os.FAMILY_MAC)) {
         "https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.10.0.zip"
     } else if (Os.isFamily(Os.FAMILY_UNIX)) {
-        "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.10.0%2Bcpu.zip"
+        "https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.10.0%2Bcpu.zip"
     } else {
         throw GradleException("Unsupported platform")
     }

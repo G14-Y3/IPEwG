@@ -69,4 +69,6 @@ class NeuralStyleTransfer(val style: NeuralStyles) : ImageProcessing {
             }
         }
     }
+
+    override fun toString(): String = "Neural Style Transfer: $style"
 }
