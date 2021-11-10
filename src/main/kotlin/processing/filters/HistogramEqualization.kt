@@ -77,5 +77,4 @@ class HistogramEqualization: ImageProcessing {
 
         return newCount
     }
-
 }
