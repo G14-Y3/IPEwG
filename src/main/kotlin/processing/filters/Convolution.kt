@@ -4,13 +4,15 @@ import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 /**
  * @param kernel n*n matrix, with odd n
  */
+@Serializable
+@SerialName("Convolution")
 class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
     init {
         if (kernel.size % 2 == 0 || kernel.any { it.size != kernel.size }) {

@@ -3,8 +3,12 @@ package processing.filters
 import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 
+@Serializable
+@SerialName("HistogramEqualization")
 class HistogramEqualization: ImageProcessing {
 
     override fun process(image: WritableImage) {

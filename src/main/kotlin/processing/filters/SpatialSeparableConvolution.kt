@@ -3,8 +3,12 @@ package processing.filters
 
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 
+@Serializable
+@SerialName("SpatialSeparableConvolution")
 class SpatialSeparableConvolution(
     private val kernelCol: Array<Double>,
     private val kernelRow: Array<Double>

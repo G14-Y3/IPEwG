@@ -1,10 +1,13 @@
 package processing.filters.blur
 
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
-import processing.filters.Convolution
 import processing.filters.SpatialSeparableConvolution
 
+@Serializable
+@SerialName("BoxBlur")
 class BoxBlur(private val radius: Int) : ImageProcessing {
     override fun process(image: WritableImage) {
         if (radius == 0) {
