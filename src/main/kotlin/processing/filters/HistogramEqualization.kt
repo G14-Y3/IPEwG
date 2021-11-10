@@ -3,9 +3,13 @@ package processing.filters
 import javafx.scene.image.PixelReader
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import kotlin.math.max
 
+@Serializable
+@SerialName("HistogramEqualization")
 class HistogramEqualization: ImageProcessing {
     val PIXEL_RANGE = 256
     val cdf: Array<Int> = Array(PIXEL_RANGE) {0}

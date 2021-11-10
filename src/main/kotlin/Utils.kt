@@ -62,11 +62,11 @@ class Utils {
                 if (dir.isNotEmpty())
                     when (mode) {
                         "import" ->
-                            controller.load("file:///" + dir[0].toString())
+                            controller.loadImage("file:///" + dir[0].toString())
                         "encode" ->
                             controller.loadEncodeImage("file:///" + dir[0].toString())
                         "export" ->
-                            controller.save(
+                            controller.saveImage(
                                 dir[0].toString(),
                                 dir[0].toString().substring(
                                     dir[0].toString().lastIndexOf(".") + 1,

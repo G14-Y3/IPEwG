@@ -13,8 +13,6 @@ import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
-import javafx.scene.image.Image
-import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.BlurType
@@ -25,9 +23,6 @@ import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import tornadofx.*
 import view.component.*
-import java.lang.IllegalArgumentException
-import java.lang.NumberFormatException
-import kotlin.math.roundToInt
 
 class FilterPanel : View() {
 

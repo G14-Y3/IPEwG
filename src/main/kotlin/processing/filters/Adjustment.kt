@@ -1,15 +1,30 @@
 package processing.filters
 
 import javafx.scene.image.WritableImage
-import processing.HSVType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import processing.ImageProcessing
-import processing.RGBType
 import processing.filters.blur.BoxBlur
 import processing.filters.blur.GaussianBlur
 import processing.filters.blur.LensBlur
 import processing.filters.blur.MotionBlur
 
+enum class RGBType { R, G, B }
+enum class HSVType {
+    H, // Hue
+    S, // Saturation
+    V // Value (Brightness)
+}
+
+enum class BlurType {
+    BOX, LENS, GAUSSIAN, MOTION_0, MOTION_45, MOTION_90, MOTION_135
+}
+
+@Serializable
+@SerialName("Adjustment")
 class Adjustment(private val properties: Map<String, Double>) : ImageProcessing {
+    @Transient
     var string: String = ""
 
     override fun process(image: WritableImage) {

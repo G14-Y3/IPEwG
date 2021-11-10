@@ -1,17 +1,17 @@
 package processing.filters
 
-import javafx.scene.image.PixelReader
-import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import processing.HSVType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
-import processing.RGBType
 import processing.multithread.splitImageVertical
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class RGBIntensity(private val factor: Double, private val type: RGBType) :
+@Serializable
+@SerialName("RGBIntensity")
+class RGBIntensity(private val factor: Double, private val rgbType: RGBType) :
     ImageProcessing {
 
     override fun process(image: WritableImage) {
@@ -37,7 +37,7 @@ class RGBIntensity(private val factor: Double, private val type: RGBType) :
                         val red = color.red
                         val green = color.green
                         val blue = color.blue
-                        val newColor: Color = when (type) {
+                        val newColor: Color = when (rgbType) {
                             RGBType.R -> Color.color(
                                 (red * factor).coerceAtMost(
                                     1.0
@@ -78,5 +78,5 @@ class RGBIntensity(private val factor: Double, private val type: RGBType) :
         }
     }
 
-    override fun toString(): String = "${type}=${(factor * 100 - 100).toInt()}%"
+    override fun toString(): String = "${rgbType}=${(factor * 100 - 100).toInt()}%"
 }
