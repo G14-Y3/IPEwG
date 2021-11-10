@@ -15,6 +15,8 @@ class FileController : Controller() {
 
     fun saveJson(path: String) = engine.saveJson(path)
 
+    fun loadEncodeImage(path: String) = engine.loadEncodeImage(path)
+
     fun undo() = engine.undo()
 
     fun redo() = engine.redo()

@@ -50,15 +50,6 @@ class TopBar : View() {
                 }
             }
         }
-//        menu("_View") {
-//            item("_Basic Actions") {
-//                action {
-//
-//                }
-//            }
-//            item("_RGB")
-//            item("_HSV")
-//        }
         menu("_Help") {
             item("_How to")
         }
@@ -124,6 +115,7 @@ class TopBar : View() {
                     fileSelectorMode = FileChooserMode.Save
                 }
             }
+
             val dir = chooseFile(
                 title = fileSelectorTitle,
                 filters = fileSelectorFilter,
