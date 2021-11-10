@@ -13,10 +13,7 @@ import processing.filters.BlurType
 import processing.filters.HSVType
 import processing.filters.RGBType
 import tornadofx.*
-import view.component.BasicFilterTab
-import view.component.BlurFilterTab
-import view.component.ColorAdjustTab
-import view.component.StyleTransferTab
+import view.component.*
 
 class FilterPanel : View() {
 
