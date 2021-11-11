@@ -24,6 +24,11 @@ class TopBar : View() {
                     imageOperation(mode = "export")
                 }
             }
+            item("Export _parallel") {
+                action {
+                    imageOperation(mode = "export_parallel")
+                }
+            }
             item("_Quit") {
                 action {
                     val quitText = "Quit"
@@ -96,6 +101,11 @@ class TopBar : View() {
                     fileSelectorFilter = exportFilter
                     fileSelectorMode = FileChooserMode.Save
                 }
+                "export_parallel" -> {
+                    fileSelectorTitle = "Export image in parallel mode"
+                    fileSelectorFilter = exportFilter
+                    fileSelectorMode = FileChooserMode.Save
+                }
             }
             val dir = chooseFile(
                 title = fileSelectorTitle,
@@ -116,6 +126,15 @@ class TopBar : View() {
                                 dir[0].toString().lastIndexOf(".") + 1,
                                 dir[0].toString().length
                             )
+                        )
+                    "export_parallel" ->
+                        fileController.save(
+                            dir[0].toString(),
+                            dir[0].toString().substring(
+                                dir[0].toString().lastIndexOf(".") + 1,
+                                dir[0].toString().length
+                            ),
+                            mode = "parallel"
                         )
                 }
 

@@ -9,7 +9,7 @@ class FileController : Controller() {
 
     fun load(path: String) = engine.load(path)
 
-    fun save(path: String, format: String) = engine.save(path, format)
+    fun save(path: String, format: String, mode: String = "") = engine.save(path, format, mode)
 
     fun undo() = engine.undo()
 

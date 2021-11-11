@@ -77,10 +77,13 @@ class EngineModel(
         snapshots.clear()
     }
 
-    fun save(path: String, format: String = "png") {
+    // Parameter 'mode' is empty
+    fun save(path: String, format: String = "png", mode: String = "") {
         val output = File(path)
 
-        val buffer = SwingFXUtils.fromFXImage(previewImage.value, null)
+        var saveImage = previewImage.value
+        if (mode == "parallel") saveImage = parallelImage.value
+        val buffer = SwingFXUtils.fromFXImage(saveImage, null)
         try {
             ImageIO.write(buffer, format, output)
         } catch (e: IOException) {
