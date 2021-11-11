@@ -42,12 +42,42 @@ class FilterPanel : View() {
     )
 
     private val colorAdjustmentSliderList = mapOf(
-        "R" to { factor: Double -> engineController.rgbFilter(factor, RGBType.R) },
-        "G" to { factor: Double -> engineController.rgbFilter(factor, RGBType.G) },
-        "B" to { factor: Double -> engineController.rgbFilter(factor, RGBType.B) },
-        "H" to { factor: Double -> engineController.hsvFilter(factor, HSVType.H) },
-        "S" to { factor: Double -> engineController.hsvFilter(factor, HSVType.S) },
-        "V" to { factor: Double -> engineController.hsvFilter(factor, HSVType.V) },
+        "R" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.R
+            )
+        },
+        "G" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.G
+            )
+        },
+        "B" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.B
+            )
+        },
+        "H" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.H
+            )
+        },
+        "S" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.S
+            )
+        },
+        "V" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.V
+            )
+        },
     )
 
     private val blurList = BlurType.values().toList()
@@ -68,7 +98,10 @@ class FilterPanel : View() {
                             content = StyleTransferTab(engineController)
                         }
                         tab("Color Adjust") {
-                            content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
+                            content = ColorAdjustTab(
+                                colorAdjustmentSliderList,
+                                engineController
+                            )
                         }
                         tab("frequency transfer") {
                             button("transfer").setOnAction {
@@ -88,7 +121,8 @@ class FilterPanel : View() {
                             }
                             style {
                                 fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                fontSize =
+                                    Dimension(20.0, Dimension.LinearUnits.px)
                             }
                         }
 
@@ -98,9 +132,10 @@ class FilterPanel : View() {
 
                             listview(engine.transformations) {
                                 prefWidth = 400.0
-                                selectionModel.selectedIndexProperty().onChange {
-                                    engine.setCurrentIndex(it)
-                                }
+                                selectionModel.selectedIndexProperty()
+                                    .onChange {
+                                        engine.setCurrentIndex(it)
+                                    }
                                 engine.updateListSelection =
                                     { selectionModel.select(engine.currIndex) }
                             }
@@ -129,11 +164,19 @@ class FilterPanel : View() {
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         side = Side.LEFT
                         tab("Encode/Decode Image") {
-                            content = EncodeImageTab(fileController, engine, engineController)
+                            content = EncodeImageTab(
+                                fileController,
+                                engine,
+                                engineController
+                            )
                         }
 
                         tab("Encode/Decode Text") {
-                            content = EncodeTextTab(fileController, engine, engineController)
+                            content = EncodeTextTab(
+                                fileController,
+                                engine,
+                                engineController
+                            )
                         }
                     }
 
@@ -145,7 +188,8 @@ class FilterPanel : View() {
                             }
                             style {
                                 fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                fontSize =
+                                    Dimension(20.0, Dimension.LinearUnits.px)
                             }
                         }
                         imageview(engine.decodeImage) {
@@ -163,5 +207,7 @@ class FilterPanel : View() {
                 }
             }
         }
+
+        tab<BatchProcessTab>()
     }
 }
