@@ -152,6 +152,7 @@ class EngineModel(
         )
         Adjustment(adjustmentProperties).process(preview)
         previewImage.value = preview
+        parallelImage.value = previewImage.value
     }
 
     fun submitAdjustment() {
@@ -164,6 +165,7 @@ class EngineModel(
     fun resetAdjustment() {
         adjustmentProperties.clear()
         previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        parallelImage.value = previewImage.value
     }
 
     fun undo() {
@@ -172,6 +174,7 @@ class EngineModel(
         currIndex--
         updateListSelection()
         previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        parallelImage.value = previewImage.value
     }
 
     fun redo() {
@@ -180,6 +183,7 @@ class EngineModel(
         currIndex++
         updateListSelection()
         previewImage.value = snapshots[currIndex]
+        parallelImage.value = previewImage.value
     }
 
     fun setCurrentIndex(index: Int) {
@@ -187,6 +191,7 @@ class EngineModel(
 
         currIndex = index
         previewImage.value = snapshots[currIndex]
+        parallelImage.value = previewImage.value
     }
 
     fun revert() {
@@ -198,6 +203,7 @@ class EngineModel(
         currIndex = -1
         updateListSelection()
         previewImage.value = originalImage.value
+        parallelImage.value = previewImage.value
     }
 
 }
