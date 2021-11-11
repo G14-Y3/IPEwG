@@ -2,20 +2,10 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
-import javafx.geometry.Pos
-import javafx.scene.Scene
-import javafx.scene.control.Alert
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.ButtonType
-import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
-import processing.FreqProcessRange
-import processing.FreqProcessType
-import processing.frequency.ButterworthFilter
-import processing.frequency.GaussianFilter
-import processing.frequency.IdleFreqFilter
+import processing.frequency.*
 import tornadofx.*
 import view.CssStyle
 

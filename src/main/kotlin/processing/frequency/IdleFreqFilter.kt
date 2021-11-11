@@ -2,8 +2,8 @@ package processing.frequency
 
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
-import processing.FreqProcessRange.*
-import processing.FreqProcessRange
+import processing.frequency.FreqProcessType.*
+import processing.frequency.FreqProcessRange.*
 import processing.filters.writeGrayImage
 import kotlin.math.abs
 import kotlin.math.exp

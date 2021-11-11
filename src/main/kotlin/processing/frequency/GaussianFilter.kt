@@ -2,10 +2,9 @@ package processing.frequency
 
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
-import processing.FreqProcessRange
-import processing.FreqProcessRange.*
 import kotlin.math.exp
 import kotlin.math.pow
+import processing.frequency.FreqProcessRange.*
 
 class GaussianFilter(
     override val filterImageView: ImageView,

@@ -1,13 +1,16 @@
 package processing.frequency
 
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+@Serializable
+@SerialName("FreqFilterGenerator")
 abstract class FilterGenerator {
 
     abstract val filterImageView: ImageView

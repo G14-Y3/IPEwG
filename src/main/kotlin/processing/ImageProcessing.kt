@@ -1,22 +1,50 @@
 package processing
 
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
+import processing.filters.*
+import processing.filters.blur.BoxBlur
+import processing.filters.blur.GaussianBlur
+import processing.filters.blur.LensBlur
+import processing.filters.blur.MotionBlur
+import processing.frequency.ButterworthFilter
+import processing.frequency.FrequencyFilters
+import processing.frequency.GaussianFilter
+import processing.frequency.IdleFreqFilter
+import processing.styletransfer.NeuralStyleTransfer
 
-enum class FreqProcessType {Idle, Gaussian, ButterWorth}
-enum class FreqProcessRange {LowPass, HighPass, BandReject, BandPass}
-enum class RGBType { R, G, B }
-
-enum class HSVType {
-    H, // Hue
-    S, // Saturation
-    V // Value (Brightness)
+val jsonFormatter = Json {
+    prettyPrint = true
+    serializersModule = SerializersModule {
+        polymorphic(ImageProcessing::class) {
+            // Declare all image processors here
+            subclass(Adjustment::class)
+            subclass(BoxBlur::class)
+            subclass(Contrast::class)
+            subclass(Convolution::class)
+            subclass(EdgeDetection::class)
+            subclass(FlipHorizontal::class)
+            subclass(FlipVertical::class)
+            subclass(GaussianBlur::class)
+            subclass(Grayscale::class)
+            subclass(HSVIntensity::class)
+            subclass(HistogramEqualization::class)
+            subclass(FrequencyFilters::class)
+            subclass(InverseColour::class)
+            subclass(LensBlur::class)
+            subclass(MotionBlur::class)
+            subclass(NeuralStyleTransfer::class)
+            subclass(RGBIntensity::class)
+            subclass(Sharpen::class)
+            subclass(SpatialSeparableConvolution::class)
+        }
+    }
 }
 
 interface ImageProcessing {
-
     fun process(image: WritableImage)
 }
 
-enum class BlurType {
-    BOX, LENS, GAUSSIAN, MOTION_0, MOTION_45, MOTION_90, MOTION_135
-}

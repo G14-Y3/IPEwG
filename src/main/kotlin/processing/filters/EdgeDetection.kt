@@ -2,12 +2,16 @@ package processing.filters
 
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import processing.filters.blur.GaussianBlur
 import java.lang.Math.toDegrees
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
+@Serializable
+@SerialName("EdgeDetection")
 class EdgeDetection : ImageProcessing {
     override fun process(image: WritableImage) {
         Grayscale().process(image)

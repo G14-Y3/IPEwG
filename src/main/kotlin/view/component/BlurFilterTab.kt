@@ -4,7 +4,7 @@ import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
-import processing.BlurType
+import processing.filters.BlurType
 import tornadofx.*
 
 class BlurFilterTab(engineController: EngineController): VBox() {

@@ -1,15 +1,21 @@
 package controller
 
 import models.EngineModel
-import tornadofx.Controller
+import tornadofx.*
 
 class FileController : Controller() {
 
     private val engine: EngineModel by inject()
 
-    fun load(path: String) = engine.load(path)
+    fun loadImage(path: String) = engine.load(path)
 
-    fun save(path: String, format: String) = engine.save(path, format)
+    fun saveImage(path: String, format: String) = engine.save(path, format)
+
+    fun loadJson(path: String) = engine.loadJson(path)
+
+    fun saveJson(path: String) = engine.saveJson(path)
+
+    fun loadEncodeImage(path: String) = engine.loadEncodeImage(path)
 
     fun undo() = engine.undo()
 

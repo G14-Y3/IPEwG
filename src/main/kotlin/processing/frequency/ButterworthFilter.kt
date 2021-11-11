@@ -1,10 +1,7 @@
 package processing.frequency
 
 import javafx.scene.image.ImageView
-import javafx.scene.image.WritableImage
-import processing.FreqProcessRange
-import processing.FreqProcessRange.*
-import kotlin.math.exp
+import processing.frequency.FreqProcessRange.*
 import kotlin.math.pow
 
 class ButterworthFilter(

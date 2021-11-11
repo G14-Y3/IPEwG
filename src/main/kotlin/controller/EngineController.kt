@@ -1,6 +1,8 @@
 package controller
 
+import javafx.scene.image.Image
 import models.EngineModel
+<<<<<<< HEAD
 import processing.frequency.FrequencyFilters
 import processing.BlurType
 import processing.HSVType
@@ -10,6 +12,14 @@ import processing.styletransfer.NeuralStyles
 import processing.filters.*
 import processing.frequency.FilterGenerator
 import tornadofx.Controller
+=======
+import tornadofx.*
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
+import processing.filters.*
+import processing.frequency.IdleFreqFilter
+import processing.steganography.SteganographyEncoder
+>>>>>>> af26f97c8a583552bc11e2403267a79f049dcb15
 
 /** IMPORTANT:
  *
@@ -48,12 +58,24 @@ class EngineController : Controller() {
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
+<<<<<<< HEAD
     
     fun frequencyTransfer(filterGenerator: FilterGenerator) = engine.transform(FrequencyFilters(filterGenerator))
     
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
+=======
+
+    // todo: support user select different filter type and boundary
+    fun frequencyTransfer() = engine.transform(IdleFreqFilter())
+>>>>>>> af26f97c8a583552bc11e2403267a79f049dcb15
 
     fun sharpen() = engine.transform(Sharpen())
+    
+    fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
+        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
 
+    fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
+        engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
+    
     fun histogramEqualization() = engine.transform(HistogramEqualization())
 }
