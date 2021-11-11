@@ -3,7 +3,9 @@ package view
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Point2D
+import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
+import javafx.scene.control.Slider
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import javafx.scene.input.MouseEvent
@@ -25,6 +27,8 @@ class ImagePanel : View() {
     lateinit var oriView: ImageView
     lateinit var newView: ImageView
 
+    lateinit var slider: Slider
+
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
     private var excessWidth = 0.0
@@ -35,6 +39,7 @@ class ImagePanel : View() {
     }
 
     override val root = vbox {
+        alignment = Pos.CENTER
         stackpane {
             val stack = stackpane {
                 oriView = imageview(engine.originalImage) {
@@ -43,17 +48,6 @@ class ImagePanel : View() {
                 }
                 newView = imageview(engine.parallelImage)
 
-                val slider = slider {
-                    prefWidth = oriView.image.width
-                    min = 0.0
-                    max = oriView.image.width
-                    blockIncrement = 1.0
-                }
-
-                slider.value = oriView.image.width
-                slider.valueProperty().addListener(ChangeListener { _, _, new ->
-                    engine.parallelView(new.toDouble())
-                })
 
                 val viewport = Rectangle2D(
                     .0,
@@ -170,8 +164,27 @@ class ImagePanel : View() {
                 margin = Insets(20.0)
             }
         }
+
+        slider = slider {
+            maxWidth = WINDOW_WIDTH
+            min = 0.0
+            max = oriView.image.width
+            blockIncrement = 1.0
+        }
+
+        slider.maxProperty().bind(
+            oriView.image.widthProperty()
+        )
+        slider.value = oriView.image.width
+        slider.valueProperty().addListener(ChangeListener { _, _, new ->
+            engine.parallelView(new.toDouble())
+        })
+        print(slider.max)
     }
 
+    fun sliderInit() {
+        slider.value = oriView.image.width
+    }
 
 
     // cast given value in given range

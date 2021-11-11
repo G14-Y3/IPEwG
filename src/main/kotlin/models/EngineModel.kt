@@ -58,6 +58,7 @@ class EngineModel(
         val image = Image(path)
         originalImage.value = image
         previewImage.value = image
+        parallelImage.value = image
         for (imagePanel in imagePanels) {
             // update all image panel view ports, so that previous image viewport will be overwritten
             val viewport = Rectangle2D(
@@ -67,6 +68,7 @@ class EngineModel(
                 image.height,
             )
             imagePanel.updateViewPort(viewport)
+            imagePanel.sliderInit()
         }
 
         currIndex = -1
@@ -100,7 +102,7 @@ class EngineModel(
             }
         }
 
-        if (splitWidth.toInt() != 0) {
+        if (splitWidth.toInt() != 0 && splitWidth.toInt() != previewImage.get().width.toInt()) {
             for (y in 0 until previewImage.get().height.toInt()) {
                 outputWriter.setColor(splitWidth.toInt() - 1, y, Color.BLACK)
             }
@@ -135,6 +137,9 @@ class EngineModel(
         transformation.process(snapshots[currIndex])
         previewImage.value = snapshots[currIndex]
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     /**
@@ -153,6 +158,9 @@ class EngineModel(
         Adjustment(adjustmentProperties).process(preview)
         previewImage.value = preview
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun submitAdjustment() {
@@ -166,6 +174,9 @@ class EngineModel(
         adjustmentProperties.clear()
         previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun undo() {
@@ -175,6 +186,9 @@ class EngineModel(
         updateListSelection()
         previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun redo() {
@@ -184,6 +198,9 @@ class EngineModel(
         updateListSelection()
         previewImage.value = snapshots[currIndex]
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun setCurrentIndex(index: Int) {
@@ -192,6 +209,9 @@ class EngineModel(
         currIndex = index
         previewImage.value = snapshots[currIndex]
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun revert() {
@@ -204,6 +224,9 @@ class EngineModel(
         updateListSelection()
         previewImage.value = originalImage.value
         parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
 }
