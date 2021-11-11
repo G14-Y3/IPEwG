@@ -6,15 +6,12 @@ import kotlinx.serialization.Serializable
 import processing.frequency.FreqProcessRange.*
 import kotlin.math.pow
 
-@Serializable
-@SerialName("ButterworthFilter")
 class ButterworthFilter(
-    override val filterImageView: ImageView,
     private val range: FreqProcessRange,
     private val passStopBound: Double,
     private val bandWidth: Double,
     private val order: Int)
-    : FilterGenerator() {
+    : FilterGenerator {
 
     // Reference: http://faculty.salina.k-state.edu/tim/mVision/freq-domain/freq_filters.html
     override fun getFilterPixel(dist: Double): Double {

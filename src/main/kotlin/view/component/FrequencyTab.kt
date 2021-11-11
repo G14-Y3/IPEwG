@@ -2,8 +2,12 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.scene.image.WritableImage
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import processing.frequency.*
 import tornadofx.*
@@ -27,7 +31,7 @@ class FrequencyTab(
         })
     }
 
-    // slider for adjusting filter parameters, initialize to invisible
+    // slider for adjusting filter parameters
     val passStopBoundSlider =
         SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
             .withLabel("Cutoff Frequency")
@@ -49,8 +53,9 @@ class FrequencyTab(
     )
 
     // imageView for showing filter, updated by passing to processing filter instance
-    val filterImageView = imageview {
+    var filterImageView = imageview {
         fitHeight = 150.0
+        fitWidth = 150.0
         preserveRatioProperty().set(true)
     }
 
@@ -96,30 +101,9 @@ class FrequencyTab(
                 // act only when operation is selected
                 if (filterType.value != null && filterRange.value != null) {
 
-                    // construct the corresponding filter
-                    val filterGenerator = when (filterType.value) {
-                        FreqProcessType.Idle -> IdleFreqFilter(
-                            filterImageView,
-                            filterRange.value,
-                            passStopBound,
-                            bandWidth
-                        )
-                        FreqProcessType.Gaussian -> GaussianFilter(
-                            filterImageView,
-                            filterRange.value,
-                            passStopBound,
-                            bandWidth
-                        )
-                        FreqProcessType.ButterWorth -> ButterworthFilter(
-                            filterImageView,
-                            filterRange.value,
-                            passStopBound,
-                            bandWidth,
-                            order = orderSpinner.value.toInt()
-                        )
-                    }
-
-                    engineController.frequencyTransfer(filterGenerator)
+                    val freqFilter = FrequencyFilters(filterType.value, filterRange.value, passStopBound, bandWidth, orderSpinner.value.toInt())
+                    engineController.frequencyTransfer(freqFilter)
+                    setFilterImage(freqFilter)
                 }
             }
             button("Reset").setOnAction {
@@ -127,7 +111,27 @@ class FrequencyTab(
                 filterRange.value = null
                 bandWidthSlider.getSlider().value = 0.0
                 passStopBoundSlider.getSlider().value = 0.0
+                filterImageView.image = null
             }
         }
+    }
+
+    // update filter view to the new filterImage
+    private fun setFilterImage(freqFilter: FrequencyFilters) {
+        val height = filterImageView.fitHeight.toInt()
+        val width = filterImageView.fitWidth.toInt()
+        val matrix = freqFilter.getFilter(height, width)
+
+        // new image for the new filter
+        val filterImage = WritableImage(height, width)
+        val writer = filterImage.pixelWriter
+
+        for (x in 0 until height) {
+            for (y in 0 until width) {
+                writer.setColor(x, y, Color.color(matrix[x][y], matrix[x][y], matrix[x][y]))
+            }
+        }
+
+        filterImageView.image = filterImage
     }
 }

@@ -15,7 +15,13 @@ enum class FreqProcessRange {LowPass, HighPass, BandReject, BandPass}
 
 @Serializable
 @SerialName("FrequencyFilter")
-class FrequencyFilters(private val filterGenerator: FilterGenerator): ImageProcessing {
+class FrequencyFilters(
+    private val filterType: FreqProcessType,
+    private val filterRange: FreqProcessRange,
+    private val passStopBound: Double,
+    private val bandWidth: Double,
+    private val order: Int): ImageProcessing {
+
 
     override fun process(image: WritableImage) {
         // 1. multiplt by (-1)^(i+j) to move top left of image to center
@@ -41,7 +47,7 @@ class FrequencyFilters(private val filterGenerator: FilterGenerator): ImageProce
         }
 
         // 3. define filter matrix
-        val filter = filterGenerator.getFilter(height, width)
+        val filter = getFilter(height, width)
 
         // 4. apply filter to frequency matrix
         for (i in 0 .. 2) {
@@ -139,8 +145,48 @@ class FrequencyFilters(private val filterGenerator: FilterGenerator): ImageProce
         return concatResult
     }
 
-    override fun toString(): String {
-        return filterGenerator.toString()
+    // get filter matrix from given generator
+    fun getFilter(height: Int, width: Int): Array<Array<Double>> {
+        val generator = getGenerator()
+        val filter = Array(height) { Array(width) { 0.0 } }
+        val halfWidth = width / 2.0
+        val halfHeight = height / 2.0
+        for (x in 0 until height) {
+            for (y in 0 until width) {
+                val xDist = abs(x - halfHeight) / halfHeight
+                val yDist = abs(y - halfWidth) / halfWidth
+                val distFromCenter = sqrt(xDist.pow(2) + yDist.pow(2))
+                val pixelVal = generator.getFilterPixel(distFromCenter)
+
+                filter[x][y] = pixelVal
+            }
+        }
+        return filter
     }
 
+    override fun toString(): String {
+        return getGenerator().toString()
+    }
+
+    // get generator according to given parameters
+    fun getGenerator(): FilterGenerator {
+        return when (filterType) {
+            FreqProcessType.Idle -> IdleFreqFilter(
+                filterRange,
+                passStopBound,
+                bandWidth
+            )
+            FreqProcessType.Gaussian -> GaussianFilter(
+                filterRange,
+                passStopBound,
+                bandWidth
+            )
+            FreqProcessType.ButterWorth -> ButterworthFilter(
+                filterRange,
+                passStopBound,
+                bandWidth,
+                order
+            )
+        }
+    }
 }

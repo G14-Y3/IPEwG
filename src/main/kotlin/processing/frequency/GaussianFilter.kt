@@ -8,14 +8,11 @@ import kotlin.math.exp
 import kotlin.math.pow
 import processing.frequency.FreqProcessRange.*
 
-@Serializable
-@SerialName("GaussianFilter")
 class GaussianFilter(
-    override val filterImageView: ImageView,
     private val range: FreqProcessRange,
     private val passStopBound: Double,
     private val bandWidth: Double)
-    : FilterGenerator() {
+    : FilterGenerator {
 
     // Reference: http://faculty.salina.k-state.edu/tim/mVision/freq-domain/freq_filters.html
     override fun getFilterPixel(dist: Double): Double {

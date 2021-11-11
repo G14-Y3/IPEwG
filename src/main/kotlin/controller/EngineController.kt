@@ -49,7 +49,7 @@ class EngineController : Controller() {
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
     
-    fun frequencyTransfer(filterGenerator: FilterGenerator) = engine.transform(FrequencyFilters(filterGenerator))
+    fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
     
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 

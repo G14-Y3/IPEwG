@@ -12,14 +12,11 @@ import kotlin.math.exp
 import kotlin.math.sqrt
 import kotlin.math.pow
 
-@Serializable
-@SerialName("IdleFreqFilter")
 class IdleFreqFilter(
-    override val filterImageView: ImageView,
     private val range: FreqProcessRange,
     private val passStopBound: Double,
     private val bandWidth: Double)
-    : FilterGenerator() {
+    : FilterGenerator {
 
     // Reference: http://faculty.salina.k-state.edu/tim/mVision/freq-domain/freq_filters.html
     override fun getFilterPixel(dist: Double): Double {
