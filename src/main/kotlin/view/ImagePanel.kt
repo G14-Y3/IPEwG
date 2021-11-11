@@ -177,12 +177,10 @@ class ImagePanel : View() {
         slider.valueProperty().addListener(ChangeListener { _, _, new ->
             engine.parallelView(new.toDouble())
         })
-        print(slider.max)
     }
 
     fun sliderInit() {
         slider.value = slider.max
-        print(slider.max)
     }
 
     fun updateSlider(newMax: Double) {

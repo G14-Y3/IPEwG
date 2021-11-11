@@ -24,19 +24,19 @@ class TopBar : View() {
                     fileOperation(mode = "export image")
                 }
             }
-            item("_Import Transformations...") {
+            item("Export _Parallel") {
+                action {
+                    fileOperation(mode = "export_parallel")
+                }
+            }
+            item("I_mport Transformations...") {
                 action {
                     fileOperation(mode = "import JSON")
                 }
             }
-            item("_Export Transformations...") {
+            item("E_xport Transformations...") {
                 action {
                     fileOperation(mode = "export JSON")
-                }
-            }
-            item("Export _parallel") {
-                action {
-                    imageOperation(mode = "export_parallel")
                 }
             }
             item("_Quit") {
@@ -150,7 +150,7 @@ class TopBar : View() {
                         )
 
                     "export_parallel" ->
-                        fileController.save(
+                        fileController.saveImage(
                             dir[0].toString(),
                             dir[0].toString().substring(
                                 dir[0].toString().lastIndexOf(".") + 1,
