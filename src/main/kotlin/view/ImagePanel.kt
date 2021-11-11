@@ -165,6 +165,7 @@ class ImagePanel : View() {
             }
         }
 
+        // The slider at the bottom of the image view to slide between new and original image.
         slider = slider {
             maxWidth = WINDOW_WIDTH
             min = 0.0
@@ -172,10 +173,7 @@ class ImagePanel : View() {
             blockIncrement = 1.0
         }
 
-        slider.maxProperty().bind(
-            oriView.image.widthProperty()
-        )
-        slider.value = oriView.image.width
+        slider.value = slider.max
         slider.valueProperty().addListener(ChangeListener { _, _, new ->
             engine.parallelView(new.toDouble())
         })
@@ -183,9 +181,13 @@ class ImagePanel : View() {
     }
 
     fun sliderInit() {
-        slider.value = oriView.image.width
+        slider.value = slider.max
+        print(slider.max)
     }
 
+    fun updateSlider(newMax: Double) {
+        slider.max = newMax
+    }
 
     // cast given value in given range
     private fun cast(value: Double, min: Double, max: Double): Double {
