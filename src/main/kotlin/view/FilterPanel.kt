@@ -6,24 +6,14 @@ import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
-import javafx.scene.control.ComboBox
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
-import javafx.scene.image.Image
-import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
-import processing.BlurType
-import processing.HSVType
-import processing.RGBType
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
+import processing.filters.BlurType
+import processing.filters.HSVType
+import processing.filters.RGBType
 import tornadofx.*
 import view.component.*
-import java.lang.IllegalArgumentException
-import java.lang.NumberFormatException
-import kotlin.math.roundToInt
 
 class FilterPanel : View() {
 
@@ -52,68 +42,116 @@ class FilterPanel : View() {
 
     private val blurList = BlurType.values().toList()
 
-    override val root = vbox {
-        splitpane {
-            val tabPane = tabpane {
-                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                side = Side.LEFT
-                tab("Basic Actions") {
-                    content = BasicFilterTab(basicFilterButtonList)
-                }
-
-                tab("Style Transfer") {
-                    content = StyleTransferTab(engineController)
-                }
-                tab("Color Adjust") {
-                    content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
-                }
-                tab("frequency transfer") {
-                    button("transfer").setOnAction {
-                        engineController.frequencyTransfer()
-                    }
-                }
-                tab("Blur") {
-                    content = BlurFilterTab(engineController)
-                }
-            }
-
+    override val root = tabpane {
+        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+        tab("Filters") {
             vbox {
-                alignment = Pos.CENTER
-                label("Transformations") {
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 10.0, 10.0)
-                    }
-                    style {
-                        fontWeight = FontWeight.BOLD
-                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                    }
-                }
-
-                hbox {
-                    alignment = Pos.CENTER
-                    padding = Insets(0.0, 10.0, 0.0, 10.0)
-
-                    listview(engine.transformations) {
-                        prefWidth = 400.0
-                        selectionModel.selectedIndexProperty().onChange {
-                            engine.setCurrentIndex(it)
+                splitpane {
+                    val tabPane = tabpane {
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        side = Side.LEFT
+                        tab("Basic Actions") {
+                            content = BasicFilterTab(basicFilterButtonList)
                         }
-                        engine.updateListSelection =
-                            { selectionModel.select(engine.currIndex) }
+
+                        tab("Style Transfer") {
+                            content = StyleTransferTab(engineController)
+                        }
+                        tab("Color Adjust") {
+                            content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
+                        }
+                        tab("frequency transfer") {
+                            button("transfer").setOnAction {
+                                engineController.frequencyTransfer()
+                            }
+                        }
+                        tab("Blur") {
+                            content = BlurFilterTab(engineController)
+                        }
                     }
-                }
-                hbox {
-                    alignment = Pos.CENTER
-                    buttonbar {
-                        padding = Insets(20.0, 10.0, 20.0, 10.0)
-                        button("Undo").setOnAction { fileController.undo() }
-                        button("Redo").setOnAction { fileController.redo() }
-                        button("Revert").setOnAction { fileController.revert() }
+
+                    vbox {
+                        alignment = Pos.CENTER
+                        label("Transformations") {
+                            vboxConstraints {
+                                margin = Insets(10.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+
+                        hbox {
+                            alignment = Pos.CENTER
+                            padding = Insets(0.0, 10.0, 0.0, 10.0)
+
+                            listview(engine.transformations) {
+                                prefWidth = 400.0
+                                selectionModel.selectedIndexProperty().onChange {
+                                    engine.setCurrentIndex(it)
+                                }
+                                engine.updateListSelection =
+                                    { selectionModel.select(engine.currIndex) }
+                            }
+                        }
+                        hbox {
+                            alignment = Pos.CENTER
+                            buttonbar {
+                                padding = Insets(20.0, 10.0, 20.0, 10.0)
+                                button("Undo").setOnAction { fileController.undo() }
+                                button("Redo").setOnAction { fileController.redo() }
+                                button("Revert").setOnAction { fileController.revert() }
+                            }
+                        }
                     }
+                    orientation = Orientation.VERTICAL
+                    setDividerPosition(0, 0.4)
                 }
             }
-            orientation = Orientation.VERTICAL
-            setDividerPosition(0, 0.4)
+        }
+
+        tab("Steganography") {
+            vbox {
+                splitpane {
+                    prefHeight = 1000.0
+                    val tabpane = tabpane {
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        side = Side.LEFT
+                        tab("Encode/Decode Image") {
+                            content = EncodeImageTab(fileController, engine, engineController)
+                        }
+
+                        tab("Encode/Decode Text") {
+                            content = EncodeTextTab(fileController, engine, engineController)
+                        }
+                    }
+
+                    vbox {
+                        alignment = Pos.CENTER
+                        label("Result/Target Image") {
+                            vboxConstraints {
+                                margin = Insets(5.0, 20.0, 5.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
+                        imageview(engine.decodeImage) {
+                            isPreserveRatio = true
+                            fitWidth = 300.0
+                            fitHeight = 300.0
+                            vboxConstraints {
+                                margin = Insets(20.0)
+                            }
+                        }
+                    }
+
+                    orientation = Orientation.VERTICAL
+                    setDividerPosition(0, 0.4)
+                }
+            }
         }
     }
 }

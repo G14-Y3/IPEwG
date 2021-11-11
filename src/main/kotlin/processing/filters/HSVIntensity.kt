@@ -1,17 +1,17 @@
 package processing.filters
 
-import javafx.scene.image.PixelReader
-import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import processing.HSVType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
-import processing.multithread.splitImageHorizontal
 import processing.multithread.splitImageVertical
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class HSVIntensity(private val factor: Double, private val type: HSVType) :
+@Serializable
+@SerialName("HSVIntensity")
+class HSVIntensity(private val factor: Double, private val hsvType: HSVType) :
     ImageProcessing {
     override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
@@ -32,7 +32,7 @@ class HSVIntensity(private val factor: Double, private val type: HSVType) :
                 for (x in 0 until subImage.width.toInt()) {
                     for (y in 0 until subImage.height.toInt()) {
                         val color: Color = reader.getColor(x, y)
-                        val newColor: Color = when (type) {
+                        val newColor: Color = when (hsvType) {
                             HSVType.H -> color.deriveColor(
                                 (factor - 1) * 180,
                                 1.0,
@@ -77,5 +77,5 @@ class HSVIntensity(private val factor: Double, private val type: HSVType) :
     }
 
 
-    override fun toString(): String = "${type}=${(factor * 100 - 100).toInt()}%"
+    override fun toString(): String = "${hsvType}=${(factor * 100 - 100).toInt()}%"
 }

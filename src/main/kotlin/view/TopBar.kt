@@ -16,12 +16,22 @@ class TopBar : View() {
         menu("_File") {
             item("_Import...") {
                 action {
-                    imageOperation(mode = "import")
+                    fileOperation(mode = "import image")
                 }
             }
             item("_Export...") {
                 action {
-                    imageOperation(mode = "export")
+                    fileOperation(mode = "export image")
+                }
+            }
+            item("_Import Transformations...") {
+                action {
+                    fileOperation(mode = "import JSON")
+                }
+            }
+            item("_Export Transformations...") {
+                action {
+                    fileOperation(mode = "export JSON")
                 }
             }
             item("Export _parallel") {
@@ -45,21 +55,12 @@ class TopBar : View() {
                 }
             }
         }
-//        menu("_View") {
-//            item("_Basic Actions") {
-//                action {
-//
-//                }
-//            }
-//            item("_RGB")
-//            item("_HSV")
-//        }
         menu("_Help") {
             item("_How to")
         }
     }
 
-    private fun imageOperation(mode: String) {
+    private fun fileOperation(mode: String) {
 
         var fileSelectorTitle = ""
         var fileSelectorFilter = emptyArray<FileChooser.ExtensionFilter>()
@@ -89,44 +90,65 @@ class TopBar : View() {
             )
         )
 
+        val jsonFilter = arrayOf(
+            FileChooser.ExtensionFilter(
+                "JSON files (*.json)",
+                "*.json"
+            )
+        )
+
         try {
             when (mode) {
-                "import" -> {
+                "import image" -> {
                     fileSelectorTitle = "Import image"
                     fileSelectorFilter = importFilter
                     fileSelectorMode = FileChooserMode.Single
                 }
-                "export" -> {
+                "export image" -> {
                     fileSelectorTitle = "Export image"
                     fileSelectorFilter = exportFilter
                     fileSelectorMode = FileChooserMode.Save
                 }
+
                 "export_parallel" -> {
                     fileSelectorTitle = "Export image in parallel mode"
                     fileSelectorFilter = exportFilter
                     fileSelectorMode = FileChooserMode.Save
                 }
+
+                "import JSON" -> {
+                    fileSelectorTitle = "import JSON"
+                    fileSelectorFilter = jsonFilter
+                    fileSelectorMode = FileChooserMode.Single
+                }
+                "export JSON" -> {
+                    fileSelectorTitle = "Export JSON"
+                    fileSelectorFilter = jsonFilter
+                    fileSelectorMode = FileChooserMode.Save
+                }
             }
+
             val dir = chooseFile(
                 title = fileSelectorTitle,
                 filters = fileSelectorFilter,
                 mode = fileSelectorMode
             ) {
                 initialDirectory = File(File("").canonicalPath)
-                initialFileName = "IPEwG_result_image"
+                initialFileName = if (mode.endsWith("JSON")) "transformations.json" else "image.png"
             }
             if (dir.isNotEmpty())
                 when (mode) {
-                    "import" ->
-                        fileController.load("file:///" + dir[0].toString())
-                    "export" ->
-                        fileController.save(
+                    "import image" ->
+                        fileController.loadImage("file:///" + dir[0].toString())
+                    "export image" ->
+                        fileController.saveImage(
                             dir[0].toString(),
                             dir[0].toString().substring(
                                 dir[0].toString().lastIndexOf(".") + 1,
                                 dir[0].toString().length
                             )
                         )
+
                     "export_parallel" ->
                         fileController.save(
                             dir[0].toString(),
@@ -136,6 +158,10 @@ class TopBar : View() {
                             ),
                             mode = "parallel"
                         )
+
+                    "import JSON" -> fileController.loadJson(dir[0].toString())
+                    "export JSON" -> fileController.saveJson(dir[0].toString())
+
                 }
 
         } catch (e: IllegalArgumentException) {

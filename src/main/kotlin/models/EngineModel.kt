@@ -4,19 +4,20 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.filters.Adjustment
-import tornadofx.ViewModel
-import tornadofx.imageview
-import tornadofx.observableListOf
+import processing.jsonFormatter
+import tornadofx.*
+import processing.steganography.SteganographyDecoder
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-import kotlin.collections.HashMap
+import kotlin.collections.set
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
@@ -35,6 +36,12 @@ class EngineModel(
 
     var parallelImage =
         SimpleObjectProperty(this, "parallelImage", originalImage)
+
+    val encodeImage =
+        SimpleObjectProperty(this, "encodeImage", originalImage)
+
+    val decodeImage =
+        SimpleObjectProperty(this, "decodeImage", originalImage)
 
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
@@ -78,6 +85,11 @@ class EngineModel(
     }
 
     // Parameter 'mode' is empty
+    fun loadEncodeImage(path: String) {
+        val image = Image(path)
+        encodeImage.value = image
+    }
+
     fun save(path: String, format: String = "png", mode: String = "") {
         val output = File(path)
 
@@ -123,24 +135,40 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
+        transform(transformation, "preview")
+    }
+
+    /* the @param destination here refers to where to put the transformed image: the image panel or the decode panel */
+    fun transform(transformation: ImageProcessing, destination: String) {
         val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        when (destination) {
+            "preview" -> {
+                transformations.subList(currIndex + 1, transformations.size).clear()
+                snapshots.subList(currIndex + 1, snapshots.size).clear()
 
-        transformations.subList(currIndex + 1, transformations.size).clear()
-        snapshots.subList(currIndex + 1, snapshots.size).clear()
-
-        snapshots.add(
-            WritableImage(
-                previous.pixelReader,
-                previous.width.toInt(),
-                previous.height.toInt()
-            )
-        )
-        transformations.add(transformation)
-        currIndex++
-        updateListSelection()
-        transformation.process(snapshots[currIndex])
-        previewImage.value = snapshots[currIndex]
-        parallelImage.value = previewImage.value
+                snapshots.add(
+                    WritableImage(
+                        previous.pixelReader,
+                        previous.width.toInt(),
+                        previous.height.toInt()
+                    )
+                )
+                transformations.add(transformation)
+                currIndex++
+                updateListSelection()
+                transformation.process(snapshots[currIndex])
+                previewImage.value = snapshots[currIndex]
+                parallelImage.value = previewImage.value
+            }
+            "decode" -> {
+                if (transformation is SteganographyDecoder) {
+                    val decoder: SteganographyDecoder = transformation
+                    transformation.process(previous as WritableImage)
+                    decodeImage.value = decoder.get_result_image()
+                    parallelImage.value = decodeImage.value
+                }
+            }
+        }
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
         }
@@ -230,6 +258,22 @@ class EngineModel(
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
+        }
+    }
+
+    fun loadJson(path: String) {
+        revert()
+        var jsonContent = ""
+        File(path).useLines { lines -> jsonContent = lines.joinToString("") }
+        val transformationList = jsonFormatter.decodeFromString<List<ImageProcessing>>(jsonContent)
+
+        for (transformation in transformationList)
+            transform(transformation)
+    }
+
+    fun saveJson(path: String) {
+        File(path).printWriter().use { out ->
+            out.println(jsonFormatter.encodeToString(ArrayList(transformations)))
         }
     }
 
