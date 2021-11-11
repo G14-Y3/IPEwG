@@ -2,6 +2,8 @@ package processing.frequency
 
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.frequency.FreqProcessType.*
 import processing.frequency.FreqProcessRange.*
 import processing.filters.writeGrayImage
@@ -10,6 +12,8 @@ import kotlin.math.exp
 import kotlin.math.sqrt
 import kotlin.math.pow
 
+@Serializable
+@SerialName("IdleFreqFilter")
 class IdleFreqFilter(
     override val filterImageView: ImageView,
     private val range: FreqProcessRange,

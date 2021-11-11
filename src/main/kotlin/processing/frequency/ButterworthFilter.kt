@@ -1,9 +1,13 @@
 package processing.frequency
 
 import javafx.scene.image.ImageView
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.frequency.FreqProcessRange.*
 import kotlin.math.pow
 
+@Serializable
+@SerialName("ButterworthFilter")
 class ButterworthFilter(
     override val filterImageView: ImageView,
     private val range: FreqProcessRange,
@@ -21,7 +25,7 @@ class ButterworthFilter(
                 1 / (1 + (dist * bandWidth / (dist.pow(2) - passStopBound.pow(2))).pow(2*order))
         }
 
-        if (range == HighPass || range == BandReject) {
+        if (range == HighPass || range == BandPass) {
             return 1 - baseVal
         }
         return baseVal
