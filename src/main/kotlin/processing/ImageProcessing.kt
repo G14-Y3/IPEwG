@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import processing.conversion.ConvertColorSpace
 import processing.filters.*
 import processing.filters.blur.BoxBlur
 import processing.filters.blur.GaussianBlur
@@ -21,6 +22,7 @@ val jsonFormatter = Json {
             subclass(Adjustment::class)
             subclass(BoxBlur::class)
             subclass(Contrast::class)
+            subclass(ConvertColorSpace::class)
             subclass(Convolution::class)
             subclass(EdgeDetection::class)
             subclass(FlipHorizontal::class)
