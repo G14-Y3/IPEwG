@@ -51,23 +51,27 @@ enum class BlendType(val operation: (Color, Color) -> Color) {
             Color(colorA.red, colorA.green, colorA.blue, 1.0)
         else colorB
     }),
-    MULTIPLY(applyToRGB(::multiplyBlend)),
-    SCREEN(applyToRGB(::screenBlend)),
-    OVERLAY(applyToRGB { a, b -> hardLightBlend(b, a) }),
     DARKEN(applyToRGB { a, b -> a.coerceAtMost(b) }),
+    MULTIPLY(applyToRGB(::multiplyBlend)),
+    COLOR_BURN(applyToRGB(::colorBurnBlend)),
+    LINEAR_BURN(applyToRGB(::linearBurnBlend)),
     LIGHTEN(applyToRGB { a, b -> a.coerceAtLeast(b) }),
-    COLOR_DODGE(applyToRGB { a, b ->
-        if (a < 1) 1.0.coerceAtMost(b / (1 - a))
-        else 1.0
-    }),
-    COLOR_BURN(applyToRGB { a, b ->
-        if (a > 0) 1 - 1.0.coerceAtMost((1 - b) / a)
-        else 0.0
-    }),
-    HARD_LIGHT(applyToRGB(::hardLightBlend)),
+    SCREEN(applyToRGB(::screenBlend)),
+    COLOR_DODGE(applyToRGB(::colorDodgeBlend)),
+    LINEAR_DODGE(applyToRGB(::linearDodgeBlend)),
+    OVERLAY(applyToRGB { a, b -> hardLightBlend(b, a) }),
     SOFT_LIGHT(applyToRGB { a, b ->
         if (a <= 0.5) b - (1 - 2 * a) * b * (1 - b)
         else b + (2 * a - 1) * (d(b) - b)
+    }),
+    HARD_LIGHT(applyToRGB(::hardLightBlend)),
+    VIVID_LIGHT(applyToRGB { a, b ->
+        if (a <= 0.5) colorBurnBlend(2 * a, b)
+        else colorDodgeBlend(2 * (a - 0.5), b)
+    }),
+    LINEAR_LIGHT(applyToRGB { a, b ->
+        if (a <= 0.5) linearBurnBlend(2 * a, b)
+        else linearDodgeBlend(2 * (a - 0.5), b)
     }),
     DIFFERENCE(applyToRGB { a, b -> (b - a).absoluteValue }),
     EXCLUSION(applyToRGB { a, b -> b + a - 2 * b * a }),
@@ -96,6 +100,17 @@ fun screenBlend(a: Double, b: Double): Double = 1 - (1 - a) * (1 - b)
 fun hardLightBlend(a: Double, b: Double): Double =
     if (a <= 0.5) multiplyBlend(b, 2 * a)
     else screenBlend(b, 2 * a - 1)
+
+fun colorBurnBlend(a: Double, b: Double) =
+    if (a > 0) 1 - 1.0.coerceAtMost((1 - b) / a)
+    else 0.0
+
+fun colorDodgeBlend(a: Double, b: Double) =
+    if (a < 1) 1.0.coerceAtMost(b / (1 - a))
+    else 1.0
+
+fun linearBurnBlend(a: Double, b: Double) = (a + b - 1).coerceAtLeast(0.0)
+fun linearDodgeBlend(a: Double, b: Double) = (a + b).coerceAtMost(1.0)
 
 fun d(x: Double): Double = if (x <= 0.25) ((16 * x - 12) * x + 4) * x else sqrt(x)
 
