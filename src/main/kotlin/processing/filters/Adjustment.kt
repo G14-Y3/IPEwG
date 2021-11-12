@@ -21,11 +21,6 @@ enum class BlurType {
     BOX, LENS, GAUSSIAN, MOTION_0, MOTION_45, MOTION_90, MOTION_135
 }
 
-enum class BlendType {
-    NORMAL, MULTIPLY, SCREEN, OVERLAY, DARKEN, LIGHTEN, COLOR_DODGE, COLOR_BURN,
-    HARD_LIGHT, SOFT_LIGHT, DIFFERENCE, EXCLUSION, HUE, SATURATION, COLOR, LUMINOSITY
-}
-
 @Serializable
 @SerialName("Adjustment")
 class Adjustment(private val properties: Map<String, Double>) : ImageProcessing {
