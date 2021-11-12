@@ -42,6 +42,13 @@ class FilterPanel : View() {
 
     private val blurList = BlurType.values().toList()
 
+    private val converterList = mapOf(
+        ConverterTypes.ColorSpace to mapOf(
+            "sRGB to Linear RGB" to engineController::convertsRGBToLinearRGB,
+            "Linear RGB to sRGB" to engineController::convertLinearRGBTosRGB,
+        )
+    )
+
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
         tab("Filters") {
@@ -52,6 +59,10 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tab("Basic Actions") {
                             content = BasicFilterTab(basicFilterButtonList)
+                        }
+
+                        tab("Conversions") {
+                            content = ConversionTab(converterList)
                         }
 
                         tab("Style Transfer") {
