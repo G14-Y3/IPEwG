@@ -14,17 +14,17 @@ class TopBar : View() {
 
     override val root = menubar {
         menu("_File") {
-            item("_Import...") {
+            item("_Import Image...") {
                 action {
                     fileOperation(mode = "import image")
                 }
             }
-            item("_Export...") {
+            item("_Export Result...") {
                 action {
                     fileOperation(mode = "export image")
                 }
             }
-            item("Export _Parallel") {
+            item("Export Current _Parallel View...") {
                 action {
                     fileOperation(mode = "export_parallel")
                 }
