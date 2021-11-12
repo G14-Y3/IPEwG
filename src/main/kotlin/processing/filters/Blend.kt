@@ -16,10 +16,10 @@ import processing.filters.BlendType.*
 class Blend(@property:Contextual val blendImage: Image, val mode: BlendType) :
     ImageProcessing {
     override fun process(image: WritableImage) {
-        val width = image.width.toInt()
-        val height = image.height.toInt()
-        val readerA: PixelReader = image.pixelReader
-        val readerB: PixelReader = blendImage.pixelReader
+        val width = image.width.toInt().coerceAtMost(blendImage.width.toInt())
+        val height = image.height.toInt().coerceAtMost(blendImage.height.toInt())
+        val readerA: PixelReader = blendImage.pixelReader
+        val readerB: PixelReader = image.pixelReader
         val writer: PixelWriter = image.pixelWriter
         for (y in 0 until height) {
             for (x in 0 until width) {
@@ -28,13 +28,18 @@ class Blend(@property:Contextual val blendImage: Image, val mode: BlendType) :
                 val newR = getChannelOperation()(oldColorA.red, oldColorB.red)
                 val newG = getChannelOperation()(oldColorA.green, oldColorB.green)
                 val newB = getChannelOperation()(oldColorA.blue, oldColorB.blue)
-                val newColor = Color(newR, newG, newB, oldColorA.opacity)
+                val newColor = Color(
+                    oldColorA.opacity * newR + (1 - oldColorA.opacity) * oldColorB.red,
+                    oldColorA.opacity * newG + (1 - oldColorA.opacity) * oldColorB.green,
+                    oldColorA.opacity * newB + (1 - oldColorA.opacity) * oldColorB.blue,
+                    1 - (1 - oldColorB.opacity) * (1 - oldColorB.opacity)
+                )
                 writer.setColor(x, y, newColor)
             }
         }
     }
 
-    fun getChannelOperation(): (Double, Double) -> Double {
+    private fun getChannelOperation(): (Double, Double) -> Double {
         return when (mode) {
             NORMAL -> { a, _ -> a }
             MULTIPLY -> { a, b -> a * b }
