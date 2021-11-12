@@ -7,16 +7,16 @@ import javafx.scene.control.Alert
 import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
 import javafx.stage.FileChooser
+import models.EngineModel
 import processing.filters.BlendType
 import tornadofx.*
 import java.io.File
 
 class BlendTab(
+    private val engine: EngineModel,
     private val engineController: EngineController,
     private val fileController: FileController
-) :
-    VBox() {
-
+) : VBox() {
     init {
         label("Blend") {
             vboxConstraints {
@@ -28,27 +28,35 @@ class BlendTab(
             }
         }
 
-        buttonbar {
+        hbox {
             padding = Insets(20.0, 10.0, 20.0, 10.0)
-            button("Import").setOnAction {
-                imageOperation()
+
+            val importButton = button("Import")
+
+            val blendView = imageview(engine.blendImage) {
+                isPreserveRatio = true
+            }
+            blendView.fitHeight = 100.0
+            blendView.fitWidth = 200.0
+            importButton.setOnAction {
+                importBlendImage()
             }
         }
 
-        val blendList = BlendType.values().toList()
-        val comboBox = combobox(values = blendList)
-        comboBox.value = blendList[0]
-
-        buttonbar {
+        hbox {
             padding = Insets(20.0, 10.0, 20.0, 10.0)
+
+            val blendList = BlendType.values().toList()
+            val comboBox = combobox(values = blendList)
+            comboBox.value = blendList[0]
+
             button("Blend").setOnAction {
                 engineController.blend(comboBox.value)
             }
         }
     }
 
-    private fun imageOperation() {
-
+    private fun importBlendImage() {
         val importFilter = arrayOf(
             FileChooser.ExtensionFilter(
                 "PNG files (*.png)",

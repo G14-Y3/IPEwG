@@ -69,7 +69,7 @@ class FilterPanel : View() {
                             content = BlurFilterTab(engineController)
                         }
                         tab("Blend") {
-                            content = BlendTab(engineController, fileController)
+                            content = BlendTab(engine, engineController, fileController)
                         }
                     }
 
