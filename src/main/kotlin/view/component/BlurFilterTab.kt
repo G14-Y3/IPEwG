@@ -2,13 +2,14 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
-import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
 import processing.BlurType
 import tornadofx.*
 
-class BlurFilterTab(engineController: EngineController): VBox() {
-    init {
+class BlurFilterTab : View("Blur") {
+    private val engineController: EngineController by inject()
+
+    override val root = vbox {
         label("Blur") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)

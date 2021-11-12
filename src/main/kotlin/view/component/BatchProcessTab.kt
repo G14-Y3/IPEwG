@@ -1,80 +1,86 @@
 package view.component
 
-import controller.FileController
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.scene.text.FontWeight
+import javafx.scene.control.SelectionMode
+import javafx.scene.image.Image
+import javafx.scene.paint.Color
+import javafx.scene.text.Font
 import javafx.stage.FileChooser
 import models.BatchProcessorModel
-import models.EngineModel
 import tornadofx.*
+import view.fragment.TransformationList
 
 class BatchProcessTab : View("Batch") {
 
     private val batchProcessor: BatchProcessorModel by inject()
-    private val engine: EngineModel by inject()
 
-    private val fileController: FileController by inject()
+    private val focusedImageProperty = SimpleObjectProperty<Image>(null)
+    private var focusedImage by focusedImageProperty
 
-    override val root =
-        borderpane {
-            top = buttonbar {
-                button("Choose images").setOnAction { importImages() }
-                button("Apply").setOnAction { batchProcessor.apply() }
-                button("Export").setOnAction { exportImages() }
-            }
-            center = listview(batchProcessor.transformedImages) {
-                cellCache {
-                    imageview(it) {
-                        fitWidth = 100.0
-                        fitHeight = 100.0
-                        isPreserveRatio = true
-                    }
-                }
-
-            }
-
-
-            right = vbox {
+    private val imagesListView = listview(batchProcessor.transformedImages) {
+        selectionModel.selectionMode = SelectionMode.SINGLE
+        padding = Insets(10.0)
+        cellCache { image ->
+            hbox {
                 alignment = Pos.CENTER
-                label("Transformations") {
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 10.0, 10.0)
-                    }
-                    style {
-                        fontWeight = FontWeight.BOLD
-                        fontSize =
-                            Dimension(20.0, Dimension.LinearUnits.px)
-                    }
+                imageview(image) {
+                    fitWidth = 100.0
+                    fitHeight = 100.0
+                    isPreserveRatio = true
                 }
-
-                hbox {
-                    alignment = Pos.CENTER
-                    padding = Insets(0.0, 10.0, 0.0, 10.0)
-
-                    listview(engine.transformations) {
-                        prefWidth = 400.0
-                        selectionModel.selectedIndexProperty()
-                            .onChange {
-                                engine.setCurrentIndex(it)
-                            }
-                        engine.updateListSelection =
-                            { selectionModel.select(engine.currIndex) }
-                    }
+                text("${image.width.toInt()} x ${image.height.toInt()}") {
+                    fill = Color.GRAY
+                    font = Font(10.0)
                 }
-                hbox {
-                    alignment = Pos.CENTER
-                    buttonbar {
-                        padding = Insets(20.0, 10.0, 20.0, 10.0)
-                        button("Undo").setOnAction { fileController.undo() }
-                        button("Redo").setOnAction { fileController.redo() }
-                        button("Revert").setOnAction { fileController.revert() }
-                    }
-                }
+                spacing = 5.0
             }
         }
 
+        onUserDelete { batchProcessor.remove(indexInParent) }
+    }
+
+    override val root = borderpane {
+        padding = Insets(10.0)
+        left = borderpane {
+
+            center = imagesListView
+
+            bottom = buttonbar {
+                button("Import").action { importImages() }
+                button("Apply").action { batchProcessor.apply() }
+                button("Remove").action {
+                    batchProcessor.remove(
+                        *imagesListView.selectionModel.selectedIndices.toIntArray()
+                    )
+                }
+                button("Preview") {
+                    action {
+                        focusedImage = imagesListView.selectedItem
+                    }
+                }
+                button("Revert").action { batchProcessor.revert() }
+                button("Export").action { exportImages() }
+                padding = Insets(15.0)
+            }
+        }
+
+        right = splitpane(
+            Orientation.VERTICAL,
+            vbox {
+                padding = Insets(5.0)
+                alignment = Pos.CENTER
+                imageview(focusedImageProperty) {
+                    fitWidth = 400.0
+                    fitHeight = 250.0
+                    isPreserveRatio = true
+                }
+            },
+            find<TransformationList>().root
+        )
+    }
 
     private fun importImages() {
         val fileChooser = FileChooser.ExtensionFilter(

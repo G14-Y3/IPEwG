@@ -8,16 +8,33 @@ import tornadofx.observableListOf
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
 import javax.imageio.ImageIO
 
 
 class BatchProcessorModel : ViewModel() {
 
-    val engine: EngineModel by inject()
-    val originalImages = observableListOf<Image>()
-    val transformedImages = observableListOf<WritableImage>()
+    private val engine: EngineModel by inject()
 
-    private val importedImagesNames = mutableListOf<String>()
+    private val originalImages = observableListOf<Image>()
+
+    val transformedImages = observableListOf<WritableImage>()
+    val importedImagesNames = mutableListOf<String>()
+
+    fun revert() {
+        transformedImages.clear()
+        originalImages.forEach {
+            transformedImages.add(
+                WritableImage(
+                    it.pixelReader,
+                    it.width.toInt(),
+                    it.height.toInt()
+                )
+            )
+        }
+    }
 
     fun loadImage(file: File) {
         val original = Image(file.toURI().toString())
@@ -33,9 +50,12 @@ class BatchProcessorModel : ViewModel() {
     }
 
     fun apply() {
+        val transformations =
+            engine.transformations.subList(0, engine.currIndex + 1)
+
         transformedImages.forEach { image ->
-            engine.transformations.forEach {
-                it.process(image)
+            transformations.forEach { transformation ->
+                transformation.process(image)
             }
         }
     }
@@ -43,7 +63,7 @@ class BatchProcessorModel : ViewModel() {
     fun exportImages(dir: File) {
         transformedImages.forEachIndexed { i, image ->
             val outPath =
-                Paths.get(dir.absolutePath, importedImagesNames[i] + "png")
+                Paths.get(dir.absolutePath, importedImagesNames[i] + ".png")
 
             val buffer = SwingFXUtils.fromFXImage(image, null)
             try {
@@ -51,6 +71,14 @@ class BatchProcessorModel : ViewModel() {
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
+        }
+    }
+
+    fun remove(vararg indices: Int) {
+        indices.forEach {
+            originalImages.removeAt(it)
+            transformedImages.removeAt(it)
+            importedImagesNames.removeAt(it)
         }
     }
 
