@@ -4,8 +4,8 @@ import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.control.Slider
 import javafx.scene.text.FontWeight
-import processing.HSVType
-import processing.RGBType
+import processing.filters.HSVType
+import processing.filters.RGBType
 import tornadofx.*
 
 class ColorAdjustTab : View("Colour Adjustment") {

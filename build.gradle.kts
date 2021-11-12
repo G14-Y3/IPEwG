@@ -1,9 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.5.31"
+    kotlin("plugin.serialization") version "1.5.31"
     application
     id("org.openjfx.javafxplugin") version "0.0.8"
     id("de.undercouch.download").version("3.4.3")
@@ -33,6 +34,7 @@ dependencies {
     implementation("org.pytorch:pytorch_java_only:1.9.0")
     implementation("com.facebook.soloader:nativeloader:0.10.1")
     implementation("com.facebook.fbjni:fbjni-java-only:0.2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
 
@@ -42,21 +44,20 @@ tasks.test {
     useJUnit()
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
     dependsOn("extractLibtorch")
 }
 
 task<Download>("downloadLibtorch") {
-    var src = ""
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        src = "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.10.0%2Bcpu.zip"
+    val src = if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.10.0%2Bcpu.zip"
     } else if (Os.isFamily(Os.FAMILY_MAC)) {
-        src = "https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.10.0.zip"
+        "https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.10.0.zip"
     } else if (Os.isFamily(Os.FAMILY_UNIX)) {
-        src = "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.10.0%2Bcpu.zip"
+        "https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.10.0%2Bcpu.zip"
     } else {
-        throw org.gradle.api.GradleException("Unsupported platform")
+        throw GradleException("Unsupported platform")
     }
 
     overwrite(false)

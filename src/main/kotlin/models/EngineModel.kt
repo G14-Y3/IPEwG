@@ -5,17 +5,18 @@ import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.filters.Adjustment
+import processing.jsonFormatter
+import tornadofx.*
 import processing.steganography.SteganographyDecoder
-import tornadofx.ViewModel
-import tornadofx.imageview
-import tornadofx.observableListOf
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-import kotlin.collections.HashMap
+import kotlin.collections.set
 
 class EngineModel(
     originalImage: Image = Image("./test_image.png"),
@@ -188,6 +189,22 @@ class EngineModel(
         currIndex = -1
         updateListSelection()
         previewImage.value = originalImage.value
+    }
+
+    fun loadJson(path: String) {
+        revert()
+        var jsonContent = ""
+        File(path).useLines { lines -> jsonContent = lines.joinToString("") }
+        val transformationList = jsonFormatter.decodeFromString<List<ImageProcessing>>(jsonContent)
+
+        for (transformation in transformationList)
+            transform(transformation)
+    }
+
+    fun saveJson(path: String) {
+        File(path).printWriter().use { out ->
+            out.println(jsonFormatter.encodeToString(ArrayList(transformations)))
+        }
     }
 
 }

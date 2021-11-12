@@ -1,7 +1,6 @@
 package view
 
 import controller.EngineController
-import controller.FileController
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
@@ -9,7 +8,6 @@ import javafx.geometry.Side
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
-import processing.BlurType
 import tornadofx.*
 import view.component.*
 import view.fragment.TransformationList
@@ -18,9 +16,6 @@ class FilterPanel : View() {
 
     private val engine: EngineModel by inject()
     private val engineController: EngineController by inject()
-    private val fileController: FileController by inject()
-
-    private val blurList = BlurType.values().toList()
 
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE

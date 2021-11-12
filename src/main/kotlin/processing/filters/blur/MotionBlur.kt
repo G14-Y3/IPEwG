@@ -1,10 +1,14 @@
 package processing.filters.blur
 
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import processing.filters.Convolution
 import processing.filters.SpatialSeparableConvolution
 
+@Serializable
+@SerialName("MotionBlur")
 class MotionBlur(private val radius: Int, private val angle: Double) :
     ImageProcessing {
     override fun process(image: WritableImage) {

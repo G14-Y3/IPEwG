@@ -3,7 +3,7 @@ package view.component
 import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
-import processing.BlurType
+import processing.filters.BlurType
 import tornadofx.*
 
 class BlurFilterTab : View("Blur") {

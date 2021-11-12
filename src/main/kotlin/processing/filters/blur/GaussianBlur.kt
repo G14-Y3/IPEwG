@@ -1,12 +1,16 @@
 package processing.filters.blur
 
 import javafx.scene.image.WritableImage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import processing.filters.SpatialSeparableConvolution
 import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.pow
 
+@Serializable
+@SerialName("GaussianBlur")
 class GaussianBlur(private val radius: Int) : ImageProcessing {
     override fun process(image: WritableImage) {
         if (radius == 0) {
