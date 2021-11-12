@@ -5,19 +5,18 @@ import javafx.scene.paint.Color
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import processing.ImageProcessing
-import processing.filters.HSVType
 import processing.multithread.splitImageVertical
 import java.lang.StrictMath.pow
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-enum class ColorSpaceType { SRGB, LinearRGB }
+enum class ColorSpaceType { sRGB, LinearRGB }
 
 enum class ColorChannels { Red, Green, Blue, Alpha }
 
 @Serializable
-@SerialName("ColorSpace")
-class ColorSpace(private val source: ColorSpaceType, private val target: ColorSpaceType) :
+@SerialName("ConvertColorSpace")
+class ConvertColorSpace(private val source: ColorSpaceType, private val target: ColorSpaceType) :
     ImageProcessing {
     override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
@@ -40,15 +39,15 @@ class ColorSpace(private val source: ColorSpaceType, private val target: ColorSp
                         val color: Color = reader.getColor(x, y)
                         val linear: Color = when (source) {
                             ColorSpaceType.LinearRGB -> color
-                            ColorSpaceType.SRGB -> channelWiseConversion(
+                            ColorSpaceType.sRGB -> channelWiseConversion(
                                 color,
                                 ::sRGBToLinearByChannel,
                             )
                         }
                         val newColor: Color = when (target) {
                             ColorSpaceType.LinearRGB -> linear
-                            ColorSpaceType.SRGB -> channelWiseConversion(
-                                color,
+                            ColorSpaceType.sRGB -> channelWiseConversion(
+                                linear,
                                 ::linearTosRGBByChannel,
                             )
                         }
@@ -83,7 +82,7 @@ class ColorSpace(private val source: ColorSpaceType, private val target: ColorSp
 
     private fun linearTosRGBByChannel(value: Double, channel: ColorChannels) =
         if (channel == ColorChannels.Alpha) value else {
-            if (value <= 0.04045) value * 12.92
+            if (value <= 0.04045 / 12.92) value * 12.92
             else 1.055 * pow(value, 1.0 / 2.4) - 0.055
         }
 
