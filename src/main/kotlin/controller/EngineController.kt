@@ -2,12 +2,12 @@ package controller
 
 import javafx.scene.image.Image
 import models.EngineModel
-import tornadofx.*
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
 import processing.filters.*
 import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
+import tornadofx.Controller
 
 /** IMPORTANT:
  *
@@ -51,12 +51,14 @@ class EngineController : Controller() {
     fun frequencyTransfer() = engine.transform(IdleFreqFilter())
 
     fun sharpen() = engine.transform(Sharpen())
-    
+
+    fun blend(type: BlendType) = engine.transform(Blend(engine.blendImage.value, type))
+
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
         engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
-    
+
     fun histogramEqualization() = engine.transform(HistogramEqualization())
 }

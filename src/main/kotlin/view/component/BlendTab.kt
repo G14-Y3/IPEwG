@@ -41,11 +41,8 @@ class BlendTab(
 
         buttonbar {
             padding = Insets(20.0, 10.0, 20.0, 10.0)
-            button("Adjust").setOnAction {
-                engineController.submitAdjustment()
-            }
-            button("Reset").setOnAction {
-                engineController.resetAdjustment()
+            button("Blend").setOnAction {
+                engineController.blend(comboBox.value)
             }
         }
     }
@@ -70,19 +67,18 @@ class BlendTab(
 
         try {
             val fileSelectorTitle = "Import image"
-            val fileSelectorFilter = importFilter
             val fileSelectorMode = FileChooserMode.Single
 
             val dir = chooseFile(
                 title = fileSelectorTitle,
-                filters = fileSelectorFilter,
+                filters = importFilter,
                 mode = fileSelectorMode
             ) {
                 initialDirectory = File(File("").canonicalPath)
                 initialFileName = "IPEwG_result_image"
             }
             if (dir.isNotEmpty()) {
-                fileController.loadImage("file:///" + dir[0].toString())
+                fileController.loadBlendImage("file:///" + dir[0].toString())
             }
 
         } catch (e: IllegalArgumentException) {

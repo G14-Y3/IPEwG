@@ -10,8 +10,9 @@ import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.filters.Adjustment
 import processing.jsonFormatter
-import tornadofx.*
 import processing.steganography.SteganographyDecoder
+import tornadofx.ViewModel
+import tornadofx.observableListOf
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
@@ -38,6 +39,9 @@ class EngineModel(
 
     val decodeImage =
         SimpleObjectProperty(this, "decodeImage", originalImage)
+
+    val blendImage =
+        SimpleObjectProperty(this, "blendImage", originalImage)
 
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
@@ -80,6 +84,11 @@ class EngineModel(
     fun loadEncodeImage(path: String) {
         val image = Image(path)
         encodeImage.value = image
+    }
+
+    fun loadBlendImage(path: String) {
+        val image = Image(path)
+        blendImage.value = image
     }
 
     fun save(path: String, format: String = "png") {
