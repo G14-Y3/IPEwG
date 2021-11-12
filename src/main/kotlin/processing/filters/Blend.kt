@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 @Serializable
 @SerialName("Blend")
@@ -45,6 +46,11 @@ class Blend(private val blendImage: Image, val mode: BlendType) :
 
 enum class BlendType(val operation: (Color, Color) -> Color) {
     NORMAL(applyToRGB { a, _ -> a }),
+    DISSOLVE({ colorA, colorB ->
+        if (Random.nextDouble() <= colorA.opacity)
+            Color(colorA.red, colorA.green, colorA.blue, 1.0)
+        else colorB
+    }),
     MULTIPLY(applyToRGB(::multiplyBlend)),
     SCREEN(applyToRGB(::screenBlend)),
     OVERLAY(applyToRGB { a, b -> hardLightBlend(b, a) }),
