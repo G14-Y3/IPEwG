@@ -48,7 +48,7 @@ class Blend(private val blendImage: Image, val mode: BlendType) :
     }
 }
 
-enum class BlendType(val operation: (Color, Color) -> Color) {
+enum class BlendType(val operation: (topColor: Color, bottomColor: Color) -> Color) {
     NORMAL(applyToRGB { a, b, alphaA, alphaB -> a + b * (1 - alphaA) }),
     DISSOLVE({ colorA, colorB ->
         if (Random.nextDouble() <= colorA.opacity)
@@ -101,7 +101,9 @@ enum class BlendType(val operation: (Color, Color) -> Color) {
 //    LUMINOSITY({ colorA, colorB -> TODO() })
 }
 
-fun applyToRGB(channelOperation: (Double, Double, Double, Double) -> Double): (Color, Color) -> Color {
+fun applyToRGB(
+    channelOperation: (topChannel: Double, bottomChannel: Double, topAlpha: Double, bottomAlpha: Double) -> Double
+): (Color, Color) -> Color {
     return { oldColorA, oldColorB ->
         val alphaA = oldColorA.opacity
         val alphaB = oldColorB.opacity
