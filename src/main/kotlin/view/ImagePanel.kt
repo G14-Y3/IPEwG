@@ -1,20 +1,19 @@
 package view
 
-import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.control.Slider
+import javafx.scene.control.Spinner
+import javafx.scene.control.SpinnerValueFactory
 import javafx.scene.image.ImageView
-import javafx.scene.image.WritableImage
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
-import processing.multithread.splitImageHorizontal
 import tornadofx.*
-import java.util.concurrent.Executors
+import view.component.doubleSpinner
 
 const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
@@ -28,6 +27,7 @@ class ImagePanel : View() {
     lateinit var newView: ImageView
 
     lateinit var slider: Slider
+    lateinit var spinner: Spinner<Number>
 
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
@@ -47,7 +47,6 @@ class ImagePanel : View() {
                     isPreserveRatio = true
                 }
                 newView = imageview(engine.parallelImage)
-
 
                 val viewport = Rectangle2D(
                     .0,
@@ -85,7 +84,6 @@ class ImagePanel : View() {
                 )
                 updateViewPort(viewport)
             }
-
 
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
@@ -177,6 +175,25 @@ class ImagePanel : View() {
         slider.valueProperty().addListener(ChangeListener { _, _, new ->
             engine.parallelView(new.toDouble())
         })
+
+        spinner = doubleSpinner(
+            min = .0,
+            max = oriView.image.width,
+            amountToStepBy = 1.0,
+            editable = true,
+            property = doubleProperty(slider.max)
+        ) {
+            maxWidth = 70.0
+        }
+
+        try {
+            slider.valueProperty().bindBidirectional(
+                spinner.valueFactory.valueProperty()
+            )
+        } catch (e: NumberFormatException) {
+        }
+
+        this.add(spinner)
     }
 
     fun sliderInit() {
@@ -185,6 +202,19 @@ class ImagePanel : View() {
 
     fun updateSlider(newMax: Double) {
         slider.max = newMax
+        slider.valueProperty().unbindBidirectional(spinner.valueFactory.valueProperty())
+        @Suppress("UNCHECKED_CAST")
+        spinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+            slider.min,
+            slider.max,
+            slider.blockIncrement
+        ) as SpinnerValueFactory<Number>
+        try {
+            slider.valueProperty().bindBidirectional(
+                spinner.valueFactory.valueProperty()
+            )
+        } catch (e: NumberFormatException) {
+        }
     }
 
     // cast given value in given range
