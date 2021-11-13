@@ -30,12 +30,15 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
     override fun process(image: WritableImage) {
         for ((k, v) in properties) {
             val adjustment = when (k) {
+                // RGB filters
                 "R" -> RGBIntensity(v, RGBType.R)
                 "G" -> RGBIntensity(v, RGBType.G)
                 "B" -> RGBIntensity(v, RGBType.B)
+                // HSV filters
                 "H" -> HSVIntensity(v, HSVType.H)
                 "S" -> HSVIntensity(v, HSVType.S)
                 "V" -> HSVIntensity(v, HSVType.V)
+                // Blur filters
                 "BOX" -> BoxBlur(v.toInt())
                 "LENS" -> LensBlur(v.toInt())
                 "GAUSSIAN" -> GaussianBlur(v.toInt())

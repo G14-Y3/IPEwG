@@ -39,6 +39,7 @@ val jsonFormatter = Json {
             subclass(RGBIntensity::class)
             subclass(Sharpen::class)
             subclass(SpatialSeparableConvolution::class)
+            subclass(Blend::class)
         }
     }
 }

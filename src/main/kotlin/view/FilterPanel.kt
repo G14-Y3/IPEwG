@@ -79,6 +79,9 @@ class FilterPanel : View() {
                         tab("Blur") {
                             content = BlurFilterTab(engineController)
                         }
+                        tab("Blend") {
+                            content = BlendTab(engine, engineController, fileController)
+                        }
                     }
 
                     vbox {
