@@ -2,8 +2,6 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
-import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox

@@ -1,8 +1,5 @@
 package processing.frequency
 
-import javafx.scene.image.ImageView
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import processing.frequency.FreqProcessRange.*
 import kotlin.math.pow
 
