@@ -61,7 +61,6 @@ class FilterPanel : View() {
                         tab("Basic Actions") {
                             content = BasicFilterTab(basicFilterButtonList)
                         }
-
                         tab("Style Transfer") {
                             content = StyleTransferTab(engineController)
                         }
@@ -69,9 +68,7 @@ class FilterPanel : View() {
                             content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
                         }
                         tab("Frequency Transfer") {
-                            button("transfer").setOnAction {
-                                engineController.frequencyTransfer()
-                            }
+                            content = FrequencyTab(engineController)
                         }
                         tab("Blur") {
                             content = BlurFilterTab(engineController)
