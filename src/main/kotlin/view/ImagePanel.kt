@@ -13,7 +13,7 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
 import tornadofx.*
-import view.component.doubleSpinner
+import view.component.customSpinner
 
 const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
@@ -177,12 +177,13 @@ class ImagePanel : View() {
             engine.parallelView(new.toDouble())
         })
 
-        spinner = doubleSpinner(
+        spinner = customSpinner(
             min = .0,
             max = oriView.image.width,
             amountToStepBy = 1.0,
             editable = true,
-            property = doubleProperty(horizontalSlider.max)
+            property = doubleProperty(horizontalSlider.max),
+            type = "int"
         ) {
             maxWidth = 70.0
         }

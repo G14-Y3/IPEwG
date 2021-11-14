@@ -15,7 +15,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
 
-inline fun <reified T : Number> EventTarget.doubleSpinner(
+inline fun <reified T : Number> EventTarget.customSpinner(
     min: T? = null,
     max: T? = null,
     initialValue: T? = null,
@@ -23,6 +23,7 @@ inline fun <reified T : Number> EventTarget.doubleSpinner(
     editable: Boolean = false,
     property: Property<T>? = null,
     enableScroll: Boolean = false,
+    type: String = "double",
     noinline op: Spinner<T>.() -> Unit = {}
 ): Spinner<T> {
     val spinner = spinner(
@@ -49,8 +50,12 @@ inline fun <reified T : Number> EventTarget.doubleSpinner(
                 if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
                     spinner.editor.text = old
                 } else {
-                    spinner.editor.text =
-                        BigDecimal(new.toDouble()).setScale(1, RoundingMode.HALF_EVEN).toString()
+                    when (type) {
+                        "double" -> spinner.editor.text =
+                            BigDecimal(new.toDouble()).setScale(1, RoundingMode.HALF_EVEN)
+                                .toString()
+                        "int" -> spinner.editor.text = new.toDouble().toInt().toString()
+                    }
                 }
             } catch (e: IllegalArgumentException) {
             }
@@ -110,13 +115,13 @@ class SliderWithSpinner(
         slider.valueProperty().addListener(op)
         this.add(slider)
 
-        spinner = doubleSpinner(
+        spinner = customSpinner(
             min = minVal,
             max = maxVal,
             initialValue = 0.0,
             amountToStepBy = stepSize,
             editable = true,
-            doubleProperty(0.0)
+            doubleProperty(0.0),
         ) {
             maxWidth = 70.0
         }
