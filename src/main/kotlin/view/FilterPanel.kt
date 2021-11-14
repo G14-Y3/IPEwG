@@ -98,7 +98,7 @@ class FilterPanel : View() {
                         }
 
                         tab("Water Marking") {
-
+                            content = WaterMarkTab(fileController, engine, engineController)
                         }
                     }
 
