@@ -108,7 +108,7 @@ class SliderWithSpinner(
             isShowTickMarks = true
             majorTickUnit = (maxVal - minVal) / 4
             minorTickCount = 1
-            blockIncrement = 0.1
+            blockIncrement = 1.0
         }
 
         slider.value = 0.0
