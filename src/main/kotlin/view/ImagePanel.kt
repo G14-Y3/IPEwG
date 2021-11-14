@@ -26,7 +26,7 @@ class ImagePanel : View() {
     lateinit var oriView: ImageView
     lateinit var newView: ImageView
 
-    lateinit var slider: Slider
+    lateinit var horizontalSlider: Slider
     lateinit var spinner: Spinner<Number>
 
     // Maximum range the left/top pixel coordinate can take,
@@ -39,6 +39,7 @@ class ImagePanel : View() {
     }
 
     override val root = vbox {
+        minWidth = 800.0
         alignment = Pos.CENTER
         stackpane {
             val stack = stackpane {
@@ -164,15 +165,15 @@ class ImagePanel : View() {
         }
 
         // The slider at the bottom of the image view to slide between new and original image.
-        slider = slider {
+        horizontalSlider = slider {
             maxWidth = WINDOW_WIDTH
             min = 0.0
             max = oriView.image.width
             blockIncrement = 1.0
         }
 
-        slider.value = slider.max
-        slider.valueProperty().addListener(ChangeListener { _, _, new ->
+        horizontalSlider.value = horizontalSlider.max
+        horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
             engine.parallelView(new.toDouble())
         })
 
@@ -181,13 +182,13 @@ class ImagePanel : View() {
             max = oriView.image.width,
             amountToStepBy = 1.0,
             editable = true,
-            property = doubleProperty(slider.max)
+            property = doubleProperty(horizontalSlider.max)
         ) {
             maxWidth = 70.0
         }
 
         try {
-            slider.valueProperty().bindBidirectional(
+            horizontalSlider.valueProperty().bindBidirectional(
                 spinner.valueFactory.valueProperty()
             )
         } catch (e: NumberFormatException) {
@@ -197,20 +198,20 @@ class ImagePanel : View() {
     }
 
     fun sliderInit() {
-        slider.value = slider.max
+        horizontalSlider.value = horizontalSlider.max
     }
 
     fun updateSlider(newMax: Double) {
-        slider.max = newMax
-        slider.valueProperty().unbindBidirectional(spinner.valueFactory.valueProperty())
+        horizontalSlider.max = newMax
+        horizontalSlider.valueProperty().unbindBidirectional(spinner.valueFactory.valueProperty())
         @Suppress("UNCHECKED_CAST")
         spinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
-            slider.min,
-            slider.max,
-            slider.blockIncrement
+            horizontalSlider.min,
+            horizontalSlider.max,
+            horizontalSlider.blockIncrement
         ) as SpinnerValueFactory<Number>
         try {
-            slider.valueProperty().bindBidirectional(
+            horizontalSlider.valueProperty().bindBidirectional(
                 spinner.valueFactory.valueProperty()
             )
         } catch (e: NumberFormatException) {

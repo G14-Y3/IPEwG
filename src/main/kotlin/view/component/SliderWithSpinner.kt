@@ -11,6 +11,8 @@ import javafx.scene.control.Spinner
 import javafx.scene.layout.HBox
 import tornadofx.*
 import view.CssStyle
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.roundToInt
 
 inline fun <reified T : Number> EventTarget.doubleSpinner(
@@ -48,7 +50,7 @@ inline fun <reified T : Number> EventTarget.doubleSpinner(
                     spinner.editor.text = old
                 } else {
                     spinner.editor.text =
-                        new.toDouble().roundToInt().toString()
+                        BigDecimal(new.toDouble()).setScale(1, RoundingMode.HALF_EVEN).toString()
                 }
             } catch (e: IllegalArgumentException) {
             }
@@ -101,7 +103,7 @@ class SliderWithSpinner(
             isShowTickMarks = true
             majorTickUnit = (maxVal - minVal) / 4
             minorTickCount = 1
-            blockIncrement = 1.0
+            blockIncrement = 0.1
         }
 
         slider.value = 0.0
@@ -118,7 +120,7 @@ class SliderWithSpinner(
         ) {
             maxWidth = 70.0
         }
-        
+
         try {
             slider.valueProperty().bindBidirectional(
                 spinner.valueFactory.valueProperty()
