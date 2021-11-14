@@ -6,10 +6,15 @@ import javafx.scene.paint.Color
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import processing.ImageProcessing
+import kotlin.math.max
 
 @Serializable
 @SerialName("HistogramEqualization")
 class HistogramEqualization: ImageProcessing {
+    val PIXEL_RANGE = 256
+    val cdf: Array<Int> = Array(PIXEL_RANGE) {0}
+    val pdf: Array<Int> = Array(PIXEL_RANGE) {0}
+    val pixelMap: Array<Double> = Array(PIXEL_RANGE) {0.0}
 
     override fun process(image: WritableImage) {
         // 0. transfer to grayscale
@@ -19,9 +24,9 @@ class HistogramEqualization: ImageProcessing {
         val reader : PixelReader = image.pixelReader
         val height = image.height.toInt()
         val width = image.width.toInt()
-        val PIXEL_RANGE = 256
+
         // element at position i in pdf is count of pixel value i in the image
-        val pdf: Array<Int> = Array(PIXEL_RANGE) {0}
+
         for (i in 0 until height) {
             for (j in 0 until width) {
                 // in this nested for loop, CDF is generated as PDF, transfer to cdf in the next step
@@ -33,7 +38,6 @@ class HistogramEqualization: ImageProcessing {
 
         // 2. generate cdf w.r.t. pdf and record the count of pixel value which is the smallest among all pixel values
         var cdfMin = 0
-        val cdf: Array<Int> = Array(PIXEL_RANGE) {0}
         cdf[0] = pdf[0]
         for (i in 1 until PIXEL_RANGE) {
             cdf[i] = cdf[i-1] + pdf[i]
@@ -43,7 +47,6 @@ class HistogramEqualization: ImageProcessing {
         }
 
         // 3. generate map from original pixel value to new pixel value
-        val pixelMap: Array<Double> = Array(PIXEL_RANGE) {0.0}
         for (i in 0 until PIXEL_RANGE) {
             pixelMap[i] = (cdf[i] - cdfMin).toDouble() / (height * width - cdfMin) * (PIXEL_RANGE - 2) + 1
         }
@@ -63,4 +66,19 @@ class HistogramEqualization: ImageProcessing {
         return "Histogram Equalization"
     }
 
+    fun getOriginalCdf(): Array<Int> {
+        return cdf
+    }
+
+    fun getResultCdf(): Array<Int> {
+        val newCount = Array(PIXEL_RANGE) {0}
+
+        for(i in 0..255)
+            newCount[pixelMap[i].toInt()] = cdf[i]
+
+        for(i in 1..255)
+            newCount[i] = max(newCount[i], newCount[i-1])
+
+        return newCount
+    }
 }

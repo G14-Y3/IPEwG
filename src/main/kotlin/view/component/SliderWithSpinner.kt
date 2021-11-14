@@ -60,7 +60,7 @@ inline fun <reified T : Number> EventTarget.doubleSpinner(
 class SliderWithSpinner(
     private val minVal: Double,
     private val maxVal: Double,
-    private val op: ChangeListener<Number>,
+    private val op: ChangeListener<Number>
 ) : HBox() {
 
     private var comboBox: ComboBox<*>? = null
@@ -111,13 +111,13 @@ class SliderWithSpinner(
             min = minVal,
             max = maxVal,
             initialValue = 0.0,
-            amountToStepBy = 1.0,
+            amountToStepBy = stepSize,
             editable = true,
             doubleProperty(0.0)
         ) {
             maxWidth = 70.0
         }
-
+        
         try {
             slider.valueProperty().bindBidirectional(
                 spinner.valueFactory.valueProperty()
