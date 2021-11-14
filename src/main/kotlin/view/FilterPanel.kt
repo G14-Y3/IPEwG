@@ -61,7 +61,7 @@ class FilterPanel : View() {
                             content = BasicFilterTab(basicFilterButtonList)
                         }
 
-                        tab("Conversions") {
+                        tab("Color Space Conversions") {
                             content = ConversionTab(converterList)
                         }
 
