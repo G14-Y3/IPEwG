@@ -13,8 +13,6 @@ import processing.styletransfer.NeuralStyles
 import processing.filters.*
 import processing.frequency.FilterGenerator
 import tornadofx.Controller
-import processing.frequency.IdleFreqFilter
-import processing.steganography.SteganographyEncoder
 
 /** IMPORTANT:
  *

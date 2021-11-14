@@ -68,10 +68,6 @@ class FilterPanel : View() {
                         tab("Basic Actions") {
                             content = BasicFilterTab(basicFilterButtonList)
                         }
-
-                        tab("Color Space Conversions") {
-                            content = ConversionTab(converterList)
-                        }
                         
                         tab("Style Transfer") {
                             content = StyleTransferTab(engineController)
@@ -79,6 +75,10 @@ class FilterPanel : View() {
                         
                         tab("Color Adjust") {
                             content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
+                        }
+
+                        tab("Color Space Conversions") {
+                            content = ConversionTab(converterList)
                         }
                         
                         tab("Frequency Transfer") {
