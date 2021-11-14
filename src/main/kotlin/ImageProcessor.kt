@@ -1,4 +1,3 @@
-import jdk.dynalink.linker.support.Lookup
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
@@ -7,8 +6,6 @@ import view.CssStyle
 import view.FilterPanel
 import view.ImagePanel
 import view.TopBar
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.VarHandle
 
 
 class GUI : View("IPEwG") {
