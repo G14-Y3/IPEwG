@@ -2,13 +2,18 @@ package view
 
 import javafx.geometry.Insets
 import javafx.geometry.Point2D
+import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
+import javafx.scene.control.Slider
+import javafx.scene.control.Spinner
+import javafx.scene.control.SpinnerValueFactory
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
 import models.EngineModel
 import tornadofx.*
+import view.component.doubleSpinner
 
 const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
@@ -21,23 +26,27 @@ class ImagePanel : View() {
     lateinit var oriView: ImageView
     lateinit var newView: ImageView
 
+    lateinit var slider: Slider
+    lateinit var spinner: Spinner<Number>
+
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
     private var excessWidth = 0.0
-    var excessHeight = 0.0
+    private var excessHeight = 0.0
 
     init {
         engine.addImagePanel(this)
     }
 
     override val root = vbox {
+        alignment = Pos.CENTER
         stackpane {
             val stack = stackpane {
                 oriView = imageview(engine.originalImage) {
                     isVisible = false
                     isPreserveRatio = true
                 }
-                newView = imageview(engine.previewImage)
+                newView = imageview(engine.parallelImage)
 
                 val viewport = Rectangle2D(
                     .0,
@@ -51,12 +60,9 @@ class ImagePanel : View() {
                 addEventHandler(MouseEvent.ANY) {
                     if (it.eventType == MouseEvent.MOUSE_PRESSED) {
                         dragging = false;
-                    }
-                    else if (it.eventType == MouseEvent.DRAG_DETECTED) {
+                    } else if (it.eventType == MouseEvent.DRAG_DETECTED) {
                         dragging = true;
-                    }
-
-                    else if (it.eventType == MouseEvent.MOUSE_CLICKED) {
+                    } else if (it.eventType == MouseEvent.MOUSE_CLICKED) {
                         if (!dragging) {
                             oriView.isVisible = !oriView.isVisible
                             newView.isVisible = !newView.isVisible
@@ -78,7 +84,6 @@ class ImagePanel : View() {
                 )
                 updateViewPort(viewport)
             }
-
 
             // listen to zoomProperty to detect zoom in & out action
             this.addEventFilter(ZoomEvent.ANY) {
@@ -113,7 +118,9 @@ class ImagePanel : View() {
                 lastMousePoint = null
             }
             addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
-            addEventFilter(MouseEvent.MOUSE_PRESSED) { lastMousePoint = Point2D(it.screenX, it.screenY) }
+            addEventFilter(MouseEvent.MOUSE_PRESSED) {
+                lastMousePoint = Point2D(it.screenX, it.screenY)
+            }
 
             addEventFilter(MouseEvent.MOUSE_DRAGGED) {
                 if (lastMousePoint != null) {
@@ -154,6 +161,59 @@ class ImagePanel : View() {
             vboxConstraints {
                 margin = Insets(20.0)
             }
+        }
+
+        // The slider at the bottom of the image view to slide between new and original image.
+        slider = slider {
+            maxWidth = WINDOW_WIDTH
+            min = 0.0
+            max = oriView.image.width
+            blockIncrement = 1.0
+        }
+
+        slider.value = slider.max
+        slider.valueProperty().addListener(ChangeListener { _, _, new ->
+            engine.parallelView(new.toDouble())
+        })
+
+        spinner = doubleSpinner(
+            min = .0,
+            max = oriView.image.width,
+            amountToStepBy = 1.0,
+            editable = true,
+            property = doubleProperty(slider.max)
+        ) {
+            maxWidth = 70.0
+        }
+
+        try {
+            slider.valueProperty().bindBidirectional(
+                spinner.valueFactory.valueProperty()
+            )
+        } catch (e: NumberFormatException) {
+        }
+
+        this.add(spinner)
+    }
+
+    fun sliderInit() {
+        slider.value = slider.max
+    }
+
+    fun updateSlider(newMax: Double) {
+        slider.max = newMax
+        slider.valueProperty().unbindBidirectional(spinner.valueFactory.valueProperty())
+        @Suppress("UNCHECKED_CAST")
+        spinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+            slider.min,
+            slider.max,
+            slider.blockIncrement
+        ) as SpinnerValueFactory<Number>
+        try {
+            slider.valueProperty().bindBidirectional(
+                spinner.valueFactory.valueProperty()
+            )
+        } catch (e: NumberFormatException) {
         }
     }
 
