@@ -14,7 +14,8 @@ import kotlin.math.roundToInt
 class SliderWithSpinner(
     private val minVal: Double,
     private val maxVal: Double,
-    private val op: ChangeListener<Number>) : HBox() {
+    private val op: ChangeListener<Number>,
+    private val stepSize: Double = 1.0) : HBox() {
 
     private var comboBox: ComboBox<*>? = null
     private lateinit var slider: Slider
@@ -64,7 +65,7 @@ class SliderWithSpinner(
             min = minVal,
             max = maxVal,
             initialValue = 0.0,
-            amountToStepBy = 1.0,
+            amountToStepBy = stepSize,
             editable = true,
             doubleProperty(0.0)
         ) {
@@ -85,7 +86,8 @@ class SliderWithSpinner(
                         spinner.editor.text = old
                     } else {
                         spinner.editor.text =
-                            new.toDouble().roundToInt().toString()
+                            "%.2f".format(new.toDouble())
+//                            new.toDouble().roundToInt().toString()
                     }
                 } catch (e: IllegalArgumentException) {
                 }

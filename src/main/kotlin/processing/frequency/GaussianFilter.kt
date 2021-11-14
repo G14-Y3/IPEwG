@@ -1,8 +1,10 @@
 package processing.frequency
 
+import kotlin.math.exp
+import kotlin.math.pow
 import processing.frequency.FreqProcessRange.*
 
-class IdleFreqFilter(
+class GaussianFilter(
     private val range: FreqProcessRange,
     private val passStopBound: Double,
     private val bandWidth: Double)
@@ -10,21 +12,21 @@ class IdleFreqFilter(
 
     // Reference: http://faculty.salina.k-state.edu/tim/mVision/freq-domain/freq_filters.html
     override fun getFilterPixel(dist: Double): Double {
-        val rangeToBool = when (range) {
-            LowPass -> dist <= passStopBound
-            HighPass -> dist >= passStopBound
-            BandPass -> passStopBound - bandWidth / 2.0 <= dist && dist <= passStopBound + bandWidth / 2.0
-            BandReject -> dist <= passStopBound - bandWidth / 2.0 || passStopBound + bandWidth / 2.0 <= dist
+        val baseVal = when (range) {
+            LowPass, HighPass -> exp(
+                -dist.pow(2) / (2.0 * passStopBound.pow(2)))
+            BandPass, BandReject -> exp(
+                -((dist.pow(2) - passStopBound.pow(2)) / (dist * bandWidth))
+                    .pow(2))
         }
-
-        if (rangeToBool) {
-            return 1.0
+        if (range == HighPass || range == BandReject) {
+            return 1 - baseVal
         }
-        return 0.0
+        return baseVal
     }
 
     override fun toString(): String {
-        var baseString = "$range idle filter, cutoff frequency: ${"%.2f".format(passStopBound)}"
+        val baseString = "$range gaussian filter, cutoff frequency: ${"%.2f".format(passStopBound)}"
         if (range == BandReject || range == BandPass) {
             return baseString + ", bandwidth: ${"%.2f".format(bandWidth)}"
         }
