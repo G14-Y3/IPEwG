@@ -4,8 +4,13 @@ import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import processing.filters.BlendType
 
-class WaterMark(val encodeImage: Image, verticalGap: Int, horizontalGap: Int): ImageProcessing {
+enum class WaterMarkingTechnique {
+    LSB, MULTIPLY, OVERLAY
+}
+
+class WaterMark(val encodeImage: Image, verticalGap: Int, horizontalGap: Int, val technique: WaterMarkingTechnique): ImageProcessing {
 
     val COLOR_BITS_COUNT = 8
     val ALL_ONE = 0b11111111
@@ -29,14 +34,26 @@ class WaterMark(val encodeImage: Image, verticalGap: Int, horizontalGap: Int): I
         for (x in 0 until image.width.toInt()) {
             for (y in 0 until image.height.toInt()) {
                 var color: Color = reader.getColor(x, y)
-                var encodeColor: Color = encodeReader.getColor(x % encodeWidth, y % encodeHeight)
+                val encodeColor: Color = encodeReader.getColor(x % encodeWidth, y % encodeHeight)
 
-                val r = transformBits(color.red, encodeColor.red)
-                val g = transformBits(color.green, encodeColor.green)
-                val b = transformBits(color.blue, encodeColor.blue)
-                color = Color.color(r, g, b)
+                when (technique) {
+                    WaterMarkingTechnique.LSB -> {
+                        val r = transformBits(color.red, encodeColor.red)
+                        val g = transformBits(color.green, encodeColor.green)
+                        val b = transformBits(color.blue, encodeColor.blue)
+                        color = Color.color(r, g, b)
 
-                writer.setColor(x, y, color)
+                        writer.setColor(x, y, color)
+                    }
+
+                    WaterMarkingTechnique.MULTIPLY -> {
+                        writer.setColor(x, y, BlendType.MULTIPLY.operation(color, encodeColor))
+                    }
+
+                    WaterMarkingTechnique.OVERLAY -> {
+                        writer.setColor(x, y, BlendType.OVERLAY.operation(color, encodeColor))
+                    }
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.steganography.SteganographyDecoder
+import processing.steganography.WaterMarkingTechnique
 import tornadofx.*
 
 class WaterMarkTab(fileController: FileController, engine: EngineModel, engineController: EngineController): VBox() {
@@ -51,9 +52,19 @@ class WaterMarkTab(fileController: FileController, engine: EngineModel, engineCo
                             vboxConstraints {
                                 marginTop = 20.0
                             }
-                            button("Encode") {
+                            button("By LSB") {
                                 action {
-                                    engineController.waterMark(engine.encodeImage.value, 0, 0)
+                                    engineController.waterMark(engine.encodeImage.value, 0, 0, WaterMarkingTechnique.LSB)
+                                }
+                            }
+                            button("By Overlay") {
+                                action {
+                                    engineController.waterMark(engine.encodeImage.value, 0, 0, WaterMarkingTechnique.OVERLAY)
+                                }
+                            }
+                            button("By Multiply") {
+                                action {
+                                    engineController.waterMark(engine.encodeImage.value, 0, 0, WaterMarkingTechnique.MULTIPLY)
                                 }
                             }
                         }
