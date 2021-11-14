@@ -79,7 +79,7 @@ class EngineModel(
                 image.height,
             )
             imagePanel.updateViewPort(viewport)
-            imagePanel.updateSlider(originalImage.value.width)
+            imagePanel.updateSlider(originalImage.value.width, originalImage.value.height)
             imagePanel.sliderInit()
         }
 

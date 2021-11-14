@@ -1,9 +1,6 @@
 package view
 
-import javafx.geometry.Insets
-import javafx.geometry.Point2D
-import javafx.geometry.Pos
-import javafx.geometry.Rectangle2D
+import javafx.geometry.*
 import javafx.scene.control.Slider
 import javafx.scene.control.Spinner
 import javafx.scene.control.SpinnerValueFactory
@@ -11,13 +8,13 @@ import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
+import javafx.scene.layout.StackPane
 import models.EngineModel
 import tornadofx.*
 import view.component.customSpinner
 
-const val WINDOW_W_H_RATIO = 1.0
 const val WINDOW_WIDTH = 600.0
-const val WINDOW_HEIGHT = WINDOW_WIDTH * WINDOW_W_H_RATIO
+const val BODY_WIDTH = WINDOW_WIDTH + 200.0
 
 class ImagePanel : View() {
     private val engine: EngineModel by inject()
@@ -27,7 +24,11 @@ class ImagePanel : View() {
     lateinit var newView: ImageView
 
     lateinit var horizontalSlider: Slider
-    lateinit var spinner: Spinner<Number>
+    lateinit var verticalSlider: Slider
+    lateinit var horizontalSpinner: Spinner<Number>
+    lateinit var verticalSpinner: Spinner<Number>
+
+    lateinit var stack: StackPane
 
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
@@ -38,11 +39,12 @@ class ImagePanel : View() {
         engine.addImagePanel(this)
     }
 
-    override val root = vbox {
-        minWidth = 800.0
+    override val root = hbox {
+        minWidth = BODY_WIDTH
         alignment = Pos.CENTER
-        stackpane {
-            val stack = stackpane {
+        vbox {
+            alignment = Pos.CENTER
+            stack = stackpane {
                 oriView = imageview(engine.originalImage) {
                     isVisible = false
                     isPreserveRatio = true
@@ -127,9 +129,11 @@ class ImagePanel : View() {
                 if (lastMousePoint != null) {
                     val oldViewport = oriView.viewport
 
-                    var leftTopX = oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
+                    var leftTopX =
+                        oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
                     leftTopX = cast(leftTopX, 0.0, excessWidth)
-                    var leftTopY = oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
+                    var leftTopY =
+                        oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
                     leftTopY = cast(leftTopY, 0.0, excessHeight)
 
                     val newViewport = Rectangle2D(
@@ -156,64 +160,123 @@ class ImagePanel : View() {
 
             this.minWidth = WINDOW_WIDTH
             this.maxWidth = WINDOW_WIDTH
-            this.minHeight = WINDOW_HEIGHT
-            this.maxHeight = WINDOW_HEIGHT
+            this.minHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
+            this.maxHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
 
             vboxConstraints {
                 margin = Insets(20.0)
+                spacing = 10.0
             }
+
+            // The slider at the bottom of the image view to slide between new and original image.
+            horizontalSlider = slider {
+                maxWidth = WINDOW_WIDTH
+                min = 0.0
+                max = oriView.image.width
+                blockIncrement = 1.0
+            }
+
+            horizontalSlider.value = horizontalSlider.max
+            horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
+                engine.parallelView(new.toDouble())
+            })
+
+            horizontalSpinner = customSpinner(
+                min = .0,
+                max = Double.MAX_VALUE,
+                amountToStepBy = 1.0,
+                editable = true,
+                property = doubleProperty(horizontalSlider.max),
+                type = "int"
+            ) {
+                maxWidth = 70.0
+            }
+
+            try {
+                horizontalSlider.valueProperty().bindBidirectional(
+                    horizontalSpinner.valueFactory.valueProperty()
+                )
+            } catch (e: NumberFormatException) {
+            }
+
+            this.add(horizontalSpinner)
         }
 
-        // The slider at the bottom of the image view to slide between new and original image.
-        horizontalSlider = slider {
-            maxWidth = WINDOW_WIDTH
+        hboxConstraints {
+            margin = Insets(20.0)
+            spacing = 10.0
+        }
+
+        // The slider at the side of the image view to slide between new and original image.
+        verticalSlider = slider {
+            maxHeight = oriView.image.height * 1.2
             min = 0.0
             max = oriView.image.width
             blockIncrement = 1.0
+            orientation = Orientation.VERTICAL
         }
 
-        horizontalSlider.value = horizontalSlider.max
-        horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
+        verticalSlider.value = verticalSlider.max
+        verticalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
             engine.parallelView(new.toDouble())
         })
 
-        spinner = customSpinner(
+        verticalSpinner = customSpinner(
             min = .0,
-            max = oriView.image.width,
+            max = Double.MAX_VALUE,
             amountToStepBy = 1.0,
             editable = true,
-            property = doubleProperty(horizontalSlider.max),
+            property = doubleProperty(verticalSlider.max),
             type = "int"
         ) {
             maxWidth = 70.0
         }
 
         try {
-            horizontalSlider.valueProperty().bindBidirectional(
-                spinner.valueFactory.valueProperty()
+            verticalSlider.valueProperty().bindBidirectional(
+                verticalSpinner.valueFactory.valueProperty()
             )
         } catch (e: NumberFormatException) {
         }
 
-        this.add(spinner)
+        this.add(verticalSpinner)
     }
 
     fun sliderInit() {
         horizontalSlider.value = horizontalSlider.max
+        verticalSlider.value = verticalSlider.max
     }
 
-    fun updateSlider(newMax: Double) {
-        horizontalSlider.max = newMax
-        horizontalSlider.valueProperty().unbindBidirectional(spinner.valueFactory.valueProperty())
+    fun updateSlider(newMaxWidth: Double, newMaxHeight: Double) {
+        stack.minHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
+        stack.maxHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
+
+        horizontalSlider.max = newMaxWidth
+        verticalSlider.max = newMaxHeight
+        verticalSlider.maxHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
+
+        horizontalSlider.valueProperty()
+            .unbindBidirectional(horizontalSpinner.valueFactory.valueProperty())
+        verticalSlider.valueProperty()
+            .unbindBidirectional(verticalSpinner.valueFactory.valueProperty())
         @Suppress("UNCHECKED_CAST")
-        spinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
-            horizontalSlider.min,
-            horizontalSlider.max,
-            horizontalSlider.blockIncrement
+        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+            verticalSlider.min,
+            verticalSlider.max,
+            verticalSlider.blockIncrement
+        ) as SpinnerValueFactory<Number>
+        @Suppress("UNCHECKED_CAST")
+        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+            verticalSlider.min,
+            verticalSlider.max,
+            verticalSlider.blockIncrement
         ) as SpinnerValueFactory<Number>
         try {
             horizontalSlider.valueProperty().bindBidirectional(
-                spinner.valueFactory.valueProperty()
+                horizontalSpinner.valueFactory.valueProperty()
+            )
+            verticalSlider.valueProperty().bindBidirectional(
+                verticalSpinner.valueFactory.valueProperty()
             )
         } catch (e: NumberFormatException) {
         }
