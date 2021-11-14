@@ -79,6 +79,7 @@ class FilterPanel : View() {
 
                         tab("Histogram Equalization") {
                             content = HistogramFilterTab(engineController)
+                        }
 
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
