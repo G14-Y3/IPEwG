@@ -108,7 +108,7 @@ class SliderWithSpinner(
         slider.valueProperty().addListener(op)
         this.add(slider)
 
-        spinner = spinner(
+        spinner = doubleSpinner(
             min = minVal,
             max = maxVal,
             initialValue = 0.0,
