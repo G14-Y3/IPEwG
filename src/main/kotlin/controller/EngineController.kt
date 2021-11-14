@@ -10,6 +10,9 @@ import processing.frequency.FilterGenerator
 import tornadofx.Controller
 import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
+import tornadofx.Controller
 
 /** IMPORTANT:
  *
@@ -54,12 +57,14 @@ class EngineController : Controller() {
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())
-    
+
+    fun blend(type: BlendType) = engine.transform(Blend(engine.blendImage.value, type))
+
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
         engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
     
-    fun histogramEqualization() = engine.transform(HistogramEqualization())
+    fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 }

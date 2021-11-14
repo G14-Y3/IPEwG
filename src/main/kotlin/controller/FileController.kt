@@ -1,7 +1,7 @@
 package controller
 
 import models.EngineModel
-import tornadofx.*
+import tornadofx.Controller
 
 class FileController : Controller() {
 
@@ -16,6 +16,8 @@ class FileController : Controller() {
     fun saveJson(path: String) = engine.saveJson(path)
 
     fun loadEncodeImage(path: String) = engine.loadEncodeImage(path)
+
+    fun loadBlendImage(path: String) = engine.loadBlendImage(path)
 
     fun undo() = engine.undo()
 
