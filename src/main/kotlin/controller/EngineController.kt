@@ -59,6 +59,6 @@ class EngineController : Controller() {
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
-
-    fun histogramEqualization() = engine.transform(HistogramEqualization())
+    
+    fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 }
