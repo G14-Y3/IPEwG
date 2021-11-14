@@ -60,7 +60,8 @@ inline fun <reified T : Number> EventTarget.doubleSpinner(
 class SliderWithSpinner(
     private val minVal: Double,
     private val maxVal: Double,
-    private val op: ChangeListener<Number>
+    private val op: ChangeListener<Number>,
+    private val stepSize: Double = 0.1
 ) : HBox() {
 
     private var comboBox: ComboBox<*>? = null
