@@ -15,10 +15,10 @@ import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
-import processing.BlurType
-import processing.HSVType
-import processing.RGBType
+import processing.filters.BlurType
+import processing.filters.HSVType
 import processing.filters.HistogramEqualization
+import processing.filters.RGBType
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import tornadofx.*
