@@ -6,12 +6,21 @@ import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.geometry.Side
+import javafx.scene.chart.AreaChart
+import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
+import javafx.scene.control.ComboBox
+import javafx.scene.control.ScrollPane
+import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.filters.BlurType
 import processing.filters.HSVType
+import processing.filters.HistogramEqualization
 import processing.filters.RGBType
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
 import tornadofx.*
 import view.component.*
 
@@ -28,7 +37,6 @@ class FilterPanel : View() {
         "Flip Vertical" to engineController::flipVertical,
         "Edge Detection" to engineController::edgeDetection,
         "Sharpen" to engineController::sharpen,
-        "Histogram Equalization" to engineController::histogramEqualization
     )
 
     private val colorAdjustmentSliderList = mapOf(
@@ -64,21 +72,27 @@ class FilterPanel : View() {
                         tab("Color Space Conversions") {
                             content = ConversionTab(converterList)
                         }
-
+                        
                         tab("Style Transfer") {
                             content = StyleTransferTab(engineController)
                         }
+                        
                         tab("Color Adjust") {
                             content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
                         }
-                        tab("frequency transfer") {
-                            button("transfer").setOnAction {
-                                engineController.frequencyTransfer()
-                            }
+                        
+                        tab("Frequency Transfer") {
+                            content = FrequencyTab(engineController)
                         }
+                        
                         tab("Blur") {
                             content = BlurFilterTab(engineController)
                         }
+
+                        tab("Histogram Equalization") {
+                            content = HistogramFilterTab(engineController)
+                        }
+
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
                         }
