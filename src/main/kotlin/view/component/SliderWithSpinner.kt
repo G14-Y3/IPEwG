@@ -1,6 +1,8 @@
 package view.component
 
+import javafx.beans.property.Property
 import javafx.beans.value.ChangeListener
+import javafx.event.EventTarget
 import javafx.geometry.Insets
 import javafx.scene.Node
 import javafx.scene.control.ComboBox
@@ -11,11 +13,56 @@ import tornadofx.*
 import view.CssStyle
 import kotlin.math.roundToInt
 
+inline fun <reified T : Number> EventTarget.doubleSpinner(
+    min: T? = null,
+    max: T? = null,
+    initialValue: T? = null,
+    amountToStepBy: T? = null,
+    editable: Boolean = false,
+    property: Property<T>? = null,
+    enableScroll: Boolean = false,
+    noinline op: Spinner<T>.() -> Unit = {}
+): Spinner<T> {
+    val spinner = spinner(
+        min = min,
+        max = max,
+        initialValue = initialValue,
+        amountToStepBy = amountToStepBy,
+        editable = editable,
+        property = property,
+        enableScroll = enableScroll,
+        op = op,
+    )
+
+    // avoid NPE and set value to old value when user clear the field
+    spinner.valueProperty()
+        .addListener { _, old, new ->
+            spinner.valueFactory.value = new ?: old
+        }
+
+    // use Regex to make sure user inputs a double not character string
+    spinner.editor.textProperty()
+        .addListener { _, old, new ->
+            try {
+                if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
+                    spinner.editor.text = old
+                } else {
+                    spinner.editor.text =
+                        new.toDouble().roundToInt().toString()
+                }
+            } catch (e: IllegalArgumentException) {
+            }
+        }
+
+    return spinner
+}
+
 class SliderWithSpinner(
     private val minVal: Double,
     private val maxVal: Double,
     private val op: ChangeListener<Number>,
-    private val stepSize: Double = 1.0) : HBox() {
+    private val stepSize: Double = 0.1
+) : HBox() {
 
     private var comboBox: ComboBox<*>? = null
     private lateinit var slider: Slider
@@ -71,28 +118,7 @@ class SliderWithSpinner(
         ) {
             maxWidth = 70.0
         }
-
-        // avoid NPE and set value to old value when user clear the field
-        spinner.valueProperty()
-            .addListener { _, old, new ->
-                spinner.valueFactory.value = new ?: old
-            }
-
-        // use Regex to make sure user inputs a double not character string
-        spinner.editor.textProperty()
-            .addListener { _, old, new ->
-                try {
-                    if (!new.matches(Regex("-?\\d*\\.?\\d*"))) {
-                        spinner.editor.text = old
-                    } else {
-                        spinner.editor.text =
-                            "%.2f".format(new.toDouble())
-//                            new.toDouble().roundToInt().toString()
-                    }
-                } catch (e: IllegalArgumentException) {
-                }
-            }
-
+        
         try {
             slider.valueProperty().bindBidirectional(
                 spinner.valueFactory.valueProperty()

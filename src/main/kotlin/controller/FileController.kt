@@ -9,7 +9,7 @@ class FileController : Controller() {
 
     fun loadImage(path: String) = engine.load(path)
 
-    fun saveImage(path: String, format: String) = engine.save(path, format)
+    fun saveImage(path: String, format: String, mode: String = "") = engine.save(path, format, mode)
 
     fun loadJson(path: String) = engine.loadJson(path)
 
