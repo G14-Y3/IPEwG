@@ -96,6 +96,12 @@ class FilterPanel : View() {
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
                         }
+
+                        tab("Image Depth") {
+                            content = button("depth") {
+
+                            }
+                        }
                     }
 
                     vbox {
