@@ -93,7 +93,7 @@ class EngineModel(
         val image = Image(path)
         encodeImage.value = image
     }
-   
+
     fun loadBlendImage(path: String) {
         val image = Image(path)
         blendImage.value = image
@@ -112,7 +112,7 @@ class EngineModel(
         }
     }
 
-    fun parallelView(splitWidth: Double) {
+    fun parallelView(splitWidth: Double, splitHeight: Double) {
         val output = WritableImage(
             previewImage.get().width.toInt(),
             previewImage.get().height.toInt()
@@ -121,23 +121,36 @@ class EngineModel(
         val newImageReader = previewImage.get().pixelReader
         val outputWriter = output.pixelWriter
 
-        for (x in 0 until splitWidth.toInt() - 1) {
+        for (x in 0 until splitWidth.toInt()) {
             for (y in 0 until previewImage.get().height.toInt()) {
                 outputWriter.setColor(x, y, newImageReader.getColor(x, y))
             }
         }
+        
+        if (splitWidth.toInt() != previewImage.get().width.toInt() || splitHeight.toInt() != previewImage.get().height.toInt()) {
+            for (x in splitWidth.toInt() until originalImage.get().width.toInt()) {
+                for (y in 0 until (previewImage.get().height.toInt() - splitHeight.toInt())) {
+                    outputWriter.setColor(x, y, oriImageReader.getColor(x, y))
+                }
+                for (y in (previewImage.get().height.toInt() - splitHeight.toInt()) until previewImage.get().height.toInt()) {
+                    outputWriter.setColor(x, y, newImageReader.getColor(x, y))
+                }
+            }
+        }
 
         if (splitWidth.toInt() != 0 && splitWidth.toInt() != previewImage.get().width.toInt()) {
-            for (y in 0 until previewImage.get().height.toInt()) {
+            for (y in 0 until (previewImage.get().height.toInt() - splitHeight.toInt())) {
                 outputWriter.setColor(splitWidth.toInt() - 1, y, Color.BLACK)
             }
         }
 
-        if (splitWidth.toInt() != previewImage.get().width.toInt()) {
-            for (x in splitWidth.toInt() until originalImage.get().width.toInt() - 1) {
-                for (y in 0 until originalImage.get().height.toInt()) {
-                    outputWriter.setColor(x, y, oriImageReader.getColor(x, y))
-                }
+        if (splitHeight.toInt() != 0 && splitHeight.toInt() != previewImage.get().height.toInt()) {
+            for (x in splitWidth.toInt() until previewImage.get().width.toInt()) {
+                outputWriter.setColor(
+                    x,
+                    previewImage.get().height.toInt() - splitHeight.toInt(),
+                    Color.BLACK
+                )
             }
         }
         parallelImage.value = output

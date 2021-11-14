@@ -178,7 +178,7 @@ class ImagePanel : View() {
 
             horizontalSlider.value = horizontalSlider.max
             horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
-                engine.parallelView(new.toDouble())
+                engine.parallelView(new.toDouble(), verticalSlider.value)
             })
 
             horizontalSpinner = customSpinner(
@@ -218,7 +218,7 @@ class ImagePanel : View() {
 
         verticalSlider.value = verticalSlider.max
         verticalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
-            engine.parallelView(new.toDouble())
+            engine.parallelView(horizontalSlider.value, new.toDouble())
         })
 
         verticalSpinner = customSpinner(
