@@ -31,10 +31,10 @@ class FrequencyTab(
 
     // slider for adjusting filter parameters
     val passStopBoundSlider =
-        SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
+        SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.1)
             .withLabel("Cutoff Frequency")
     val bandWidthSlider =
-        SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.01)
+        SliderWithSpinner(0.0, 1.0, ChangeListener { _, _, _ -> }, 0.1)
             .withLabel("Band Width")
 
     // input box for butterworth order
