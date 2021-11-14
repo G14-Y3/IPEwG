@@ -10,9 +10,6 @@ import processing.frequency.FilterGenerator
 import tornadofx.Controller
 import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
-import tornadofx.Controller
 
 /** IMPORTANT:
  *

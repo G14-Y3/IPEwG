@@ -67,7 +67,7 @@ class FilterPanel : View() {
                         tab("Color Adjust") {
                             content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
                         }
-                        tab("frequency transfer") {
+                        tab("Frequency Transfer") {
                             content = FrequencyTab(engineController)
                         }
                         tab("Blur") {
