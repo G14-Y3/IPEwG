@@ -38,7 +38,7 @@ class BasicFilterTab : View("Basic Actions") {
                         /* The buttons need enough width to load up all labels
                          in them, or the border will change when tabs clicked. */
                         prefWidth = 60.0
-                    }.setOnAction { callback() }
+                    }.setOnAction { callback.call() }
                 }
             }
         }

@@ -5,13 +5,15 @@ import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.filters.Adjustment
 import processing.jsonFormatter
-import tornadofx.*
 import processing.steganography.SteganographyDecoder
+import tornadofx.ViewModel
+import tornadofx.observableListOf
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
@@ -33,11 +35,17 @@ class EngineModel(
     val previewImage =
         SimpleObjectProperty(this, "previewImage", originalImage)
 
+    var parallelImage =
+        SimpleObjectProperty(this, "parallelImage", originalImage)
+
     val encodeImage =
         SimpleObjectProperty(this, "encodeImage", originalImage)
 
     val decodeImage =
         SimpleObjectProperty(this, "decodeImage", originalImage)
+
+    val blendImage =
+        SimpleObjectProperty(this, "blendImage", originalImage)
 
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
@@ -61,6 +69,7 @@ class EngineModel(
         val image = Image(path)
         originalImage.value = image
         previewImage.value = image
+        parallelImage.value = image
         for (imagePanel in imagePanels) {
             // update all image panel view ports, so that previous image viewport will be overwritten
             val viewport = Rectangle2D(
@@ -70,6 +79,8 @@ class EngineModel(
                 image.height,
             )
             imagePanel.updateViewPort(viewport)
+            imagePanel.updateSlider(originalImage.value.width)
+            imagePanel.sliderInit()
         }
 
         currIndex = -1
@@ -77,20 +88,59 @@ class EngineModel(
         snapshots.clear()
     }
 
+    // Parameter 'mode' is empty
     fun loadEncodeImage(path: String) {
         val image = Image(path)
         encodeImage.value = image
     }
+   
+    fun loadBlendImage(path: String) {
+        val image = Image(path)
+        blendImage.value = image
+    }
 
-    fun save(path: String, format: String = "png") {
+    fun save(path: String, format: String = "png", mode: String = "") {
         val output = File(path)
 
-        val buffer = SwingFXUtils.fromFXImage(previewImage.value, null)
+        var saveImage = previewImage.value
+        if (mode == "parallel") saveImage = parallelImage.value
+        val buffer = SwingFXUtils.fromFXImage(saveImage, null)
         try {
             ImageIO.write(buffer, format, output)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    fun parallelView(splitWidth: Double) {
+        val output = WritableImage(
+            previewImage.get().width.toInt(),
+            previewImage.get().height.toInt()
+        )
+        val oriImageReader = originalImage.get().pixelReader
+        val newImageReader = previewImage.get().pixelReader
+        val outputWriter = output.pixelWriter
+
+        for (x in 0 until splitWidth.toInt() - 1) {
+            for (y in 0 until previewImage.get().height.toInt()) {
+                outputWriter.setColor(x, y, newImageReader.getColor(x, y))
+            }
+        }
+
+        if (splitWidth.toInt() != 0 && splitWidth.toInt() != previewImage.get().width.toInt()) {
+            for (y in 0 until previewImage.get().height.toInt()) {
+                outputWriter.setColor(splitWidth.toInt() - 1, y, Color.BLACK)
+            }
+        }
+
+        if (splitWidth.toInt() != previewImage.get().width.toInt()) {
+            for (x in splitWidth.toInt() until originalImage.get().width.toInt() - 1) {
+                for (y in 0 until originalImage.get().height.toInt()) {
+                    outputWriter.setColor(x, y, oriImageReader.getColor(x, y))
+                }
+            }
+        }
+        parallelImage.value = output
     }
 
     fun transform(transformation: ImageProcessing) {
@@ -117,14 +167,19 @@ class EngineModel(
                 updateListSelection()
                 transformation.process(snapshots[currIndex])
                 previewImage.value = snapshots[currIndex]
+                parallelImage.value = previewImage.value
             }
             "decode" -> {
                 if (transformation is SteganographyDecoder) {
                     val decoder: SteganographyDecoder = transformation
                     transformation.process(previous as WritableImage)
                     decodeImage.value = decoder.get_result_image()
+                    parallelImage.value = decodeImage.value
                 }
             }
+        }
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
         }
     }
 
@@ -143,6 +198,10 @@ class EngineModel(
         )
         Adjustment(adjustmentProperties).process(preview)
         previewImage.value = preview
+        parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun submitAdjustment() {
@@ -155,6 +214,10 @@ class EngineModel(
     fun resetAdjustment() {
         adjustmentProperties.clear()
         previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun undo() {
@@ -163,6 +226,10 @@ class EngineModel(
         currIndex--
         updateListSelection()
         previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun redo() {
@@ -171,6 +238,10 @@ class EngineModel(
         currIndex++
         updateListSelection()
         previewImage.value = snapshots[currIndex]
+        parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun setCurrentIndex(index: Int) {
@@ -178,6 +249,10 @@ class EngineModel(
 
         currIndex = index
         previewImage.value = snapshots[currIndex]
+        parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun revert() {
@@ -189,6 +264,10 @@ class EngineModel(
         currIndex = -1
         updateListSelection()
         previewImage.value = originalImage.value
+        parallelImage.value = previewImage.value
+        for (imagePanel in imagePanels) {
+            imagePanel.sliderInit()
+        }
     }
 
     fun loadJson(path: String) {

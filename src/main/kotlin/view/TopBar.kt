@@ -14,22 +14,27 @@ class TopBar : View() {
 
     override val root = menubar {
         menu("_File") {
-            item("_Import...") {
+            item("_Import Image...") {
                 action {
                     fileOperation(mode = "import image")
                 }
             }
-            item("_Export...") {
+            item("_Export Result...") {
                 action {
                     fileOperation(mode = "export image")
                 }
             }
-            item("_Import Transformations...") {
+            item("Export Current _Parallel View...") {
+                action {
+                    fileOperation(mode = "export_parallel")
+                }
+            }
+            item("I_mport Transformations...") {
                 action {
                     fileOperation(mode = "import JSON")
                 }
             }
-            item("_Export Transformations...") {
+            item("E_xport Transformations...") {
                 action {
                     fileOperation(mode = "export JSON")
                 }
@@ -104,6 +109,13 @@ class TopBar : View() {
                     fileSelectorFilter = exportFilter
                     fileSelectorMode = FileChooserMode.Save
                 }
+
+                "export_parallel" -> {
+                    fileSelectorTitle = "Export image in parallel mode"
+                    fileSelectorFilter = exportFilter
+                    fileSelectorMode = FileChooserMode.Save
+                }
+
                 "import JSON" -> {
                     fileSelectorTitle = "import JSON"
                     fileSelectorFilter = jsonFilter
@@ -136,8 +148,20 @@ class TopBar : View() {
                                 dir[0].toString().length
                             )
                         )
+
+                    "export_parallel" ->
+                        fileController.saveImage(
+                            dir[0].toString(),
+                            dir[0].toString().substring(
+                                dir[0].toString().lastIndexOf(".") + 1,
+                                dir[0].toString().length
+                            ),
+                            mode = "parallel"
+                        )
+
                     "import JSON" -> fileController.loadJson(dir[0].toString())
                     "export JSON" -> fileController.saveJson(dir[0].toString())
+
                 }
 
         } catch (e: IllegalArgumentException) {

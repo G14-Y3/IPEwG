@@ -15,7 +15,6 @@ import view.fragment.TransformationList
 class FilterPanel : View() {
 
     private val engine: EngineModel by inject()
-    private val engineController: EngineController by inject()
 
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
@@ -26,19 +25,19 @@ class FilterPanel : View() {
                     tabpane {
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         side = Side.LEFT
+
                         tab<BasicFilterTab>()
                         tab<StyleTransferTab>()
                         tab<ColorAdjustTab>()
                         tab<BlurFilterTab>()
-
-                        tab("frequency transfer") {
-                            button("transfer").setOnAction {
-                                engineController.frequencyTransfer()
-                            }
-                        }
+                        tab<FrequencyTab>()
+                        tab<ConversionTab>()
+                        tab<HistogramFilterTab>()
+                        tab<BlendTab>()
                     },
                     TransformationList().root
                 ) {
+
                     setDividerPosition(0, 0.4)
                 }
             }

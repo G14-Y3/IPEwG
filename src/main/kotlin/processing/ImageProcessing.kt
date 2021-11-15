@@ -5,11 +5,15 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import processing.conversion.ConvertColorSpace
 import processing.filters.*
 import processing.filters.blur.BoxBlur
 import processing.filters.blur.GaussianBlur
 import processing.filters.blur.LensBlur
 import processing.filters.blur.MotionBlur
+import processing.frequency.ButterworthFilter
+import processing.frequency.FrequencyFilters
+import processing.frequency.GaussianFilter
 import processing.frequency.IdleFreqFilter
 import processing.styletransfer.NeuralStyleTransfer
 
@@ -21,6 +25,7 @@ val jsonFormatter = Json {
             subclass(Adjustment::class)
             subclass(BoxBlur::class)
             subclass(Contrast::class)
+            subclass(ConvertColorSpace::class)
             subclass(Convolution::class)
             subclass(EdgeDetection::class)
             subclass(FlipHorizontal::class)
@@ -29,7 +34,7 @@ val jsonFormatter = Json {
             subclass(Grayscale::class)
             subclass(HSVIntensity::class)
             subclass(HistogramEqualization::class)
-            subclass(IdleFreqFilter::class)
+            subclass(FrequencyFilters::class)
             subclass(InverseColour::class)
             subclass(LensBlur::class)
             subclass(MotionBlur::class)
@@ -37,6 +42,7 @@ val jsonFormatter = Json {
             subclass(RGBIntensity::class)
             subclass(Sharpen::class)
             subclass(SpatialSeparableConvolution::class)
+            subclass(Blend::class)
         }
     }
 }
