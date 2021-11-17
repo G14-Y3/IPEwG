@@ -30,6 +30,9 @@ class ImagePanel : View() {
 
     lateinit var stack: StackPane
 
+    // The region of (TL, TR, BL, BR) to show the position of the original image in parallel view.
+    lateinit var comparePosition: String
+
     // Maximum range the left/top pixel coordinate can take,
     // calculated as Image height/width - viewport height/width
     private var excessWidth = 0.0
@@ -39,10 +42,19 @@ class ImagePanel : View() {
         engine.addImagePanel(this)
     }
 
-    override val root = hbox {
-        minWidth = BODY_WIDTH
+    override val root = vbox {
+        vboxConstraints {
+            margin = Insets(20.0)
+            spacing = 10.0
+        }
         alignment = Pos.CENTER
-        vbox {
+        minWidth = BODY_WIDTH
+        comparePosition = "TR"
+        hbox {
+            hboxConstraints {
+                margin = Insets(20.0)
+                spacing = 10.0
+            }
             alignment = Pos.CENTER
             stack = stackpane {
                 oriView = imageview(engine.originalImage) {
@@ -163,83 +175,153 @@ class ImagePanel : View() {
             this.minHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
             this.maxHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
 
-            vboxConstraints {
-                margin = Insets(20.0)
-                spacing = 10.0
-            }
-
-            // The slider at the bottom of the image view to slide between new and original image.
-            horizontalSlider = slider {
-                maxWidth = WINDOW_WIDTH
+            // The slider at the side of the image view to slide between new and original image.
+            verticalSlider = slider {
+                maxHeight = oriView.image.height * 1.2
                 min = 0.0
                 max = oriView.image.width
                 blockIncrement = 1.0
+                orientation = Orientation.VERTICAL
             }
 
-            horizontalSlider.value = horizontalSlider.max
-            horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
-                engine.parallelView(new.toDouble(), verticalSlider.value)
+            verticalSlider.value = verticalSlider.max
+            verticalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
+                engine.parallelView(horizontalSlider.value, new.toDouble(), comparePosition)
             })
 
-            horizontalSpinner = customSpinner(
+            verticalSpinner = customSpinner(
                 min = .0,
                 max = Double.MAX_VALUE,
                 amountToStepBy = 1.0,
                 editable = true,
-                property = doubleProperty(horizontalSlider.max),
+                property = doubleProperty(verticalSlider.max),
                 type = "int"
             ) {
                 maxWidth = 70.0
+                minWidth = 70.0
             }
 
             try {
-                horizontalSlider.valueProperty().bindBidirectional(
-                    horizontalSpinner.valueFactory.valueProperty()
+                verticalSlider.valueProperty().bindBidirectional(
+                    verticalSpinner.valueFactory.valueProperty()
                 )
             } catch (e: NumberFormatException) {
             }
 
-            this.add(horizontalSpinner)
-        }
+            this.add(verticalSpinner)
 
-        hboxConstraints {
-            margin = Insets(20.0)
-            spacing = 10.0
         }
-
-        // The slider at the side of the image view to slide between new and original image.
-        verticalSlider = slider {
-            maxHeight = oriView.image.height * 1.2
+        // The slider at the bottom of the image view to slide between new and original image.
+        horizontalSlider = slider {
+            maxWidth = WINDOW_WIDTH
             min = 0.0
             max = oriView.image.width
             blockIncrement = 1.0
-            orientation = Orientation.VERTICAL
         }
 
-        verticalSlider.value = verticalSlider.max
-        verticalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
-            engine.parallelView(horizontalSlider.value, new.toDouble())
+        horizontalSlider.value = horizontalSlider.max
+        horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
+            engine.parallelView(new.toDouble(), verticalSlider.value, comparePosition)
         })
 
-        verticalSpinner = customSpinner(
+        horizontalSpinner = customSpinner(
             min = .0,
             max = Double.MAX_VALUE,
             amountToStepBy = 1.0,
             editable = true,
-            property = doubleProperty(verticalSlider.max),
+            property = doubleProperty(horizontalSlider.max),
             type = "int"
         ) {
             maxWidth = 70.0
+            minWidth = 70.0
         }
 
         try {
-            verticalSlider.valueProperty().bindBidirectional(
-                verticalSpinner.valueFactory.valueProperty()
+            horizontalSlider.valueProperty().bindBidirectional(
+                horizontalSpinner.valueFactory.valueProperty()
             )
         } catch (e: NumberFormatException) {
         }
+        
+        hbox {
+            alignment = Pos.CENTER
+            spacing = 10.0
+            this.add(horizontalSpinner)
 
-        this.add(verticalSpinner)
+            vbox {
+                alignment = Pos.CENTER
+                spacing = 10.0
+                togglegroup {
+                    hbox {
+                        alignment = Pos.CENTER
+                        // TL
+                        radiobutton {
+                            toggleGroup = this.parent.parent.getToggleGroup()
+                            spacing = 5.0
+                            this.selectedProperty().addListener(ChangeListener { _, _, _ ->
+                                if (isSelected) {
+                                    comparePosition = "TL"
+                                    engine.parallelView(
+                                        horizontalSlider.value,
+                                        verticalSlider.value,
+                                        comparePosition
+                                    )
+                                }
+                            })
+                        }
+                        // TR
+                        radiobutton {
+                            isSelected = true
+                            toggleGroup = this.parent.parent.getToggleGroup()
+                            spacing = 5.0
+                            this.selectedProperty().addListener(ChangeListener { _, _, _ ->
+                                if (isSelected) {
+                                    comparePosition = "TR"
+                                    engine.parallelView(
+                                        horizontalSlider.value,
+                                        verticalSlider.value,
+                                        comparePosition
+                                    )
+                                }
+                            })
+                        }
+                    }
+                    hbox {
+                        alignment = Pos.CENTER
+                        // BL
+                        radiobutton {
+                            toggleGroup = this.parent.parent.getToggleGroup()
+                            spacing = 5.0
+                            this.selectedProperty().addListener(ChangeListener { _, _, _ ->
+                                if (isSelected) {
+                                    comparePosition = "BL"
+                                    engine.parallelView(
+                                        horizontalSlider.value,
+                                        verticalSlider.value,
+                                        comparePosition
+                                    )
+                                }
+                            })
+                        }
+                        // BR
+                        radiobutton {
+                            toggleGroup = this.parent.parent.getToggleGroup()
+                            spacing = 5.0
+                            this.selectedProperty().addListener(ChangeListener { _, _, _ ->
+                                if (isSelected) {
+                                    comparePosition = "BR"
+                                    engine.parallelView(
+                                        horizontalSlider.value,
+                                        verticalSlider.value,
+                                        comparePosition
+                                    )
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun sliderInit() {
@@ -308,3 +390,4 @@ class ImagePanel : View() {
         return value / localToImage
     }
 }
+
