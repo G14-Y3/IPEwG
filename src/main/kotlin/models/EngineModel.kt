@@ -174,7 +174,7 @@ class EngineModel(
                     val decoder: SteganographyDecoder = transformation
                     transformation.process(previous as WritableImage)
                     decodeImage.value = decoder.get_result_image()
-                    parallelImage.value = decodeImage.value
+//                    parallelImage.value = decodeImage.value
                 }
             }
         }
