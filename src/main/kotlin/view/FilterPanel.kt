@@ -96,6 +96,10 @@ class FilterPanel : View() {
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
                         }
+
+                        tab("Salt & Pepper Noise") {
+                            content = SaltPepperTab(engineController)
+                        }
                     }
 
                     vbox {

@@ -74,4 +74,6 @@ class EngineController : Controller() {
     fun convertLinearRGBTosRGB() = convertColorSpace(ColorSpaceType.LinearRGB, ColorSpaceType.sRGB)
     
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
+
+    fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 }
