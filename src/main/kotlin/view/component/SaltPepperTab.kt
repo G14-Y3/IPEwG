@@ -30,7 +30,6 @@ class SaltPepperTab(private val engineController: EngineController): VBox() {
         this.children.add(noiseRatioSlider.build())
         hbox {
             label("Seed (optional):") {
-                addClass(CssStyle.labelTag)
                 prefWidth = 130.0
             }
             this.children.add(seed)
