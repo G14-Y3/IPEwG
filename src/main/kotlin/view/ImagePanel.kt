@@ -72,7 +72,7 @@ class ImagePanel : View() {
                 updateViewPort(viewport)
 
                 var dragging = false
-                addEventHandler(MouseEvent.ANY) {
+                this.addEventHandler(MouseEvent.ANY) {
                     if (it.eventType == MouseEvent.MOUSE_PRESSED) {
                         dragging = false;
                     } else if (it.eventType == MouseEvent.DRAG_DETECTED) {
@@ -84,79 +84,80 @@ class ImagePanel : View() {
                         }
                     }
                 }
-            }
 
-            this.addEventFilter(ScrollEvent.SCROLL) {
-                var leftTopX = oriView.viewport.minX - it.deltaX
-                leftTopX = cast(leftTopX, 0.0, excessWidth)
-                var leftTopY = oriView.viewport.minY - it.deltaY
-                leftTopY = cast(leftTopY, 0.0, excessHeight)
-                val viewport = Rectangle2D(
-                    leftTopX,
-                    leftTopY,
-                    oriView.viewport.width,
-                    oriView.viewport.height,
-                )
-                updateViewPort(viewport)
-            }
+//                this.addEventFilter(ScrollEvent.SCROLL) {
+//                    var leftTopX = oriView.viewport.minX - it.deltaX
+//                    leftTopX = cast(leftTopX, 0.0, excessWidth)
+//                    var leftTopY = oriView.viewport.minY - it.deltaY
+//                    leftTopY = cast(leftTopY, 0.0, excessHeight)
+//                    val viewport = Rectangle2D(
+//                        leftTopX,
+//                        leftTopY,
+//                        oriView.viewport.width,
+//                        oriView.viewport.height,
+//                    )
+//                    updateViewPort(viewport)
+//                }
 
-            // listen to zoomProperty to detect zoom in & out action
-            this.addEventFilter(ZoomEvent.ANY) {
-                var ratio = 1.0
-                val oldViewport = oriView.viewport!!
-                if (it.zoomFactor > 1) {
-                    ratio = 1.035
-                } else if (it.zoomFactor < 1) {
-                    // only zoom out when viewport is smaller than original image
-                    if (oldViewport.width < oriView.image.width) {
-                        ratio = 1 / 1.035
+                // listen to zoomProperty to detect zoom in & out action
+                // change the zoom to scroll as compatibility issue occurs for zoom in windows
+                this.addEventFilter(ScrollEvent.SCROLL) {
+                    var ratio = 1.0
+                    val oldViewport = oriView.viewport!!
+                    if (it.deltaY > 1) {
+                        ratio = 1.035
+                    } else if (it.deltaY < 1) {
+                        // only zoom out when viewport is smaller than original image
+                        if (oldViewport.width < oriView.image.width) {
+                            ratio = 1 / 1.035
+                        }
                     }
-                }
 
-                // update image origin so zoom on the mouse position
-                var leftTopX = oldViewport.minX + localToImage(it.x * (1 - 1 / ratio))
-                leftTopX = cast(leftTopX, 0.0, excessWidth)
-                var leftTopY = oldViewport.minY + localToImage(it.y * (1 - 1 / ratio))
-                leftTopY = cast(leftTopY, 0.0, excessHeight)
-
-                val newViewport = Rectangle2D(
-                    leftTopX,
-                    leftTopY,
-                    oldViewport.width / ratio,
-                    oldViewport.height / ratio,
-                )
-                updateViewPort(newViewport)
-            }
-
-            // Drag image handlers
-            fun stopDrag(event: MouseEvent) {
-                lastMousePoint = null
-            }
-            addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
-            addEventFilter(MouseEvent.MOUSE_PRESSED) {
-                lastMousePoint = Point2D(it.screenX, it.screenY)
-            }
-
-            addEventFilter(MouseEvent.MOUSE_DRAGGED) {
-                if (lastMousePoint != null) {
-                    val oldViewport = oriView.viewport
-
-                    var leftTopX =
-                        oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
+                    // update image origin so zoom on the mouse position
+                    var leftTopX = oldViewport.minX + localToImage(it.x * (1 - 1 / ratio))
                     leftTopX = cast(leftTopX, 0.0, excessWidth)
-                    var leftTopY =
-                        oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
+                    var leftTopY = oldViewport.minY + localToImage(it.y * (1 - 1 / ratio))
                     leftTopY = cast(leftTopY, 0.0, excessHeight)
 
                     val newViewport = Rectangle2D(
                         leftTopX,
                         leftTopY,
-                        oldViewport.width,
-                        oldViewport.height,
+                        oldViewport.width / ratio,
+                        oldViewport.height / ratio,
                     )
                     updateViewPort(newViewport)
+                }
 
+                // Drag image handlers
+                fun stopDrag(event: MouseEvent) {
+                    lastMousePoint = null
+                }
+                addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
+                addEventFilter(MouseEvent.MOUSE_PRESSED) {
                     lastMousePoint = Point2D(it.screenX, it.screenY)
+                }
+
+                addEventFilter(MouseEvent.MOUSE_DRAGGED) {
+                    if (lastMousePoint != null) {
+                        val oldViewport = oriView.viewport
+
+                        var leftTopX =
+                            oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
+                        leftTopX = cast(leftTopX, 0.0, excessWidth)
+                        var leftTopY =
+                            oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
+                        leftTopY = cast(leftTopY, 0.0, excessHeight)
+
+                        val newViewport = Rectangle2D(
+                            leftTopX,
+                            leftTopY,
+                            oldViewport.width,
+                            oldViewport.height,
+                        )
+                        updateViewPort(newViewport)
+
+                        lastMousePoint = Point2D(it.screenX, it.screenY)
+                    }
                 }
             }
 
