@@ -5,6 +5,7 @@ import javafx.scene.control.Slider
 import javafx.scene.control.Spinner
 import javafx.scene.control.SpinnerValueFactory
 import javafx.scene.image.ImageView
+import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
@@ -85,47 +86,31 @@ class ImagePanel : View() {
                     }
                 }
 
-//                this.addEventFilter(ScrollEvent.SCROLL) {
-//                    var leftTopX = oriView.viewport.minX - it.deltaX
-//                    leftTopX = cast(leftTopX, 0.0, excessWidth)
-//                    var leftTopY = oriView.viewport.minY - it.deltaY
-//                    leftTopY = cast(leftTopY, 0.0, excessHeight)
-//                    val viewport = Rectangle2D(
-//                        leftTopX,
-//                        leftTopY,
-//                        oriView.viewport.width,
-//                        oriView.viewport.height,
-//                    )
-//                    updateViewPort(viewport)
-//                }
-
                 // listen to zoomProperty to detect zoom in & out action
-                // change the zoom to scroll as compatibility issue occurs for zoom in windows
+                // Use ctrl+scroll in Windows as compatibility issue occurs for zoom
+                // Use scroll only to move around image
                 this.addEventFilter(ScrollEvent.SCROLL) {
-                    var ratio = 1.0
-                    val oldViewport = oriView.viewport!!
-                    if (it.deltaY > 1) {
-                        ratio = 1.035
-                    } else if (it.deltaY < 1) {
-                        // only zoom out when viewport is smaller than original image
-                        if (oldViewport.width < oriView.image.width) {
-                            ratio = 1 / 1.035
-                        }
+                    //this.addEventFilter(KeyEvent.KEY_PRESSED) {
+                    if (it.isControlDown) {
+                        zoom(it.deltaY, it.x, it.y)
+                    } else {
+                        var leftTopX = oriView.viewport.minX - it.deltaX
+                        leftTopX = cast(leftTopX, 0.0, excessWidth)
+                        var leftTopY = oriView.viewport.minY - it.deltaY
+                        leftTopY = cast(leftTopY, 0.0, excessHeight)
+                        val viewport = Rectangle2D(
+                            leftTopX,
+                            leftTopY,
+                            oriView.viewport.width,
+                            oriView.viewport.height,
+                        )
+                        updateViewPort(viewport)
                     }
+                }
 
-                    // update image origin so zoom on the mouse position
-                    var leftTopX = oldViewport.minX + localToImage(it.x * (1 - 1 / ratio))
-                    leftTopX = cast(leftTopX, 0.0, excessWidth)
-                    var leftTopY = oldViewport.minY + localToImage(it.y * (1 - 1 / ratio))
-                    leftTopY = cast(leftTopY, 0.0, excessHeight)
-
-                    val newViewport = Rectangle2D(
-                        leftTopX,
-                        leftTopY,
-                        oldViewport.width / ratio,
-                        oldViewport.height / ratio,
-                    )
-                    updateViewPort(newViewport)
+                // Zoom event for Mac users
+                this.addEventFilter(ZoomEvent.ANY) {
+                    zoom(it.zoomFactor, it.x, it.y)
                 }
 
                 // Drag image handlers
@@ -243,7 +228,7 @@ class ImagePanel : View() {
             )
         } catch (e: NumberFormatException) {
         }
-        
+
         hbox {
             alignment = Pos.CENTER
             spacing = 10.0
@@ -323,6 +308,34 @@ class ImagePanel : View() {
                 }
             }
         }
+    }
+
+    // Zoom the image
+    private fun zoom(factor: Double, x: Double, y: Double) {
+        var ratio = 1.0
+        val oldViewport = oriView.viewport!!
+        if (factor > 1) {
+            ratio = 1.035
+        } else if (factor < 1) {
+            // only zoom out when viewport is smaller than original image
+            if (oldViewport.width < oriView.image.width) {
+                ratio = 1 / 1.035
+            }
+        }
+
+        // update image origin so zoom on the mouse position
+        var leftTopX = oldViewport.minX + localToImage(x * (1 - 1 / ratio))
+        leftTopX = cast(leftTopX, 0.0, excessWidth)
+        var leftTopY = oldViewport.minY + localToImage(y * (1 - 1 / ratio))
+        leftTopY = cast(leftTopY, 0.0, excessHeight)
+
+        val newViewport = Rectangle2D(
+            leftTopX,
+            leftTopY,
+            oldViewport.width / ratio,
+            oldViewport.height / ratio,
+        )
+        updateViewPort(newViewport)
     }
 
     fun sliderInit() {
