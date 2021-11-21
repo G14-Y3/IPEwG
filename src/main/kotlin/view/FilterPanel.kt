@@ -15,6 +15,7 @@ import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.depthestimation.DepthEstimationModel
 import processing.filters.BlurType
 import processing.filters.HSVType
 import processing.filters.HistogramEqualization
@@ -98,8 +99,34 @@ class FilterPanel : View() {
                         }
 
                         tab("Image Depth") {
-                            content = button("depth") {
-
+                            content = vbox {
+                                label("Blend") {
+                                    vboxConstraints {
+                                        margin = Insets(20.0, 20.0, 10.0, 10.0)
+                                    }
+                                    style {
+                                        fontWeight = FontWeight.BOLD
+                                        fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                    }
+                                }
+                                hbox {
+                                    button("depth") {
+                                        action {
+                                            engineController.depthEstimation(DepthEstimationModel.NYU)
+                                        }
+                                        hboxConstraints {
+                                            margin = Insets(20.0, 20.0, 10.0, 10.0)
+                                        }
+                                    }
+                                    imageview(engine.depthImage) {
+                                        isPreserveRatio = true
+                                        fitWidth = 200.0
+                                        fitHeight = 200.0
+                                        hboxConstraints {
+                                            margin = Insets(20.0)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

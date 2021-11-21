@@ -9,6 +9,7 @@ import javafx.scene.paint.Color
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
+import processing.depthestimation.DepthEstimation
 import processing.filters.Adjustment
 import processing.jsonFormatter
 import processing.steganography.SteganographyDecoder
@@ -46,6 +47,9 @@ class EngineModel(
 
     val blendImage =
         SimpleObjectProperty(this, "blendImage", originalImage)
+
+    val depthImage =
+        SimpleObjectProperty(this, "depthImage", originalImage)
 
     var adjustmentProperties: MutableMap<String, Double> = HashMap()
 
@@ -93,7 +97,7 @@ class EngineModel(
         val image = Image(path)
         encodeImage.value = image
     }
-   
+
     fun loadBlendImage(path: String) {
         val image = Image(path)
         blendImage.value = image
@@ -174,7 +178,13 @@ class EngineModel(
                     val decoder: SteganographyDecoder = transformation
                     transformation.process(previous as WritableImage)
                     decodeImage.value = decoder.get_result_image()
-                    parallelImage.value = decodeImage.value
+                }
+            }
+            "depth" -> {
+                if (transformation is DepthEstimation) {
+                    val temp = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
+                    transformation.process(temp)
+                    depthImage.value = transformation.get_depth_image()
                 }
             }
         }
