@@ -9,6 +9,13 @@ import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.BatchProcessorModel
 import models.EngineModel
+import processing.depthestimation.DepthEstimationModel
+import processing.filters.BlurType
+import processing.filters.HSVType
+import processing.filters.HistogramEqualization
+import processing.filters.RGBType
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
 import tornadofx.*
 import view.component.*
 import view.fragment.TransformationList
@@ -24,9 +31,66 @@ class FilterPanel : View() {
             vbox {
                 splitpane(
                     Orientation.VERTICAL,
-                    tabpane {
-                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                        side = Side.LEFT
+//                     tabpane {
+//                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+//                         side = Side.LEFT
+                      
+//                         tab("Basic Actions") {
+//                             content = BasicFilterTab(basicFilterButtonList)
+//                         }
+                        
+//                         tab("Style Transfer") {
+//                             content = StyleTransferTab(engineController)
+//                         }
+                        
+//                         tab("Color Adjust") {
+//                             content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
+//                         }
+
+//                         tab("Color Space Conversions") {
+//                             content = ConversionTab(converterList)
+//                         }
+                        
+//                         tab("Frequency Transfer") {
+//                             content = FrequencyTab(engineController)
+//                         }
+                        
+//                         tab("Blur") {
+//                             content = BlurFilterTab(engineController)
+//                         }
+
+//                         tab("Histogram Equalization") {
+//                             content = HistogramFilterTab(engineController)
+//                         }
+
+//                         tab("Blend") {
+//                             content = BlendTab(engine, engineController, fileController)
+//                         }
+                        
+//                         tab("Salt & Pepper Noise") {
+//                             content = SaltPepperTab(engineController)
+//                         }
+
+//                         tab("Image Depth") {
+//                             content = DepthEstimationTab(engineController, engine)
+//                         }
+                        
+//                         tab("Water Marking") {
+//                             content = WaterMarkTab(fileController, engine, engineController)
+//                         }
+//                     }
+
+                    vbox {
+                        alignment = Pos.CENTER
+                        label("Transformations") {
+                            vboxConstraints {
+                                margin = Insets(10.0, 20.0, 10.0, 10.0)
+                            }
+                            style {
+                                fontWeight = FontWeight.BOLD
+                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                            }
+                        }
 
                         tab<BasicFilterTab>()
                         tab<StyleTransferTab>()

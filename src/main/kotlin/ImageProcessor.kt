@@ -17,6 +17,7 @@ class GUI : View("IPEwG") {
     override val root = borderpane {
         setPrefSize(1300.0, 780.0)
         top<TopBar>()
+
         center = splitpane(
             Orientation.HORIZONTAL,
             find<FilterPanel>().root,

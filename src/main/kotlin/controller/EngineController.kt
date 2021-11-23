@@ -1,9 +1,13 @@
 package controller
 
 import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
 import models.EngineModel
 import processing.conversion.ColorSpaceType
 import processing.conversion.ConvertColorSpace
+import processing.depthestimation.DepthColorMap
+import processing.depthestimation.DepthEstimation
+import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
 import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
@@ -12,6 +16,8 @@ import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import processing.filters.*
 import processing.frequency.FilterGenerator
+import processing.steganography.WaterMark
+import processing.steganography.WaterMarkingTechnique
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -66,6 +72,8 @@ class EngineController : Controller() {
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
 
+    fun waterMark(encodeImage: Image, horizontalGap: Int, verticalGap: Int, technique: WaterMarkingTechnique) = engine.transform(WaterMark(encodeImage, horizontalGap, verticalGap, technique))
+
     private fun convertColorSpace(source: ColorSpaceType, target: ColorSpaceType) =
         engine.transform(ConvertColorSpace(source, target))
 
@@ -74,4 +82,8 @@ class EngineController : Controller() {
     fun convertLinearRGBTosRGB() = convertColorSpace(ColorSpaceType.LinearRGB, ColorSpaceType.sRGB)
     
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
+
+    fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
+
+    fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
 }
