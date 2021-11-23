@@ -96,6 +96,10 @@ class FilterPanel : View() {
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
                         }
+
+                        tab("Water Marking") {
+                            content = WaterMarkTab(fileController, engine, engineController)
+                        }
                     }
 
                     vbox {
