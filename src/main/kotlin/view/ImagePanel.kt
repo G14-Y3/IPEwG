@@ -5,6 +5,7 @@ import javafx.scene.control.Slider
 import javafx.scene.control.Spinner
 import javafx.scene.control.SpinnerValueFactory
 import javafx.scene.image.ImageView
+import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.input.ZoomEvent
@@ -14,7 +15,7 @@ import tornadofx.*
 import view.component.customSpinner
 
 const val WINDOW_WIDTH = 600.0
-const val BODY_WIDTH = WINDOW_WIDTH + 200.0
+const val BODY_WIDTH = WINDOW_WIDTH + 100.0
 
 class ImagePanel : View() {
     private val engine: EngineModel by inject()
@@ -44,7 +45,7 @@ class ImagePanel : View() {
 
     override val root = vbox {
         vboxConstraints {
-            margin = Insets(20.0)
+            margin = Insets(10.0)
             spacing = 10.0
         }
         alignment = Pos.CENTER
@@ -52,7 +53,7 @@ class ImagePanel : View() {
         comparePosition = "TR"
         hbox {
             hboxConstraints {
-                margin = Insets(20.0)
+                margin = Insets(10.0)
                 spacing = 10.0
             }
             alignment = Pos.CENTER
@@ -72,7 +73,7 @@ class ImagePanel : View() {
                 updateViewPort(viewport)
 
                 var dragging = false
-                addEventHandler(MouseEvent.ANY) {
+                this.addEventHandler(MouseEvent.ANY) {
                     if (it.eventType == MouseEvent.MOUSE_PRESSED) {
                         dragging = false;
                     } else if (it.eventType == MouseEvent.DRAG_DETECTED) {
@@ -84,79 +85,64 @@ class ImagePanel : View() {
                         }
                     }
                 }
-            }
 
-            this.addEventFilter(ScrollEvent.SCROLL) {
-                var leftTopX = oriView.viewport.minX - it.deltaX
-                leftTopX = cast(leftTopX, 0.0, excessWidth)
-                var leftTopY = oriView.viewport.minY - it.deltaY
-                leftTopY = cast(leftTopY, 0.0, excessHeight)
-                val viewport = Rectangle2D(
-                    leftTopX,
-                    leftTopY,
-                    oriView.viewport.width,
-                    oriView.viewport.height,
-                )
-                updateViewPort(viewport)
-            }
-
-            // listen to zoomProperty to detect zoom in & out action
-            this.addEventFilter(ZoomEvent.ANY) {
-                var ratio = 1.0
-                val oldViewport = oriView.viewport!!
-                if (it.zoomFactor > 1) {
-                    ratio = 1.035
-                } else if (it.zoomFactor < 1) {
-                    // only zoom out when viewport is smaller than original image
-                    if (oldViewport.width < oriView.image.width) {
-                        ratio = 1 / 1.035
+                // listen to zoomProperty to detect zoom in & out action
+                // Use ctrl+scroll in Windows as compatibility issue occurs for zoom
+                // Use scroll only to move around image
+                this.addEventFilter(ScrollEvent.SCROLL) {
+                    //this.addEventFilter(KeyEvent.KEY_PRESSED) {
+                    if (it.isControlDown) {
+                        zoom(it.deltaY, it.x, it.y)
+                    } else {
+                        var leftTopX = oriView.viewport.minX - it.deltaX
+                        leftTopX = cast(leftTopX, 0.0, excessWidth)
+                        var leftTopY = oriView.viewport.minY - it.deltaY
+                        leftTopY = cast(leftTopY, 0.0, excessHeight)
+                        val viewport = Rectangle2D(
+                            leftTopX,
+                            leftTopY,
+                            oriView.viewport.width,
+                            oriView.viewport.height,
+                        )
+                        updateViewPort(viewport)
                     }
                 }
 
-                // update image origin so zoom on the mouse position
-                var leftTopX = oldViewport.minX + localToImage(it.x * (1 - 1 / ratio))
-                leftTopX = cast(leftTopX, 0.0, excessWidth)
-                var leftTopY = oldViewport.minY + localToImage(it.y * (1 - 1 / ratio))
-                leftTopY = cast(leftTopY, 0.0, excessHeight)
+                // Zoom event for Mac users
+                this.addEventFilter(ZoomEvent.ANY) {
+                    zoom(it.zoomFactor, it.x, it.y)
+                }
 
-                val newViewport = Rectangle2D(
-                    leftTopX,
-                    leftTopY,
-                    oldViewport.width / ratio,
-                    oldViewport.height / ratio,
-                )
-                updateViewPort(newViewport)
-            }
-
-            // Drag image handlers
-            fun stopDrag(event: MouseEvent) {
-                lastMousePoint = null
-            }
-            addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
-            addEventFilter(MouseEvent.MOUSE_PRESSED) {
-                lastMousePoint = Point2D(it.screenX, it.screenY)
-            }
-
-            addEventFilter(MouseEvent.MOUSE_DRAGGED) {
-                if (lastMousePoint != null) {
-                    val oldViewport = oriView.viewport
-
-                    var leftTopX =
-                        oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
-                    leftTopX = cast(leftTopX, 0.0, excessWidth)
-                    var leftTopY =
-                        oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
-                    leftTopY = cast(leftTopY, 0.0, excessHeight)
-
-                    val newViewport = Rectangle2D(
-                        leftTopX,
-                        leftTopY,
-                        oldViewport.width,
-                        oldViewport.height,
-                    )
-                    updateViewPort(newViewport)
-
+                // Drag image handlers
+                fun stopDrag(event: MouseEvent) {
+                    lastMousePoint = null
+                }
+                addEventFilter(MouseEvent.MOUSE_RELEASED, ::stopDrag)
+                addEventFilter(MouseEvent.MOUSE_PRESSED) {
                     lastMousePoint = Point2D(it.screenX, it.screenY)
+                }
+
+                addEventFilter(MouseEvent.MOUSE_DRAGGED) {
+                    if (lastMousePoint != null) {
+                        val oldViewport = oriView.viewport
+
+                        var leftTopX =
+                            oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
+                        leftTopX = cast(leftTopX, 0.0, excessWidth)
+                        var leftTopY =
+                            oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
+                        leftTopY = cast(leftTopY, 0.0, excessHeight)
+
+                        val newViewport = Rectangle2D(
+                            leftTopX,
+                            leftTopY,
+                            oldViewport.width,
+                            oldViewport.height,
+                        )
+                        updateViewPort(newViewport)
+
+                        lastMousePoint = Point2D(it.screenX, it.screenY)
+                    }
                 }
             }
 
@@ -189,64 +175,69 @@ class ImagePanel : View() {
                 engine.parallelView(horizontalSlider.value, new.toDouble(), comparePosition)
             })
 
-            verticalSpinner = customSpinner(
-                min = .0,
-                max = Double.MAX_VALUE,
-                amountToStepBy = 1.0,
-                editable = true,
-                property = doubleProperty(verticalSlider.max),
-                type = "int"
-            ) {
-                maxWidth = 70.0
-                minWidth = 70.0
-            }
-
-            try {
-                verticalSlider.valueProperty().bindBidirectional(
-                    verticalSpinner.valueFactory.valueProperty()
-                )
-            } catch (e: NumberFormatException) {
-            }
-
-            this.add(verticalSpinner)
+//            verticalSpinner = customSpinner(
+//                min = .0,
+//                max = Double.MAX_VALUE,
+//                amountToStepBy = 1.0,
+//                editable = true,
+//                property = doubleProperty(verticalSlider.max),
+//                type = "int"
+//            ) {
+//                maxWidth = 70.0
+//                minWidth = 70.0
+//            }
+//
+//            try {
+//                verticalSlider.valueProperty().bindBidirectional(
+//                    verticalSpinner.valueFactory.valueProperty()
+//                )
+//            } catch (e: NumberFormatException) {
+//            }
+//
+//            this.add(verticalSpinner)
 
         }
         // The slider at the bottom of the image view to slide between new and original image.
-        horizontalSlider = slider {
-            maxWidth = WINDOW_WIDTH
-            min = 0.0
-            max = oriView.image.width
-            blockIncrement = 1.0
+        vbox {
+            vboxConstraints {
+                marginLeft = 35.0
+            }
+            horizontalSlider = slider {
+                maxWidth = WINDOW_WIDTH
+                min = 0.0
+                max = oriView.image.width
+                blockIncrement = 1.0
+            }
+
+            horizontalSlider.value = horizontalSlider.max
+            horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
+                engine.parallelView(new.toDouble(), verticalSlider.value, comparePosition)
+            })
         }
 
-        horizontalSlider.value = horizontalSlider.max
-        horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
-            engine.parallelView(new.toDouble(), verticalSlider.value, comparePosition)
-        })
+//        horizontalSpinner = customSpinner(
+//            min = .0,
+//            max = Double.MAX_VALUE,
+//            amountToStepBy = 1.0,
+//            editable = true,
+//            property = doubleProperty(horizontalSlider.max),
+//            type = "int"
+//        ) {
+//            maxWidth = 70.0
+//            minWidth = 70.0
+//        }
+//
+//        try {
+//            horizontalSlider.valueProperty().bindBidirectional(
+//                horizontalSpinner.valueFactory.valueProperty()
+//            )
+//        } catch (e: NumberFormatException) {
+//        }
 
-        horizontalSpinner = customSpinner(
-            min = .0,
-            max = Double.MAX_VALUE,
-            amountToStepBy = 1.0,
-            editable = true,
-            property = doubleProperty(horizontalSlider.max),
-            type = "int"
-        ) {
-            maxWidth = 70.0
-            minWidth = 70.0
-        }
-
-        try {
-            horizontalSlider.valueProperty().bindBidirectional(
-                horizontalSpinner.valueFactory.valueProperty()
-            )
-        } catch (e: NumberFormatException) {
-        }
-        
         hbox {
             alignment = Pos.CENTER
             spacing = 10.0
-            this.add(horizontalSpinner)
+//            this.add(horizontalSpinner)
 
             vbox {
                 alignment = Pos.CENTER
@@ -255,7 +246,7 @@ class ImagePanel : View() {
                     hbox {
                         alignment = Pos.CENTER
                         // TL
-                        radiobutton {
+                        radiobutton("Show Top Left") {
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
                             this.selectedProperty().addListener(ChangeListener { _, _, _ ->
@@ -270,7 +261,7 @@ class ImagePanel : View() {
                             })
                         }
                         // TR
-                        radiobutton {
+                        radiobutton("Show Top Right") {
                             isSelected = true
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
@@ -289,7 +280,7 @@ class ImagePanel : View() {
                     hbox {
                         alignment = Pos.CENTER
                         // BL
-                        radiobutton {
+                        radiobutton("Show Bottom Left") {
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
                             this.selectedProperty().addListener(ChangeListener { _, _, _ ->
@@ -304,7 +295,7 @@ class ImagePanel : View() {
                             })
                         }
                         // BR
-                        radiobutton {
+                        radiobutton("Show Bottom Right") {
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
                             this.selectedProperty().addListener(ChangeListener { _, _, _ ->
@@ -322,6 +313,34 @@ class ImagePanel : View() {
                 }
             }
         }
+    }
+
+    // Zoom the image
+    private fun zoom(factor: Double, x: Double, y: Double) {
+        var ratio = 1.0
+        val oldViewport = oriView.viewport!!
+        if (factor > 1) {
+            ratio = 1.035
+        } else if (factor < 1) {
+            // only zoom out when viewport is smaller than original image
+            if (oldViewport.width < oriView.image.width) {
+                ratio = 1 / 1.035
+            }
+        }
+
+        // update image origin so zoom on the mouse position
+        var leftTopX = oldViewport.minX + localToImage(x * (1 - 1 / ratio))
+        leftTopX = cast(leftTopX, 0.0, excessWidth)
+        var leftTopY = oldViewport.minY + localToImage(y * (1 - 1 / ratio))
+        leftTopY = cast(leftTopY, 0.0, excessHeight)
+
+        val newViewport = Rectangle2D(
+            leftTopX,
+            leftTopY,
+            oldViewport.width / ratio,
+            oldViewport.height / ratio,
+        )
+        updateViewPort(newViewport)
     }
 
     fun sliderInit() {

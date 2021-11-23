@@ -13,7 +13,7 @@ class GUI : View("IPEwG") {
         setPrefSize(1100.0, 780.0)
         top<TopBar>()
         left<FilterPanel>()
-        center<ImagePanel>()
+        right<ImagePanel>()
     }
 
     override fun onDock() {
