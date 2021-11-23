@@ -25,6 +25,7 @@ class BatchProcessTab : Fragment("Batch") {
     private var focusedImage by focusedImageProperty
 
     private val imagesListView = listview(batchProcessor.transformedImages) {
+        prefWidth = 50.0
         selectionModel.selectionMode = SelectionMode.SINGLE
         padding = Insets(10.0)
         cellCache { image ->
@@ -50,7 +51,22 @@ class BatchProcessTab : Fragment("Batch") {
         padding = Insets(10.0)
         left = borderpane {
 
-            center = imagesListView
+            center = splitpane (Orientation.HORIZONTAL,
+                imagesListView,
+
+                tabpane {
+                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+
+                    tab<BasicFilterTab>()
+                    tab<StyleTransferTab>()
+                    tab<ColorAdjustTab>()
+                    tab<BlurFilterTab>()
+                    tab<FrequencyTab>()
+                    tab<ConversionTab>()
+                    tab<HistogramFilterTab>()
+                    tab<BlendTab>()
+                }
+            )
 
             bottom = buttonbar {
                 button("Import").action { importImages() }
@@ -69,19 +85,6 @@ class BatchProcessTab : Fragment("Batch") {
                 button("Export").action { exportImages() }
                 padding = Insets(15.0)
             }
-        }
-
-        center = tabpane {
-            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-
-            tab<BasicFilterTab>()
-            tab<StyleTransferTab>()
-            tab<ColorAdjustTab>()
-            tab<BlurFilterTab>()
-            tab<FrequencyTab>()
-            tab<ConversionTab>()
-            tab<HistogramFilterTab>()
-            tab<BlendTab>()
         }
 
         right = splitpane(
