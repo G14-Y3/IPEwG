@@ -6,10 +6,10 @@ import net.mahdilamb.colormap.Colormaps
 import org.pytorch.*
 import processing.ImageProcessing
 
-class DepthEstimation(val type: DepthEstimationModel): ImageProcessing {
+class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMap): ImageProcessing {
     private val modelType = mapOf(
         DepthEstimationModel.NYU to "./src/main/resources/depth_estimation_model/nyu.pt",
-        DepthEstimationModel.KITTI to "\"./src/main/resources/depth_estimation_model/kitti.pt"
+        DepthEstimationModel.KITTI to "./src/main/resources/depth_estimation_model/kitti.pt"
     )
 
     private lateinit var depthImage: WritableImage
@@ -55,9 +55,13 @@ class DepthEstimation(val type: DepthEstimationModel): ImageProcessing {
         val new_w = result.shape()[2].toInt()
         val new_h = result.shape()[3].toInt()
         val output = result.dataAsFloatArray
-        depthImage = WritableImage(new_w, new_h)
+        depthImage = WritableImage(new_h, new_w)
 
-        val colormap = Colormaps.fluidColormap(Colormaps.get("Viridis"));
+        val colormap = when (colormap) {
+            DepthColorMap.Viridis -> Colormaps.fluidColormap(Colormaps.get("Viridis"));
+            DepthColorMap.YlOrRd -> Colormaps.fluidColormap(Colormaps.get("YlOrRd"));
+            DepthColorMap.Thermal -> Colormaps.fluidColormap(Colormaps.get("Thermal"));
+        }
 
         for (i in 0 until new_w) {
             for (j in 0 until new_h) {
