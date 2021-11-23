@@ -1,7 +1,9 @@
 package view.component
 
 import controller.EngineController
+import controller.FileController
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
@@ -9,6 +11,7 @@ import javafx.geometry.Side
 import javafx.scene.control.SelectionMode
 import javafx.scene.control.TabPane
 import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.FileChooser
@@ -19,7 +22,7 @@ import view.fragment.TransformationList
 class BatchProcessTab : Fragment("Batch") {
 
     private val batchProcessor: BatchProcessorModel by inject()
-    private val engineController: EngineController by inject()
+    private val engine: FileController by inject()
 
     private val focusedImageProperty = SimpleObjectProperty(Image("./test_image.png"))
     private var focusedImage by focusedImageProperty
@@ -45,6 +48,10 @@ class BatchProcessTab : Fragment("Batch") {
         }
 
         onUserDelete { batchProcessor.remove(indexInParent) }
+
+        this.selectionModel.selectedItemProperty().addListener(ChangeListener<WritableImage> { _ , _, new ->
+            focusedImage = new
+        });
     }
 
     override val root = borderpane {
@@ -76,12 +83,10 @@ class BatchProcessTab : Fragment("Batch") {
                         *imagesListView.selectionModel.selectedIndices.toIntArray()
                     )
                 }
-                button("Preview") {
-                    action {
-                        focusedImage = imagesListView.selectedItem
-                    }
+                button("Revert").action {
+                    batchProcessor.revert()
+                    engine.revert()
                 }
-                button("Revert").action { batchProcessor.revert() }
                 button("Export").action { exportImages() }
                 padding = Insets(15.0)
             }
