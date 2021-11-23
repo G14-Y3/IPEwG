@@ -5,6 +5,9 @@ import javafx.scene.image.WritableImage
 import models.EngineModel
 import processing.conversion.ColorSpaceType
 import processing.conversion.ConvertColorSpace
+import processing.depthestimation.DepthColorMap
+import processing.depthestimation.DepthEstimation
+import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
 import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
@@ -81,4 +84,6 @@ class EngineController : Controller() {
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
+
+    fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
 }
