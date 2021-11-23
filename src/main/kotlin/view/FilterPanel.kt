@@ -15,6 +15,7 @@ import javafx.scene.control.Slider
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.EngineModel
+import processing.depthestimation.DepthEstimationModel
 import processing.filters.BlurType
 import processing.filters.HSVType
 import processing.filters.HistogramEqualization
@@ -97,6 +98,10 @@ class FilterPanel : View() {
                             content = BlendTab(engine, engineController, fileController)
                         }
 
+                        tab("Image Depth") {
+                            content = DepthEstimationTab(engineController, engine)
+                        }
+                        
                         tab("Water Marking") {
                             content = WaterMarkTab(fileController, engine, engineController)
                         }

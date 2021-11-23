@@ -36,6 +36,7 @@ dependencies {
     implementation("com.facebook.fbjni:fbjni-java-only:0.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
     implementation("org.tensorflow:tensorflow-core-platform:0.3.3")
+    implementation("net.mahdilamb:colormap:0.9.61")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
 }
