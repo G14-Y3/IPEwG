@@ -96,9 +96,13 @@ class FilterPanel : View() {
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
                         }
-
+                        
                         tab("Salt & Pepper Noise") {
                             content = SaltPepperTab(engineController)
+                        }
+                        
+                        tab("Water Marking") {
+                            content = WaterMarkTab(fileController, engine, engineController)
                         }
                     }
 

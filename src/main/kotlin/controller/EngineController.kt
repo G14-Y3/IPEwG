@@ -1,6 +1,7 @@
 package controller
 
 import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
 import models.EngineModel
 import processing.conversion.ColorSpaceType
 import processing.conversion.ConvertColorSpace
@@ -12,6 +13,8 @@ import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import processing.filters.*
 import processing.frequency.FilterGenerator
+import processing.steganography.WaterMark
+import processing.steganography.WaterMarkingTechnique
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -65,6 +68,8 @@ class EngineController : Controller() {
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
+
+    fun waterMark(encodeImage: Image, horizontalGap: Int, verticalGap: Int, technique: WaterMarkingTechnique) = engine.transform(WaterMark(encodeImage, horizontalGap, verticalGap, technique))
 
     private fun convertColorSpace(source: ColorSpaceType, target: ColorSpaceType) =
         engine.transform(ConvertColorSpace(source, target))
