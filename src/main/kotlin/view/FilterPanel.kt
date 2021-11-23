@@ -101,6 +101,10 @@ class FilterPanel : View() {
                         tab("Image Depth") {
                             content = DepthEstimationTab(engineController, engine)
                         }
+                        
+                        tab("Water Marking") {
+                            content = WaterMarkTab(fileController, engine, engineController)
+                        }
                     }
 
                     vbox {
