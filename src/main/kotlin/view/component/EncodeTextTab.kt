@@ -11,7 +11,7 @@ import models.EngineModel
 import processing.steganography.SteganographyDecoder
 import tornadofx.*
 
-class EncodeTextTab: View("Encode/Decode Text") {
+class EncodeTextTab: Fragment("Encode/Decode Text") {
 
     private var bits = 4
     private var key = ""

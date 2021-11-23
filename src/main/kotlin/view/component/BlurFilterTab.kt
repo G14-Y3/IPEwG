@@ -6,7 +6,7 @@ import javafx.scene.text.FontWeight
 import processing.filters.BlurType
 import tornadofx.*
 
-class BlurFilterTab : View("Blur") {
+class BlurFilterTab : Fragment("Blur") {
     private val engineController: EngineController by inject()
 
     override val root = vbox {

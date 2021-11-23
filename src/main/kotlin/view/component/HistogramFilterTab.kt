@@ -10,7 +10,7 @@ import javafx.scene.text.FontWeight
 import processing.filters.HistogramEqualization
 import tornadofx.*
 
-class HistogramFilterTab : View("Histogram Equalization") {
+class HistogramFilterTab : Fragment("Histogram Equalization") {
 
     private val engineController: EngineController by inject()
 

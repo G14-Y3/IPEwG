@@ -11,7 +11,7 @@ import processing.frequency.*
 import tornadofx.*
 import view.CssStyle
 
-class FrequencyTab : View("Frequency Transfer") {
+class FrequencyTab : Fragment("Frequency Transfer") {
 
     // type select combobox
     val filterType = combobox(values = FreqProcessType.values().toList()) {

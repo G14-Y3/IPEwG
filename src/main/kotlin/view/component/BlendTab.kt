@@ -12,7 +12,7 @@ import processing.filters.BlendType
 import tornadofx.*
 import java.io.File
 
-class BlendTab : View("Blend") {
+class BlendTab : Fragment("Blend") {
 
     private val engine: EngineModel by inject()
     private val engineController: EngineController by inject()

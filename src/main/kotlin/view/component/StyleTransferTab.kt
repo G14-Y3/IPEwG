@@ -6,7 +6,7 @@ import javafx.scene.image.Image
 import processing.styletransfer.NeuralStyles
 import tornadofx.*
 
-class StyleTransferTab : View("Style Transfer") {
+class StyleTransferTab : Fragment("Style Transfer") {
 
     private val engineController: EngineController by inject()
 

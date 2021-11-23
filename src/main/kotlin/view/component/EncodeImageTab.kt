@@ -12,7 +12,7 @@ import models.EngineModel
 import processing.steganography.SteganographyDecoder
 import tornadofx.*
 
-class EncodeImageTab : View("Encode/Decode Image") {
+class EncodeImageTab : Fragment("Encode/Decode Image") {
 
     private var bits = 4
     private var key = ""

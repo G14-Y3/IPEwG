@@ -8,7 +8,7 @@ import tornadofx.*
 
 enum class ConverterTypes { ColorSpace }
 
-class ConversionTab : View("Color Space Conversions") {
+class ConversionTab : Fragment("Color Space Conversions") {
 
     private val engineController: EngineController by inject()
     

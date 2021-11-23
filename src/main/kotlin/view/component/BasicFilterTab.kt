@@ -5,7 +5,7 @@ import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import tornadofx.*
 
-class BasicFilterTab : View("Basic Actions") {
+class BasicFilterTab : Fragment("Basic Actions") {
 
     private val engineController: EngineController by inject()
 

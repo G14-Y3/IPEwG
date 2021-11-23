@@ -8,7 +8,7 @@ import processing.filters.HSVType
 import processing.filters.RGBType
 import tornadofx.*
 
-class ColorAdjustTab : View("Colour Adjustment") {
+class ColorAdjustTab : Fragment("Colour Adjustment") {
 
     private val engineController: EngineController by inject()
 

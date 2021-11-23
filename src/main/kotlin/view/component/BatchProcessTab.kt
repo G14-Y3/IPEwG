@@ -1,10 +1,13 @@
 package view.component
 
+import controller.EngineController
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
+import javafx.geometry.Side
 import javafx.scene.control.SelectionMode
+import javafx.scene.control.TabPane
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -13,11 +16,12 @@ import models.BatchProcessorModel
 import tornadofx.*
 import view.fragment.TransformationList
 
-class BatchProcessTab : View("Batch") {
+class BatchProcessTab : Fragment("Batch") {
 
     private val batchProcessor: BatchProcessorModel by inject()
+    private val engineController: EngineController by inject()
 
-    private val focusedImageProperty = SimpleObjectProperty<Image>(null)
+    private val focusedImageProperty = SimpleObjectProperty(Image("./test_image.png"))
     private var focusedImage by focusedImageProperty
 
     private val imagesListView = listview(batchProcessor.transformedImages) {
@@ -65,6 +69,19 @@ class BatchProcessTab : View("Batch") {
                 button("Export").action { exportImages() }
                 padding = Insets(15.0)
             }
+        }
+
+        center = tabpane {
+            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+
+            tab<BasicFilterTab>()
+            tab<StyleTransferTab>()
+            tab<ColorAdjustTab>()
+            tab<BlurFilterTab>()
+            tab<FrequencyTab>()
+            tab<ConversionTab>()
+            tab<HistogramFilterTab>()
+            tab<BlendTab>()
         }
 
         right = splitpane(
