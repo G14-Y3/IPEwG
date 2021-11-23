@@ -39,7 +39,7 @@ class ImagePanel : View() {
     }
 
     override val root = vbox {
-        minWidth = 800.0
+//        minWidth = 800.0
         alignment = Pos.CENTER
         stackpane {
             val stack = stackpane {

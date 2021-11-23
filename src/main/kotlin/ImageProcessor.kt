@@ -1,6 +1,8 @@
+import javafx.geometry.Orientation
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
+import models.BatchProcessorModel
 import tornadofx.*
 import view.CssStyle
 import view.FilterPanel
@@ -9,11 +11,26 @@ import view.TopBar
 
 
 class GUI : View("IPEwG") {
+
+    private val batchModel: BatchProcessorModel by inject()
+
     override val root = borderpane {
-        setPrefSize(1100.0, 780.0)
+        setPrefSize(1300.0, 780.0)
         top<TopBar>()
-        left<FilterPanel>()
-        center<ImagePanel>()
+        center = splitpane(
+            Orientation.HORIZONTAL,
+            find<FilterPanel>().root,
+            find<ImagePanel>().root.managedWhen(batchModel.isBatchTabOpened).visibleWhen(batchModel.isBatchTabOpened)
+        ) {
+            batchModel.isBatchTabOpened.addListener { observable, oldValue, newValue ->
+                if (newValue) {
+                    setDividerPosition(0, 0.7)
+                }
+                else {
+                    setDividerPosition(0, 1.0)
+                }
+            }
+        }
     }
 
     override fun onDock() {

@@ -1,5 +1,6 @@
 package models
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
@@ -17,6 +18,7 @@ import javax.imageio.ImageIO
 class BatchProcessorModel : ViewModel() {
 
     private val engine: EngineModel by inject()
+    val isBatchTabOpened = SimpleBooleanProperty(false)
 
     private val originalImages = observableListOf<Image>()
 

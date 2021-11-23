@@ -7,6 +7,7 @@ import javafx.geometry.Pos
 import javafx.geometry.Side
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
+import models.BatchProcessorModel
 import models.EngineModel
 import tornadofx.*
 import view.component.*
@@ -15,6 +16,7 @@ import view.fragment.TransformationList
 class FilterPanel : View() {
 
     private val engine: EngineModel by inject()
+    private val batchModel: BatchProcessorModel by inject()
 
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
@@ -84,6 +86,8 @@ class FilterPanel : View() {
             }
         }
 
-        tab<BatchProcessTab>()
+        tab<BatchProcessTab>() {
+            batchModel.isBatchTabOpened.bind(selectedProperty().not())
+        }
     }
 }
