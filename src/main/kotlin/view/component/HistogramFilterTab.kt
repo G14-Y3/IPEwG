@@ -10,11 +10,15 @@ import javafx.scene.text.FontWeight
 import processing.filters.HistogramEqualization
 import tornadofx.*
 
-class HistogramFilterTab(engineController: EngineController): HBox() {
-    init {
-        var originalCdf: Array<Int> = Array(256) {0}
-        var resultCdf: Array<Int> = Array(256) {0}
+class HistogramFilterTab : Fragment("Histogram Equalization") {
+
+    private val engineController: EngineController by inject()
+
+    override val root = hbox {
+        var originalCdf: Array<Int>
+        var resultCdf: Array<Int>
         var chart: AreaChart<Number, Number>? = null
+
         hbox {
             vbox {
                 label("Histogram Equalization") {
@@ -35,11 +39,23 @@ class HistogramFilterTab(engineController: EngineController): HBox() {
                         engineController.histogramEqualization(hist)
                         originalCdf = hist.getOriginalCdf()
                         resultCdf = hist.getResultCdf()
-                        val originalCdfSeries: XYChart.Series<Number, Number> = XYChart.Series()
-                        val resultCdfSeries: XYChart.Series<Number, Number> = XYChart.Series()
+                        val originalCdfSeries: XYChart.Series<Number, Number> =
+                            XYChart.Series()
+                        val resultCdfSeries: XYChart.Series<Number, Number> =
+                            XYChart.Series()
                         for (i in 0..255) {
-                            originalCdfSeries.data.add(XYChart.Data(i, originalCdf[i]))
-                            resultCdfSeries.data.add(XYChart.Data(i, resultCdf[i]))
+                            originalCdfSeries.data.add(
+                                XYChart.Data(
+                                    i,
+                                    originalCdf[i]
+                                )
+                            )
+                            resultCdfSeries.data.add(
+                                XYChart.Data(
+                                    i,
+                                    resultCdf[i]
+                                )
+                            )
                         }
                         originalCdfSeries.name = "Before Equalization"
                         resultCdfSeries.name = "After Equalization"
@@ -48,7 +64,11 @@ class HistogramFilterTab(engineController: EngineController): HBox() {
                     }
                 }
             }
-            chart = areachart("Cumulative Distribution Histogram", NumberAxis(), NumberAxis())
+            chart = areachart(
+                "Cumulative Distribution Histogram",
+                NumberAxis(),
+                NumberAxis()
+            )
         }
     }
 }

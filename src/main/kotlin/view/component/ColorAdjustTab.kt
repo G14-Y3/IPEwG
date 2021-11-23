@@ -3,13 +3,55 @@ package view.component
 import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.control.Slider
-import javafx.scene.control.Tab
-import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
+import processing.filters.HSVType
+import processing.filters.RGBType
 import tornadofx.*
 
-class ColorAdjustTab(colorAdjustmentSliderList: Map<String, (Double) -> Unit>, engineController: EngineController) : VBox() {
-    init {
+class ColorAdjustTab : Fragment("Colour Adjustment") {
+
+    private val engineController: EngineController by inject()
+
+    private val colorAdjustmentSliderList = mapOf(
+        "R" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.R
+            )
+        },
+        "G" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.G
+            )
+        },
+        "B" to { factor: Double ->
+            engineController.rgbFilter(
+                factor,
+                RGBType.B
+            )
+        },
+        "H" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.H
+            )
+        },
+        "S" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.S
+            )
+        },
+        "V" to { factor: Double ->
+            engineController.hsvFilter(
+                factor,
+                HSVType.V
+            )
+        },
+    )
+
+    override val root = vbox {
         label("Color Adjustment") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)

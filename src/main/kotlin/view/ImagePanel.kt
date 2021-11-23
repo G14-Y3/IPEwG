@@ -48,6 +48,7 @@ class ImagePanel : View() {
             margin = Insets(10.0)
             spacing = 10.0
         }
+
         alignment = Pos.CENTER
         minWidth = BODY_WIDTH
         comparePosition = "TR"

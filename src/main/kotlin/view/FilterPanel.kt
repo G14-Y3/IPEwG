@@ -1,19 +1,10 @@
 package view
 
 import controller.EngineController
-import controller.FileController
-import javafx.geometry.Insets
-import javafx.geometry.Orientation
-import javafx.geometry.Pos
-import javafx.geometry.Side
-import javafx.scene.chart.AreaChart
-import javafx.scene.chart.NumberAxis
-import javafx.scene.chart.XYChart
-import javafx.scene.control.ComboBox
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.Slider
+import javafx.geometry.*
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
+import models.BatchProcessorModel
 import models.EngineModel
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.BlurType
@@ -24,148 +15,52 @@ import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import tornadofx.*
 import view.component.*
+import view.fragment.TransformationList
 
 class FilterPanel : View() {
 
     private val engine: EngineModel by inject()
-    private val engineController: EngineController by inject()
-    private val fileController: FileController by inject()
-
-    private val basicFilterButtonList = mapOf(
-        "Inverse Color" to engineController::inverseColour,
-        "Greyscale" to engineController::grayscale,
-        "Flip Horizontal" to engineController::flipHorizontal,
-        "Flip Vertical" to engineController::flipVertical,
-        "Edge Detection" to engineController::edgeDetection,
-        "Sharpen" to engineController::sharpen,
-    )
-
-    private val colorAdjustmentSliderList = mapOf(
-        "R" to { factor: Double -> engineController.rgbFilter(factor, RGBType.R) },
-        "G" to { factor: Double -> engineController.rgbFilter(factor, RGBType.G) },
-        "B" to { factor: Double -> engineController.rgbFilter(factor, RGBType.B) },
-        "H" to { factor: Double -> engineController.hsvFilter(factor, HSVType.H) },
-        "S" to { factor: Double -> engineController.hsvFilter(factor, HSVType.S) },
-        "V" to { factor: Double -> engineController.hsvFilter(factor, HSVType.V) },
-    )
-
-    private val blurList = BlurType.values().toList()
-
-    private val converterList = mapOf(
-        ConverterTypes.ColorSpace to mapOf(
-            "sRGB to Linear RGB" to engineController::convertsRGBToLinearRGB,
-            "Linear RGB to sRGB" to engineController::convertLinearRGBTosRGB,
-        )
-    )
+    private val batchModel: BatchProcessorModel by inject()
 
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
         tab("Filters") {
             vbox {
-                splitpane {
-                    val tabPane = tabpane {
-                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
                         side = Side.LEFT
-                        tab("Basic Actions") {
-                            content = BasicFilterTab(basicFilterButtonList)
-                        }
-                        
-                        tab("Style Transfer") {
-                            content = StyleTransferTab(engineController)
-                        }
-                        
-                        tab("Color Adjust") {
-                            content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
-                        }
-
-                        tab("Color Space Conversions") {
-                            content = ConversionTab(converterList)
-                        }
-                        
-                        tab("Frequency Transfer") {
-                            content = FrequencyTab(engineController)
-                        }
-                        
-                        tab("Blur") {
-                            content = BlurFilterTab(engineController)
-                        }
-
-                        tab("Histogram Equalization") {
-                            content = HistogramFilterTab(engineController)
-                        }
-
-                        tab("Blend") {
-                            content = BlendTab(engine, engineController, fileController)
-                        }
-                        
-                        tab("Salt & Pepper Noise") {
-                            content = SaltPepperTab(engineController)
-                        }
-
-                        tab("Image Depth") {
-                            content = DepthEstimationTab(engineController, engine)
-                        }
-                        
-                        tab("Water Marking") {
-                            content = WaterMarkTab(fileController, engine, engineController)
-                        }
-                    }
-
-                    vbox {
-                        alignment = Pos.CENTER
-                        label("Transformations") {
-                            vboxConstraints {
-                                margin = Insets(10.0, 20.0, 10.0, 10.0)
-                            }
-                            style {
-                                fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                            }
-                        }
-
-                        hbox {
-                            alignment = Pos.CENTER
-                            padding = Insets(0.0, 10.0, 0.0, 10.0)
-
-                            listview(engine.transformations) {
-                                prefWidth = 400.0
-                                selectionModel.selectedIndexProperty().onChange {
-                                    engine.setCurrentIndex(it)
-                                }
-                                engine.updateListSelection =
-                                    { selectionModel.select(engine.currIndex) }
-                            }
-                        }
-                        hbox {
-                            alignment = Pos.CENTER
-                            buttonbar {
-                                padding = Insets(20.0, 10.0, 20.0, 10.0)
-                                button("Undo").setOnAction { fileController.undo() }
-                                button("Redo").setOnAction { fileController.redo() }
-                                button("Revert").setOnAction { fileController.revert() }
-                            }
-                        }
-                    }
-                    orientation = Orientation.VERTICAL
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab<BasicFilterTab>()
+                        tab<StyleTransferTab>()
+                        tab<ColorAdjustTab>()
+                        tab<BlurFilterTab>()
+                        tab<FrequencyTab>()
+                        tab<ConversionTab>()
+                        tab<HistogramFilterTab>()
+                        tab<BlendTab>()
+                        tab<SaltPepperTab>()
+                        tab<DepthEstimationTab>()
+                        tab<WaterMarkTab>()
+                    },
+                    TransformationList().root
+                ) {
                     setDividerPosition(0, 0.4)
                 }
             }
         }
 
-        tab("Steganography") {
+        tab("Steganography")
+        {
             vbox {
                 splitpane {
                     prefHeight = 1000.0
-                    val tabpane = tabpane {
+                    tabpane {
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         side = Side.LEFT
-                        tab("Encode/Decode Image") {
-                            content = EncodeImageTab(fileController, engine, engineController)
-                        }
+                        tab<EncodeImageTab>()
+                        tab<EncodeTextTab>()
 
-                        tab("Encode/Decode Text") {
-                            content = EncodeTextTab(fileController, engine, engineController)
-                        }
                     }
 
                     vbox {
@@ -176,7 +71,8 @@ class FilterPanel : View() {
                             }
                             style {
                                 fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                                fontSize =
+                                    Dimension(20.0, Dimension.LinearUnits.px)
                             }
                         }
                         imageview(engine.decodeImage) {
@@ -193,6 +89,10 @@ class FilterPanel : View() {
                     setDividerPosition(0, 0.4)
                 }
             }
+        }
+
+        tab<BatchProcessTab>() {
+            batchModel.isBatchTabOpened.bind(selectedProperty().not())
         }
     }
 }

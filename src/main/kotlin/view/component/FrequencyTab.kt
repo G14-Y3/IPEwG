@@ -13,8 +13,7 @@ import processing.frequency.*
 import tornadofx.*
 import view.CssStyle
 
-class FrequencyTab(
-    private val engineController: EngineController) : VBox() {
+class FrequencyTab : Fragment("Frequency Transfer") {
 
     // type select combobox
     val filterType = combobox(values = FreqProcessType.values().toList()) {
@@ -59,7 +58,9 @@ class FrequencyTab(
         preserveRatioProperty().set(true)
     }
 
-    init {
+    private val engineController: EngineController by inject()
+
+    override val root = vbox {
         label("Frequency Filtering ") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)

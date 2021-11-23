@@ -2,6 +2,7 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
+import javafx.scene.Parent
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.VBox
@@ -10,14 +11,15 @@ import kotlin.random.Random
 import tornadofx.*
 import view.CssStyle
 
-class SaltPepperTab(private val engineController: EngineController): VBox() {
+class SaltPepperTab : View("Salt Pepper") {
+    private val engineController: EngineController by inject()
 
     val noiseRatioSlider =
         SliderWithSpinner(0.0, 1.0, { _, _, _ -> }, 0.01)
             .withLabel("Noise Ratio: ")
     val seed = textfield()
 
-    init {
+    override val root: Parent = vbox {
         padding = Insets(20.0, 10.0, 20.0, 10.0)
 
         label("Salt & Pepper Noise") {
@@ -45,7 +47,8 @@ class SaltPepperTab(private val engineController: EngineController): VBox() {
 
                 engineController.saltAndPepper(
                     noiseRatioSlider.getSlider().value,
-                    seedVal)
+                    seedVal
+                )
 
             } else {
                 alert(
@@ -56,6 +59,5 @@ class SaltPepperTab(private val engineController: EngineController): VBox() {
                 )
             }
         }
-
     }
 }

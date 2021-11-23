@@ -12,12 +12,13 @@ import processing.filters.BlendType
 import tornadofx.*
 import java.io.File
 
-class BlendTab(
-    private val engine: EngineModel,
-    private val engineController: EngineController,
-    private val fileController: FileController
-) : VBox() {
-    init {
+class BlendTab : Fragment("Blend") {
+
+    private val engine: EngineModel by inject()
+    private val engineController: EngineController by inject()
+    private val fileController: FileController by inject()
+
+    override val root = vbox {
         label("Blend") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)

@@ -6,22 +6,25 @@ import javafx.geometry.Insets
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.control.TextArea
-import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.steganography.SteganographyDecoder
 import tornadofx.*
 
-class EncodeTextTab(fileController: FileController, engine: EngineModel, engineController: EngineController) : HBox() {
+class EncodeTextTab: Fragment("Encode/Decode Text") {
 
     private var bits = 4
     private var key = ""
     private var hasUndone = false
     private var onlyRChannel = false
-    private var original_text = ""
+    private var originalText = ""
 
-    init {
-        var decode_textarea: TextArea? = null
+    private val engine: EngineModel by inject()
+    private val engineController: EngineController by inject()
+    private val fileController: FileController by inject()
+
+    override val root = hbox {
+        var decodeTextarea: TextArea? = null
         hbox {
             vbox {
                 label("Encode/Decode Text") {
@@ -85,7 +88,7 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                                 action {
                                     val original_image = engine.originalImage.value
 
-                                    if (original_text.length > original_image.width * original_image.height) {
+                                    if (originalText.length > original_image.width * original_image.height) {
                                         alert(
                                             type = Alert.AlertType.ERROR,
                                             header = "Could not encode the text",
@@ -94,7 +97,7 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                                         )
                                     } else {
                                         hasUndone = false
-                                        engineController.encodeText(original_text, key, bits, onlyRChannel)
+                                        engineController.encodeText(originalText, key, bits, onlyRChannel)
                                     }
                                 }
                             }
@@ -108,12 +111,12 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                                 action {
                                     val decoder = SteganographyDecoder(false)
                                     engine.transform(decoder)
-                                    decode_textarea!!.text = decoder.get_result_text()
+                                    decodeTextarea!!.text = decoder.get_result_text()
                                 }
                             }
                         }
                     }
-                    decode_textarea = textarea {
+                    decodeTextarea = textarea {
                         prefWidth = 300.0
                         hboxConstraints {
                             hboxConstraints {
@@ -122,7 +125,7 @@ class EncodeTextTab(fileController: FileController, engine: EngineModel, engineC
                         }
                         isWrapText = true
                         textProperty().addListener(ChangeListener { _, _, newValue ->
-                            original_text = newValue
+                            originalText = newValue
                         })
                     }
                 }
