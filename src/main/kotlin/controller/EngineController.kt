@@ -83,5 +83,7 @@ class EngineController : Controller() {
     
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 
+    fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
+
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
 }

@@ -97,6 +97,10 @@ class FilterPanel : View() {
                         tab("Blend") {
                             content = BlendTab(engine, engineController, fileController)
                         }
+                        
+                        tab("Salt & Pepper Noise") {
+                            content = SaltPepperTab(engineController)
+                        }
 
                         tab("Image Depth") {
                             content = DepthEstimationTab(engineController, engine)

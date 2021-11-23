@@ -43,6 +43,7 @@ val jsonFormatter = Json {
             subclass(Sharpen::class)
             subclass(SpatialSeparableConvolution::class)
             subclass(Blend::class)
+            subclass(SaltPepperNoise::class)
         }
     }
 }

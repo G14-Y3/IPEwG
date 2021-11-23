@@ -2,6 +2,8 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import javafx.scene.image.WritableImage
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
@@ -102,6 +104,13 @@ class FrequencyTab(
                     val freqFilter = FrequencyFilters(filterType.value, filterRange.value, passStopBound, bandWidth, orderSpinner.value.toInt())
                     engineController.frequencyTransfer(freqFilter)
                     setFilterImage(freqFilter)
+                } else {
+                    alert(
+                        type = Alert.AlertType.ERROR,
+                        header = "No Operation Selected",
+                        content = "Select one frequency filter before click 'Adjust'",
+                        ButtonType.OK
+                    )
                 }
             }
             button("Reset").setOnAction {
