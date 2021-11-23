@@ -15,7 +15,7 @@ import tornadofx.*
 import view.component.customSpinner
 
 const val WINDOW_WIDTH = 600.0
-const val BODY_WIDTH = WINDOW_WIDTH + 200.0
+const val BODY_WIDTH = WINDOW_WIDTH + 100.0
 
 class ImagePanel : View() {
     private val engine: EngineModel by inject()
@@ -45,7 +45,7 @@ class ImagePanel : View() {
 
     override val root = vbox {
         vboxConstraints {
-            margin = Insets(20.0)
+            margin = Insets(10.0)
             spacing = 10.0
         }
         alignment = Pos.CENTER
@@ -53,7 +53,7 @@ class ImagePanel : View() {
         comparePosition = "TR"
         hbox {
             hboxConstraints {
-                margin = Insets(20.0)
+                margin = Insets(10.0)
                 spacing = 10.0
             }
             alignment = Pos.CENTER
@@ -175,64 +175,69 @@ class ImagePanel : View() {
                 engine.parallelView(horizontalSlider.value, new.toDouble(), comparePosition)
             })
 
-            verticalSpinner = customSpinner(
-                min = .0,
-                max = Double.MAX_VALUE,
-                amountToStepBy = 1.0,
-                editable = true,
-                property = doubleProperty(verticalSlider.max),
-                type = "int"
-            ) {
-                maxWidth = 70.0
-                minWidth = 70.0
-            }
-
-            try {
-                verticalSlider.valueProperty().bindBidirectional(
-                    verticalSpinner.valueFactory.valueProperty()
-                )
-            } catch (e: NumberFormatException) {
-            }
-
-            this.add(verticalSpinner)
+//            verticalSpinner = customSpinner(
+//                min = .0,
+//                max = Double.MAX_VALUE,
+//                amountToStepBy = 1.0,
+//                editable = true,
+//                property = doubleProperty(verticalSlider.max),
+//                type = "int"
+//            ) {
+//                maxWidth = 70.0
+//                minWidth = 70.0
+//            }
+//
+//            try {
+//                verticalSlider.valueProperty().bindBidirectional(
+//                    verticalSpinner.valueFactory.valueProperty()
+//                )
+//            } catch (e: NumberFormatException) {
+//            }
+//
+//            this.add(verticalSpinner)
 
         }
         // The slider at the bottom of the image view to slide between new and original image.
-        horizontalSlider = slider {
-            maxWidth = WINDOW_WIDTH
-            min = 0.0
-            max = oriView.image.width
-            blockIncrement = 1.0
+        vbox {
+            vboxConstraints {
+                marginLeft = 35.0
+            }
+            horizontalSlider = slider {
+                maxWidth = WINDOW_WIDTH
+                min = 0.0
+                max = oriView.image.width
+                blockIncrement = 1.0
+            }
+
+            horizontalSlider.value = horizontalSlider.max
+            horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
+                engine.parallelView(new.toDouble(), verticalSlider.value, comparePosition)
+            })
         }
 
-        horizontalSlider.value = horizontalSlider.max
-        horizontalSlider.valueProperty().addListener(ChangeListener { _, _, new ->
-            engine.parallelView(new.toDouble(), verticalSlider.value, comparePosition)
-        })
-
-        horizontalSpinner = customSpinner(
-            min = .0,
-            max = Double.MAX_VALUE,
-            amountToStepBy = 1.0,
-            editable = true,
-            property = doubleProperty(horizontalSlider.max),
-            type = "int"
-        ) {
-            maxWidth = 70.0
-            minWidth = 70.0
-        }
-
-        try {
-            horizontalSlider.valueProperty().bindBidirectional(
-                horizontalSpinner.valueFactory.valueProperty()
-            )
-        } catch (e: NumberFormatException) {
-        }
+//        horizontalSpinner = customSpinner(
+//            min = .0,
+//            max = Double.MAX_VALUE,
+//            amountToStepBy = 1.0,
+//            editable = true,
+//            property = doubleProperty(horizontalSlider.max),
+//            type = "int"
+//        ) {
+//            maxWidth = 70.0
+//            minWidth = 70.0
+//        }
+//
+//        try {
+//            horizontalSlider.valueProperty().bindBidirectional(
+//                horizontalSpinner.valueFactory.valueProperty()
+//            )
+//        } catch (e: NumberFormatException) {
+//        }
 
         hbox {
             alignment = Pos.CENTER
             spacing = 10.0
-            this.add(horizontalSpinner)
+//            this.add(horizontalSpinner)
 
             vbox {
                 alignment = Pos.CENTER
@@ -241,7 +246,7 @@ class ImagePanel : View() {
                     hbox {
                         alignment = Pos.CENTER
                         // TL
-                        radiobutton {
+                        radiobutton("Show Top Left") {
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
                             this.selectedProperty().addListener(ChangeListener { _, _, _ ->
@@ -256,7 +261,7 @@ class ImagePanel : View() {
                             })
                         }
                         // TR
-                        radiobutton {
+                        radiobutton("Show Top Right") {
                             isSelected = true
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
@@ -275,7 +280,7 @@ class ImagePanel : View() {
                     hbox {
                         alignment = Pos.CENTER
                         // BL
-                        radiobutton {
+                        radiobutton("Show Bottom Left") {
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
                             this.selectedProperty().addListener(ChangeListener { _, _, _ ->
@@ -290,7 +295,7 @@ class ImagePanel : View() {
                             })
                         }
                         // BR
-                        radiobutton {
+                        radiobutton("Show Bottom Right") {
                             toggleGroup = this.parent.parent.getToggleGroup()
                             spacing = 5.0
                             this.selectedProperty().addListener(ChangeListener { _, _, _ ->
