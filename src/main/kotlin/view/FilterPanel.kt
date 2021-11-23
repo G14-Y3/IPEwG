@@ -1,10 +1,7 @@
 package view
 
 import controller.EngineController
-import javafx.geometry.Insets
-import javafx.geometry.Orientation
-import javafx.geometry.Pos
-import javafx.geometry.Side
+import javafx.geometry.*
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.BatchProcessorModel
@@ -31,67 +28,9 @@ class FilterPanel : View() {
             vbox {
                 splitpane(
                     Orientation.VERTICAL,
-//                     tabpane {
-//                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-//                         side = Side.LEFT
-                      
-//                         tab("Basic Actions") {
-//                             content = BasicFilterTab(basicFilterButtonList)
-//                         }
-                        
-//                         tab("Style Transfer") {
-//                             content = StyleTransferTab(engineController)
-//                         }
-                        
-//                         tab("Color Adjust") {
-//                             content = ColorAdjustTab(colorAdjustmentSliderList, engineController)
-//                         }
-
-//                         tab("Color Space Conversions") {
-//                             content = ConversionTab(converterList)
-//                         }
-                        
-//                         tab("Frequency Transfer") {
-//                             content = FrequencyTab(engineController)
-//                         }
-                        
-//                         tab("Blur") {
-//                             content = BlurFilterTab(engineController)
-//                         }
-
-//                         tab("Histogram Equalization") {
-//                             content = HistogramFilterTab(engineController)
-//                         }
-
-//                         tab("Blend") {
-//                             content = BlendTab(engine, engineController, fileController)
-//                         }
-                        
-//                         tab("Salt & Pepper Noise") {
-//                             content = SaltPepperTab(engineController)
-//                         }
-
-//                         tab("Image Depth") {
-//                             content = DepthEstimationTab(engineController, engine)
-//                         }
-                        
-//                         tab("Water Marking") {
-//                             content = WaterMarkTab(fileController, engine, engineController)
-//                         }
-//                     }
-
-                    vbox {
-                        alignment = Pos.CENTER
-                        label("Transformations") {
-                            vboxConstraints {
-                                margin = Insets(10.0, 20.0, 10.0, 10.0)
-                            }
-                            style {
-                                fontWeight = FontWeight.BOLD
-                                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-                            }
-                        }
-
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
                         tab<StyleTransferTab>()
                         tab<ColorAdjustTab>()
@@ -100,10 +39,12 @@ class FilterPanel : View() {
                         tab<ConversionTab>()
                         tab<HistogramFilterTab>()
                         tab<BlendTab>()
+                        tab<SaltPepperTab>()
+                        tab<DepthEstimationTab>()
+                        tab<WaterMarkTab>()
                     },
                     TransformationList().root
                 ) {
-
                     setDividerPosition(0, 0.4)
                 }
             }
