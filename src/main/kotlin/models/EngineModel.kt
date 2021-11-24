@@ -4,18 +4,16 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
-import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
-import javafx.scene.paint.Color
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.depthestimation.DepthEstimation
 import processing.filters.Adjustment
 import processing.jsonFormatter
+import processing.resample.Resample
 import processing.steganography.SteganographyDecoder
-import tornadofx.ViewModel
-import tornadofx.observableListOf
+import tornadofx.*
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
@@ -216,6 +214,31 @@ class EngineModel(
                 previewImage.value = snapshots[currIndex]
                 parallelImage.value = previewImage.value
             }
+            "resample" -> {
+                transformations.subList(currIndex + 1, transformations.size).clear()
+                snapshots.subList(currIndex + 1, snapshots.size).clear()
+
+                if (transformation is Resample) {
+                    snapshots.add(transformation.targetImage)
+                    if (currIndex < 0) {
+                        transformation.process(
+                            WritableImage(
+                                previous.pixelReader,
+                                previous.width.toInt(),
+                                previous.height.toInt()
+                            )
+                        )
+                    } else {
+                        transformation.process(snapshots[currIndex])
+                    }
+                    transformations.add(transformation)
+                    currIndex++
+                    updateListSelection()
+
+                    previewImage.value = snapshots[currIndex]
+                    parallelImage.value = previewImage.value
+                }
+            }
             "decode" -> {
                 if (transformation is SteganographyDecoder) {
                     val decoder: SteganographyDecoder = transformation
@@ -338,5 +361,4 @@ class EngineModel(
             out.println(jsonFormatter.encodeToString(ArrayList(transformations)))
         }
     }
-
 }

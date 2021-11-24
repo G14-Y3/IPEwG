@@ -1,7 +1,6 @@
 package controller
 
 import javafx.scene.image.Image
-import javafx.scene.image.WritableImage
 import models.EngineModel
 import processing.conversion.ColorSpaceType
 import processing.conversion.ConvertColorSpace
@@ -9,16 +8,15 @@ import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimation
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
-import processing.frequency.IdleFreqFilter
-import processing.steganography.SteganographyEncoder
 import processing.frequency.FrequencyFilters
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
-import processing.filters.*
-import processing.frequency.FilterGenerator
+import processing.resample.Resample
+import processing.resample.ResampleMethod
+import processing.steganography.SteganographyEncoder
 import processing.steganography.WaterMark
 import processing.steganography.WaterMarkingTechnique
-import tornadofx.Controller
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
+import tornadofx.*
 
 /** IMPORTANT:
  *
@@ -35,6 +33,9 @@ import tornadofx.Controller
 class EngineController : Controller() {
 
     private val engine: EngineModel by inject()
+
+    val previewWidth: Double get() = engine.previewImage.value.width
+    val previewHeight: Double get() = engine.previewImage.value.height
 
     fun grayscale() = engine.transform(Grayscale())
 
@@ -57,9 +58,9 @@ class EngineController : Controller() {
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
-    
+
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
-    
+
     fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())
@@ -80,10 +81,12 @@ class EngineController : Controller() {
     fun convertsRGBToLinearRGB() = convertColorSpace(ColorSpaceType.sRGB, ColorSpaceType.LinearRGB)
 
     fun convertLinearRGBTosRGB() = convertColorSpace(ColorSpaceType.LinearRGB, ColorSpaceType.sRGB)
-    
+
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
+
+    fun resample(width: Int, height: Int, method: ResampleMethod) = engine.transform(Resample(width, height, method), "resample")
 }
