@@ -86,4 +86,6 @@ class EngineController : Controller() {
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
+
+    fun denoise() = engine.transform(Denoise())
 }

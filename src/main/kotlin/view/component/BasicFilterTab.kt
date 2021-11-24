@@ -16,7 +16,7 @@ class BasicFilterTab : Fragment("Basic Actions") {
         "Flip Vertical" to engineController::flipVertical,
         "Edge Detection" to engineController::edgeDetection,
         "Sharpen" to engineController::sharpen,
-        "Histogram Equalization" to engineController::histogramEqualization
+        "Denoise" to engineController::denoise
     )
 
     override val root = vbox {
