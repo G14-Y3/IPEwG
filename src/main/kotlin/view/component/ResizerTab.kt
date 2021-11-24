@@ -9,16 +9,28 @@ import processing.resample.ResampleMethod
 import tornadofx.*
 
 class ResizerTab : Fragment("Resize Image") {
-
     private val engineController: EngineController by inject()
+    private val previewWidth = engineController.previewWidth.toInt()
+    private val previewHeight = engineController.previewHeight.toInt()
+
+    private val widthValidator = mapOf(
+        ResampleMethod.PointWithZeros to { width: Int ->
+            if (width % previewWidth != 0)
+                "Width must be a multiple of source for this method"
+            else null
+        }
+    )
+
+    private val heightValidator = mapOf(
+        ResampleMethod.PointWithZeros to { height: Int ->
+            if (height % previewHeight != 0)
+                "Height must be a multiple of source for this method"
+            else null
+        }
+    )
 
     override val root = vbox {
-        val model = DimensionModel(
-            ImgSize(
-                engineController.previewWidth.toInt(),
-                engineController.previewHeight.toInt(),
-            )
-        )
+        val model = DimensionModel(ImgSize(previewWidth, previewHeight))
 
         label("Resize Image") {
             vboxConstraints {
@@ -39,10 +51,24 @@ class ResizerTab : Fragment("Resize Image") {
         form {
             fieldset("Dimensions") {
                 field("width") {
-                    textfield(model.width).required()
+                    textfield(model.width).validator {
+                        if (it.isNullOrBlank()) error("This field is required")
+                        else {
+                            val message =
+                                widthValidator[comboBox.value]?.let { it1 -> it1(it.toInt()) }
+                            if (message != null) error(message) else null
+                        }
+                    }
                 }
                 field("height") {
-                    textfield(model.height).required()
+                    textfield(model.height).validator {
+                        if (it.isNullOrBlank()) error("This field is required")
+                        else {
+                            val message =
+                                heightValidator[comboBox.value]?.let { it1 -> it1(it.toInt()) }
+                            if (message != null) error(message) else null
+                        }
+                    }
                 }
                 button("Resize") {
                     enableWhen(model.valid)
