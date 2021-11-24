@@ -13,6 +13,7 @@ import kotlin.math.roundToInt
 
 enum class ResampleMethod(val create: (Double, Double, WritableImage) -> Interpolation) {
     Point(::PointInterpolation),
+    PointWithZeros(::PointWithZeros),
 }
 
 // an (assumed) linear RGBA pixel

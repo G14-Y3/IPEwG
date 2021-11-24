@@ -30,3 +30,44 @@ class PointInterpolation(
 
     override fun toString(): String = name
 }
+
+private const val pointWithZeros = "Fill with Zeros"
+
+// Copy the pixel when is the direct multiple (thus the top-left corner),
+// and fills the rest with 0s.
+//
+// Note that `targetWidth` and `targetHeight` must be
+// multiples of corresponding dimensions in `sourceImage`
+@Serializable
+@SerialName(pointWithZeros)
+class PointWithZeros(
+    private val targetWidth: Double,
+    private val targetHeight: Double,
+    @Contextual private val sourceImage: Image,
+) : Interpolation {
+    private val scaleX = (targetWidth / sourceImage.width).toInt()
+    private val scaleY = (targetHeight / sourceImage.height).toInt()
+
+    init {
+        if (targetWidth.toInt() != scaleX * sourceImage.width.toInt()
+            || targetHeight.toInt() != scaleY * sourceImage.height.toInt()
+        ) {
+            throw IllegalArgumentException(
+                "Cannot deduce correct scaling factor! "
+                    + "Target width and height must be of multiples of the source. "
+                    + "$scaleX * ${sourceImage.width.toInt()} != ${targetWidth.toInt()} "
+                    + "OR $scaleY * ${sourceImage.height.toInt()} != ${targetHeight.toInt()}."
+            )
+        }
+    }
+
+    override fun getPixel(x: Int, y: Int): RGBA =
+        if (x % scaleX == 0 && y % scaleY == 0) RGBA.fromColor(
+            sourceImage.pixelReader!!.getColor(
+                x / scaleX,
+                y / scaleY,
+            )
+        ) else RGBA(.0, .0, .0, 1.0)
+
+    override fun toString(): String = "pointWithZeros ($scaleX, $scaleY)x"
+}
