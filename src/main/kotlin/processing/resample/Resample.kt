@@ -11,7 +11,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
-enum class ResampleMethod(val create: (Double, Double, WritableImage) -> Interpolation) {}
+enum class ResampleMethod(val create: (Double, Double, WritableImage) -> Interpolation) {
+    Point(::PointInterpolation),
+}
 
 // an (assumed) linear RGBA pixel
 // This is used to avoid Clamping.
