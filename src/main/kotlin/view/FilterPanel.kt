@@ -42,6 +42,7 @@ class FilterPanel : View() {
                         tab<SaltPepperTab>()
                         tab<DepthEstimationTab>()
                         tab<WaterMarkTab>()
+                        tab<DenoiseTab>()
                     },
                     TransformationList().root
                 ) {
