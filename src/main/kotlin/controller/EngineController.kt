@@ -1,21 +1,19 @@
 package controller
 
 import javafx.scene.image.Image
-import javafx.scene.image.WritableImage
 import models.EngineModel
 import processing.conversion.ColorSpaceType
 import processing.conversion.ConvertColorSpace
+import processing.denoise.Denoise
+import processing.denoise.DenoiseMethod
 import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimation
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
-import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
 import processing.frequency.FrequencyFilters
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
-import processing.filters.*
-import processing.frequency.FilterGenerator
 import processing.steganography.WaterMark
 import processing.steganography.WaterMarkingTechnique
 import tornadofx.Controller
@@ -87,5 +85,5 @@ class EngineController : Controller() {
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
 
-    fun denoise() = engine.transform(Denoise())
+    fun denoise(denoiseMethod: DenoiseMethod, noise: Double) = engine.transform(Denoise(denoiseMethod, noise))
 }
