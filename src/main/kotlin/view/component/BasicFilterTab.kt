@@ -41,5 +41,27 @@ class BasicFilterTab : Fragment("Basic Actions") {
                 }
             }
         }
+
+        label("Rotation") {
+            vboxConstraints {
+                margin = Insets(10.0, 20.0, 10.0, 10.0)
+            }
+            style {
+                fontWeight = FontWeight.BOLD
+                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+            }
+        }
+
+        vbox {
+            val slider = SliderWithSpinner(0.0, 360.0, ChangeListener { _, _, new ->
+                engineController.rotate(new as Double)
+            }).withLabel("Rotate Degree")
+            this.children.add(slider.build())
+            button("Apply Rotation") {
+                action {
+
+                }
+            }
+        }
     }
 }
