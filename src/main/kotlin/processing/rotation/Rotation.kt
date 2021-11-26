@@ -24,12 +24,16 @@ class Rotation(val angle: Double): ImageProcessing {
 
         for (x in 0 until width) {
             for (y in 0 until height) {
-                val radian = angle * PI / 180.0
+                val radian = if (angle >= 90 && angle < 270) (angle - 180) * PI / 180.0 else angle * PI / 180.0
                 val color = reader.getColor(x, y)
                 val dx = x - midx
                 val dy = y - midy
+                // original version. This produces lots of mini-holes inside the rotated
+                // newx = cos(radian) * (x - midx) - sin(radian) * (y - midy) + midx
+                // newy = sin(radian) * (x - midx) + cos(radian) * (y - midy) + midy
+
                 // shear 1
-                val tan = tan(radian / 2.0)
+                val tan = tan( radian / 2.0)
                 var newx = round(dx - dy * tan)
                 var newy = dy
 
@@ -42,9 +46,12 @@ class Rotation(val angle: Double): ImageProcessing {
                 newy += midy
                 newx = round(newx)
                 newy = round(newy)
-                //newx = cos(radian) * (x - midx) - sin(radian) * (y - midy) + midx
-                //newy = sin(radian) * (x - midx) + cos(radian) * (y - midy) + midy
+
                 if (newx.toInt() in 0 until width && newy.toInt() in 0 until height) {
+                    if (angle > 90 && angle < 270) {
+                        newy = height - newy - 1
+                        newx = width - newx - 1
+                    }
                     tempWriter.setColor(newx.toInt(), newy.toInt(), color)
                 }
             }
