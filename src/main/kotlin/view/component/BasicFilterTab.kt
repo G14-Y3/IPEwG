@@ -58,8 +58,11 @@ class BasicFilterTab : Fragment("Basic Actions") {
             }).withLabel("Rotate Degree")
             this.children.add(slider.build())
             button("Apply Rotation") {
+                vboxConstraints {
+                    margin = Insets(10.0, 20.0, 10.0, 10.0)
+                }
                 action {
-
+                    engineController.submitAdjustment()
                 }
             }
         }
