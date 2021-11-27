@@ -11,11 +11,11 @@ import processing.ImageProcessing
 @Serializable
 @SerialName("Contrast")
 class Contrast(private val factor: Double) : ImageProcessing {
-    override fun process(image: WritableImage) {
-        val width = image.width.toInt()
-        val height = image.height.toInt()
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+        val width = srcImage.width.toInt()
+        val height = srcImage.height.toInt()
+        val reader: PixelReader = srcImage.pixelReader
+        val writer: PixelWriter = destImage.pixelWriter
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val oldColor = reader.getColor(x, y)

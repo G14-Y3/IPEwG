@@ -1,21 +1,20 @@
 package controller
 
 import javafx.scene.image.Image
-import javafx.scene.image.WritableImage
 import models.EngineModel
 import processing.conversion.ColorSpaceType
 import processing.conversion.ConvertColorSpace
+import processing.denoise.Denoise
+import processing.denoise.DenoiseMethod
 import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimation
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
-import processing.frequency.IdleFreqFilter
 import processing.steganography.SteganographyEncoder
 import processing.frequency.FrequencyFilters
+import processing.rotation.Rotation
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
-import processing.filters.*
-import processing.frequency.FilterGenerator
 import processing.steganography.WaterMark
 import processing.steganography.WaterMarkingTechnique
 import tornadofx.Controller
@@ -59,15 +58,13 @@ class EngineController : Controller() {
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
     
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
-    
-    fun blur(radius: Int, type: BlurType) = engine.adjust(type.name, radius.toDouble())
 
     fun sharpen() = engine.transform(Sharpen())
 
     fun blend(type: BlendType) = engine.transform(Blend(engine.blendImage.value, type))
 
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
-        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview")
+        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview", encodeImage.width, encodeImage.height)
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
@@ -85,5 +82,13 @@ class EngineController : Controller() {
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 
-    fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
+    fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap, width: Double, height: Double) = engine.transform(DepthEstimation(modelType, colormap), "preview", width, height)
+
+    fun denoise(denoiseMethod: DenoiseMethod, noise: Double) = engine.transform(Denoise(denoiseMethod, noise))
+
+    fun falseColoring(coloringMethod: FalseColoringMethod) = engine.transform(FalseColoring(coloringMethod))
+
+    fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
+
+    fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
 }
