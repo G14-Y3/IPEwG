@@ -25,8 +25,8 @@ class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMa
         val reader = srcImage.pixelReader
         val writer = destImage.pixelWriter
 
-        val h = destImage.height.toInt()
-        val w = destImage.width.toInt()
+        val h = srcImage.height.toInt()
+        val w = srcImage.width.toInt()
         val pixels = Array(3) {
             Array(w) {
                 DoubleArray(

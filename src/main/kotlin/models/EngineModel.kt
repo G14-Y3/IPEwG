@@ -233,7 +233,17 @@ class EngineModel(
                 }
             }
         }
+
         for (imagePanel in imagePanels) {
+            // update all image panel view ports, so that previous image viewport will be overwritten
+            val viewport = Rectangle2D(
+                .0,
+                .0,
+                snapshots[currIndex].width,
+                snapshots[currIndex].height,
+            )
+            imagePanel.updateViewPort(viewport)
+            imagePanel.updateSlider(originalImage.value.width, originalImage.value.height)
             imagePanel.sliderInit()
         }
     }
