@@ -48,8 +48,6 @@ class BilinearInterpolation(
             val srcX1 = if (scaleDownX) x1.toDouble() else x1 * scaleX
             val srcX2 = if (scaleDownX) x2.toDouble() else x2 * scaleX
 
-            println("$srcX1, $tarX, $srcX2")
-
             val q21: RGBA = sourceImage.pixelReader.getColor(x2, y1).toRGBA()
             q_1 = interpolate(tarX, srcX1, srcX2, q11, q21)
             q_2 = if (y2 < srcH) {
