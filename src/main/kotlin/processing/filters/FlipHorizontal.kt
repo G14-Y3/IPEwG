@@ -13,29 +13,29 @@ import kotlin.math.roundToInt
 @Serializable
 @SerialName("FlipHorizontal")
 class FlipHorizontal : ImageProcessing {
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(image, numCores)
+        multiThreadedProcess(srcImage, destImage, numCores)
     }
 
-    private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
+    private fun multiThreadedProcess(srcImage: WritableImage, destImage: WritableImage, num_threads: Int) {
         val executorService = Executors.newFixedThreadPool(num_threads)
-        val stripeWidth = (image.height / num_threads).roundToInt()
+        val stripeWidth = (srcImage.height / num_threads).roundToInt()
 
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
+        val reader: PixelReader = srcImage.pixelReader
+        val writer: PixelWriter = destImage.pixelWriter
 
         for (i in 0 until num_threads) {
             val yStart = i * stripeWidth
-            val yEnd = minOf((i + 1) * stripeWidth, image.height.toInt())
+            val yEnd = minOf((i + 1) * stripeWidth, srcImage.height.toInt())
 
             executorService.execute {
-                for (x in 0 until image.width.toInt() / 2) {
+                for (x in 0 until srcImage.width.toInt() / 2) {
                     for (y in yStart until yEnd) {
                         val colour =
-                            reader.getColor(image.width.toInt() - x - 1, y)
+                            reader.getColor(srcImage.width.toInt() - x - 1, y)
                         writer.setColor(
-                            image.width.toInt() - x - 1,
+                            srcImage.width.toInt() - x - 1,
                             y,
                             reader.getColor(x, y)
                         )

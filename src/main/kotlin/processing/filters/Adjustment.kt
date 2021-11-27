@@ -28,7 +28,7 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
     @Transient
     var string: String = ""
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         for ((k, v) in properties) {
             val adjustment = when (k) {
                 // RGB filters
@@ -53,7 +53,7 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 else -> null
             }
             string += adjustment.toString() + " "
-            adjustment?.process(image)
+            adjustment?.process(srcImage, destImage)
         }
     }
 

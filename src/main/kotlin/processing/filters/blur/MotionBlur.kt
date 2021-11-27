@@ -11,7 +11,7 @@ import processing.filters.SpatialSeparableConvolution
 @SerialName("MotionBlur")
 class MotionBlur(private val radius: Int, private val angle: Double) :
     ImageProcessing {
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         if (radius == 0) {
             return
         }
@@ -24,26 +24,26 @@ class MotionBlur(private val radius: Int, private val angle: Double) :
                 column[radius] = 1.0
                 SpatialSeparableConvolution(
                     column, Array(kernelSize) { 1.0 / kernelSize }
-                ).process(image)
+                ).process(srcImage, destImage)
             }
             45.0 -> {
                 for (i in 0 until kernelSize) {
                     kernel[i][kernelSize - i - 1] = 1.0 / kernelSize
                 }
-                Convolution(kernel).process(image)
+                Convolution(kernel).process(srcImage, destImage)
             }
             90.0 -> {
                 val row = Array(kernelSize) { 0.0 }
                 row[radius] = 1.0
                 SpatialSeparableConvolution(
                     Array(kernelSize) { 1.0 / kernelSize }, row
-                ).process(image)
+                ).process(srcImage, destImage)
             }
             135.0 -> {
                 for (i in 0 until kernelSize) {
                     kernel[i][i] = 1.0 / kernelSize
                 }
-                Convolution(kernel).process(image)
+                Convolution(kernel).process(srcImage, destImage)
             }
             else -> {
                 throw IllegalArgumentException("angle has to be 0, 45, 90 or 135")

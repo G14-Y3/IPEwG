@@ -77,7 +77,7 @@ class DepthEstimationTab : Fragment("Depth Estimation") {
 
                     button("Estimate Depth") {
                         action {
-                            engineController.depthEstimation(modelType, colormap)
+                            engineController.depthEstimation(modelType, colormap, engine.previewImage.value.width / 2, engine.previewImage.value.height / 2)
                         }
                         vboxConstraints {
                             margin = Insets(0.0, 20.0, 10.0, 10.0)

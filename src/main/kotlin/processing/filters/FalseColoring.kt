@@ -9,14 +9,14 @@ enum class FalseColoringMethod {
 }
 
 class FalseColoring(val coloringMethod: FalseColoringMethod) : ImageProcessing {
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         when (coloringMethod) {
-            FalseColoringMethod.ENHANCEMENT -> enhance(image)
-            FalseColoringMethod.TRANSFORM -> transform(image)
+            FalseColoringMethod.ENHANCEMENT -> enhance(srcImage, destImage)
+            FalseColoringMethod.TRANSFORM -> transform(srcImage, destImage)
         }
     }
 
-    private fun enhance(image: WritableImage) {
+    private fun enhance(srcImage: WritableImage, destImage: WritableImage) {
         fun getR(value: Double): Double {
             return if (value < 127) 0.0 else if (value > 191) 255.0 else (value - 127.0) * 4.0 - 1.0
         }
@@ -29,11 +29,11 @@ class FalseColoring(val coloringMethod: FalseColoringMethod) : ImageProcessing {
             return if (value < 64) return 255.0 else if (value > 127.0) 0.0 else 255.0 - (value - 63.0) * 4.0
         }
         
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
 
-        for (x in 0 until image.width.toInt()) {
-            for (y in 0 until image.height.toInt()) {
+        for (x in 0 until srcImage.width.toInt()) {
+            for (y in 0 until srcImage.height.toInt()) {
                 val r = reader.getColor(x, y).red
                 val g = reader.getColor(x, y).green
                 val b = reader.getColor(x, y).blue
@@ -46,17 +46,17 @@ class FalseColoring(val coloringMethod: FalseColoringMethod) : ImageProcessing {
         }
     }
 
-    private fun transform(image: WritableImage) {
+    private fun transform(srcImage: WritableImage, destImage: WritableImage) {
         val falseColorArray = listOf(listOf(0, 51, 0), listOf(0, 51, 102), listOf(51, 51, 102), listOf(51, 102, 51),
         listOf(51, 51, 153), listOf(102, 51, 102), listOf(153, 153, 0), listOf(51, 102, 153),
         listOf(153, 102, 51), listOf(153, 204, 102), listOf(204, 153, 102), listOf(102, 204, 102),
         listOf(153, 204, 153), listOf(204, 204, 102), listOf(204, 255, 204), listOf(255, 255, 204))
 
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
 
-        for (x in 0 until image.width.toInt()) {
-            for (y in 0 until image.height.toInt()) {
+        for (x in 0 until srcImage.width.toInt()) {
+            for (y in 0 until srcImage.height.toInt()) {
                 val r = reader.getColor(x, y).red
                 val g = reader.getColor(x, y).green
                 val b = reader.getColor(x, y).blue

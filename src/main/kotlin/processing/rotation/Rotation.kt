@@ -6,12 +6,12 @@ import processing.ImageProcessing
 import kotlin.math.*
 
 class Rotation(val angle: Double): ImageProcessing {
-    override fun process(image: WritableImage) {
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
-        val width = image.width.toInt()
-        val height = image.height.toInt()
-        val tempImage = WritableImage(image.pixelReader, width, height)
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
+        val width = srcImage.width.toInt()
+        val height = srcImage.height.toInt()
+        val tempImage = WritableImage(srcImage.pixelReader, width, height)
         val tempReader = tempImage.pixelReader
         val tempWriter = tempImage.pixelWriter
 
