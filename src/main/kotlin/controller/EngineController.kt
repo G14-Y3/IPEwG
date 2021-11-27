@@ -88,5 +88,7 @@ class EngineController : Controller() {
 
     fun denoise(denoiseMethod: DenoiseMethod, noise: Double) = engine.transform(Denoise(denoiseMethod, noise))
 
+    fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
+
     fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
 }

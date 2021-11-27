@@ -32,6 +32,7 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
+                        tab<BlackAndWhiteTab>()
                         tab<StyleTransferTab>()
                         tab<ColorAdjustTab>()
                         tab<BlurFilterTab>()
