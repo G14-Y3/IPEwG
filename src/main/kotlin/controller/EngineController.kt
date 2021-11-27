@@ -86,7 +86,7 @@ class EngineController : Controller() {
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 
-    fun resample(width: Int, height: Int, method: ResampleMethod) = engine.transform(Resample(width, height, method), "preview", width.toDouble(), height.toDouble())
+    fun resample(srcWidth: Int, srcHeight: Int, width: Int, height: Int, method: ResampleMethod) = engine.transform(Resample(srcWidth, srcHeight, width, height, method), "preview", width.toDouble(), height.toDouble())
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap, width: Double, height: Double) = engine.transform(DepthEstimation(modelType, colormap), "preview", width, height)
 

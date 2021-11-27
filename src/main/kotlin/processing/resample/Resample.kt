@@ -1,9 +1,9 @@
 package processing.resample
 
+import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import processing.ImageProcessing
@@ -13,7 +13,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-enum class ResampleMethod(val create: (Double, Double, WritableImage) -> Interpolation) {
+// srcW, srcH, tarW, tarH
+enum class ResampleMethod(val create: (Int, Int, Int, Int) -> Interpolation) {
     Point(::PointInterpolation),
     PointWithZeros(::PointWithZeros),
 
@@ -53,23 +54,34 @@ private const val name = "Resample"
 @Serializable
 @SerialName(name)
 class Resample(
+    private val sourceWidth: Int,
+    private val sourceHeight: Int,
     private val targetWidth: Int,
     private val targetHeight: Int,
     private val method: ResampleMethod,
 ) : ImageProcessing {
-    private lateinit var interpolator: Interpolation
+    private val interpolator: Interpolation = method.create(
+        sourceWidth,
+        sourceHeight,
+        targetWidth,
+        targetHeight,
+    )
 
     override fun process(srcImage: WritableImage, destImage: WritableImage) {
-        interpolator = method.create(targetWidth.toDouble(), targetHeight.toDouble(), srcImage)
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(destImage, numCores)
+        multiThreadedProcess(srcImage, destImage, numCores)
     }
 
-    private fun multiThreadedProcess(destImage: WritableImage, num_threads: Int) {
+    private fun multiThreadedProcess(
+        srcImage: WritableImage,
+        destImage: WritableImage,
+        num_threads: Int
+    ) {
         val executorService = Executors.newFixedThreadPool(num_threads)
         val stripeWidth = (destImage.height / num_threads).roundToInt()
 
         val writer: PixelWriter = destImage.pixelWriter
+        val reader: PixelReader = srcImage.pixelReader
 
         for (i in 0 until num_threads) {
             val yStart = i * stripeWidth
@@ -81,7 +93,7 @@ class Resample(
                         writer.setColor(
                             x,
                             y,
-                            interpolator.getPixel(x, y).color
+                            interpolator.getPixel(reader, x, y).color
                         )
                     }
                 }

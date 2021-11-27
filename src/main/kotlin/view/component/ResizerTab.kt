@@ -10,8 +10,8 @@ import tornadofx.*
 
 class ResizerTab : Fragment("Resize Image") {
     private val engineController: EngineController by inject()
-    private val previewWidth = engineController.previewWidth.toInt()
-    private val previewHeight = engineController.previewHeight.toInt()
+    private val previewWidth get() = engineController.previewWidth.toInt()
+    private val previewHeight get() = engineController.previewHeight.toInt()
 
     private val widthValidator = mapOf(
         ResampleMethod.PointWithZeros to { width: Int ->
@@ -74,6 +74,8 @@ class ResizerTab : Fragment("Resize Image") {
                     enableWhen(model.valid)
                     action {
                         engineController.resample(
+                            previewWidth,
+                            previewHeight,
                             model.width.value,
                             model.height.value,
                             comboBox.value,

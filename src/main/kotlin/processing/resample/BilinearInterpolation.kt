@@ -1,7 +1,6 @@
 package processing.resample
 
-import javafx.scene.image.Image
-import kotlinx.serialization.Contextual
+import javafx.scene.image.PixelReader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.math.ceil
@@ -11,18 +10,15 @@ private const val bilinear = "Bilinear"
 @Serializable
 @SerialName(bilinear)
 class BilinearInterpolation(
-    private val targetWidth: Double,
-    private val targetHeight: Double,
-    @Contextual private val sourceImage: Image,
+    private val srcW: Int,
+    private val srcH: Int,
+    private val tarW: Int,
+    private val tarH: Int,
 ) : Interpolation {
-    private val srcW = sourceImage.width.toInt()
-    private val srcH = sourceImage.height.toInt()
-    private val tarW = targetWidth.toInt()
-    private val tarH = targetHeight.toInt()
     private val scaleX: Double = tarW.toDouble() / srcW
     private val scaleY: Double = tarH.toDouble() / srcH
 
-    override fun getPixel(x: Int, y: Int): RGBA {
+    override fun getPixel(reader: PixelReader, x: Int, y: Int): RGBA {
         // Ref: https://en.wikipedia.org/wiki/Bilinear_interpolation
         val x1: Int = x * srcW / tarW
         val xInc: Int = ceil(1.0 / scaleX).toInt()
@@ -31,7 +27,7 @@ class BilinearInterpolation(
         val yInc: Int = ceil(1.0 / scaleY).toInt()
         val y2: Int = y1 + yInc
 
-        val q11: RGBA = sourceImage.pixelReader.getColor(x1, y1).toRGBA()
+        val q11: RGBA = reader.getColor(x1, y1).toRGBA()
         // at corner, repeat
         if (x2 >= srcW && y2 >= srcH) {
             return q11
@@ -48,11 +44,11 @@ class BilinearInterpolation(
             val srcX1 = if (scaleDownX) x1.toDouble() else x1 * scaleX
             val srcX2 = if (scaleDownX) x2.toDouble() else x2 * scaleX
 
-            val q21: RGBA = sourceImage.pixelReader.getColor(x2, y1).toRGBA()
+            val q21: RGBA = reader.getColor(x2, y1).toRGBA()
             q_1 = interpolate(tarX, srcX1, srcX2, q11, q21)
             q_2 = if (y2 < srcH) {
-                val q12: RGBA = sourceImage.pixelReader.getColor(x1, y2).toRGBA()
-                val q22: RGBA = sourceImage.pixelReader.getColor(x2, y2).toRGBA()
+                val q12: RGBA = reader.getColor(x1, y2).toRGBA()
+                val q22: RGBA = reader.getColor(x2, y2).toRGBA()
                 interpolate(tarX, srcX1, srcX2, q12, q22)
             } else {
                 q_1
@@ -60,7 +56,7 @@ class BilinearInterpolation(
         } else {
             q_1 = q11
             q_2 = if (y2 < srcH) {
-                val q12: RGBA = sourceImage.pixelReader.getColor(x1, y2).toRGBA()
+                val q12: RGBA = reader.getColor(x1, y2).toRGBA()
                 q12
             } else {
                 q_1
