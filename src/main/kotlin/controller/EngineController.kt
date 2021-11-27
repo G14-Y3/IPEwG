@@ -12,6 +12,7 @@ import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
 import processing.steganography.SteganographyEncoder
 import processing.frequency.FrequencyFilters
+import processing.rotation.Rotation
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import processing.steganography.WaterMark
@@ -88,4 +89,8 @@ class EngineController : Controller() {
     fun denoise(denoiseMethod: DenoiseMethod, noise: Double) = engine.transform(Denoise(denoiseMethod, noise))
 
     fun falseColoring(coloringMethod: FalseColoringMethod) = engine.transform(FalseColoring(coloringMethod))
+
+    fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
+
+    fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
 }

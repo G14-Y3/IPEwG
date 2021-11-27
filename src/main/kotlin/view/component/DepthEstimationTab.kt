@@ -10,7 +10,7 @@ import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimationModel
 import tornadofx.*
 
-class DepthEstimationTab : View("Depth Estimation") {
+class DepthEstimationTab : Fragment("Depth Estimation") {
     private val engineController: EngineController by inject()
     private val engine: EngineModel by inject()
 

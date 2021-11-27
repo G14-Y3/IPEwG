@@ -11,7 +11,7 @@ import kotlin.random.Random
 import tornadofx.*
 import view.CssStyle
 
-class SaltPepperTab : View("Salt Pepper") {
+class SaltPepperTab : Fragment("Salt Pepper") {
     private val engineController: EngineController by inject()
 
     val noiseRatioSlider =
