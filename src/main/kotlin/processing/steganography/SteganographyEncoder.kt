@@ -34,18 +34,19 @@ class SteganographyEncoder(
         return result / 255.0
     }
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         if (isEncodeImage) {
-            encodeImage(image)
+            encodeImage(srcImage, destImage)
         } else {
-            encodeText(image)
-            encodeText(image)
+            // Encoding text only works with calling this twice somehow
+            encodeText(srcImage, destImage)
+            encodeText(srcImage, destImage)
         }
     }
 
-    private fun encodeImage(image: WritableImage) {
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
+    private fun encodeImage(srcImage: WritableImage, destImage: WritableImage) {
+        val reader: PixelReader = srcImage.pixelReader
+        val writer: PixelWriter = destImage.pixelWriter
 
         val encodeReader: PixelReader = encodeImage!!.pixelReader
         val encode_width = encodeImage.width.toInt()
@@ -59,8 +60,8 @@ class SteganographyEncoder(
         }
 
         var index = 0
-        for (x in 0 until image.width.toInt()) {
-            for (y in 0 until image.height.toInt()) {
+        for (x in 0 until srcImage.width.toInt()) {
+            for (y in 0 until srcImage.height.toInt()) {
                 var color: Color = reader.getColor(x, y)
                 var encodeColor: Color = color
 
@@ -101,14 +102,14 @@ class SteganographyEncoder(
         writer.setArgb(1, 0, encode_height or (third_pixel and TOP_BITS.toInt()))
     }
 
-    private fun encodeText(image: WritableImage) {
+    private fun encodeText(srcImage: WritableImage, destImage: WritableImage) {
         /* encode text into the RGBA channels of the image */
-        val reader: PixelReader = image.pixelReader
-        val writer: PixelWriter = image.pixelWriter
+        val reader: PixelReader = srcImage.pixelReader
+        val writer: PixelWriter = destImage.pixelWriter
 
         var count = 0
-        loop@for (x in 0 until image.width.toInt()) {
-            for (y in 0 until image.height.toInt()) {
+        loop@for (x in 0 until srcImage.width.toInt()) {
+            for (y in 0 until srcImage.height.toInt()) {
                 if (count >= encodeText.length) break@loop
                 var color = reader.getColor(x, y)
                 val ch1 = encodeText[count++]
@@ -127,7 +128,7 @@ class SteganographyEncoder(
             }
         }
 
-        writer.setArgb(image.width.toInt() - 1, image.height.toInt() - 1, encodeText.length or 0b11111111000000000000000000000000.toInt())
+        writer.setArgb(srcImage.width.toInt() - 1, srcImage.height.toInt() - 1, encodeText.length or 0b11111111000000000000000000000000.toInt())
     }
 
     override fun toString(): String {

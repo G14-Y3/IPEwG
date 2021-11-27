@@ -59,28 +59,25 @@ class Resample(
 ) : ImageProcessing {
     private lateinit var interpolator: Interpolation
 
-    @Contextual
-    val targetImage: WritableImage = WritableImage(targetWidth, targetHeight)
-
-    override fun process(image: WritableImage) {
-        interpolator = method.create(targetImage.width, targetImage.height, image)
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+        interpolator = method.create(targetWidth.toDouble(), targetHeight.toDouble(), srcImage)
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(targetImage, numCores)
+        multiThreadedProcess(destImage, numCores)
     }
 
-    private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
+    private fun multiThreadedProcess(destImage: WritableImage, num_threads: Int) {
         val executorService = Executors.newFixedThreadPool(num_threads)
-        val stripeWidth = (image.height / num_threads).roundToInt()
+        val stripeWidth = (destImage.height / num_threads).roundToInt()
 
-        val writer: PixelWriter = image.pixelWriter
+        val writer: PixelWriter = destImage.pixelWriter
 
         for (i in 0 until num_threads) {
             val yStart = i * stripeWidth
-            val yEnd = minOf((i + 1) * stripeWidth, image.height.toInt())
+            val yEnd = minOf((i + 1) * stripeWidth, destImage.height.toInt())
 
             executorService.execute {
                 for (y in yStart until yEnd) {
-                    for (x in 0 until image.width.toInt()) {
+                    for (x in 0 until destImage.width.toInt()) {
                         writer.setColor(
                             x,
                             y,

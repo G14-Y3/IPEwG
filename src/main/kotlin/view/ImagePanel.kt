@@ -26,8 +26,8 @@ class ImagePanel : View() {
 
     lateinit var horizontalSlider: Slider
     lateinit var verticalSlider: Slider
-    lateinit var horizontalSpinner: Spinner<Number>
-    lateinit var verticalSpinner: Spinner<Number>
+//    lateinit var horizontalSpinner: Spinner<Number>
+//    lateinit var verticalSpinner: Spinner<Number>
 
     lateinit var stack: StackPane
 
@@ -60,6 +60,7 @@ class ImagePanel : View() {
             alignment = Pos.CENTER
             stack = stackpane {
                 oriView = imageview(engine.originalImage) {
+                    this.depthTest
                     isVisible = false
                     isPreserveRatio = true
                 }
@@ -95,17 +96,18 @@ class ImagePanel : View() {
                     if (it.isControlDown) {
                         zoom(it.deltaY, it.x, it.y)
                     } else {
-                        var leftTopX = oriView.viewport.minX - it.deltaX
+                        val temp = if (oriView.isVisible) oriView else newView
+                        var leftTopX = temp.viewport.minX - it.deltaX
                         leftTopX = cast(leftTopX, 0.0, excessWidth)
-                        var leftTopY = oriView.viewport.minY - it.deltaY
+                        var leftTopY = temp.viewport.minY - it.deltaY
                         leftTopY = cast(leftTopY, 0.0, excessHeight)
                         val viewport = Rectangle2D(
                             leftTopX,
                             leftTopY,
-                            oriView.viewport.width,
-                            oriView.viewport.height,
+                            temp.viewport.width,
+                            temp.viewport.height,
                         )
-                        updateViewPort(viewport)
+                        updateViewPort(temp, viewport)
                     }
                 }
 
@@ -125,7 +127,7 @@ class ImagePanel : View() {
 
                 addEventFilter(MouseEvent.MOUSE_DRAGGED) {
                     if (lastMousePoint != null) {
-                        val oldViewport = oriView.viewport
+                        val oldViewport = if (oriView.isVisible) oriView.viewport else newView.viewport
 
                         var leftTopX =
                             oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
@@ -134,13 +136,8 @@ class ImagePanel : View() {
                             oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
                         leftTopY = cast(leftTopY, 0.0, excessHeight)
 
-                        val newViewport = Rectangle2D(
-                            leftTopX,
-                            leftTopY,
-                            oldViewport.width,
-                            oldViewport.height,
-                        )
-                        updateViewPort(newViewport)
+                        val newViewport = Rectangle2D(leftTopX, leftTopY, oldViewport.width, oldViewport.height)
+                        updateViewPort(if (oriView.isVisible) oriView else newView, newViewport)
 
                         lastMousePoint = Point2D(it.screenX, it.screenY)
                     }
@@ -319,12 +316,13 @@ class ImagePanel : View() {
     // Zoom the image
     private fun zoom(factor: Double, x: Double, y: Double) {
         var ratio = 1.0
-        val oldViewport = oriView.viewport!!
+        val temp = if (oriView.isVisible) oriView else newView
+        val oldViewport = temp.viewport
         if (factor > 1) {
             ratio = 1.035
         } else if (factor < 1) {
             // only zoom out when viewport is smaller than original image
-            if (oldViewport.width < oriView.image.width) {
+            if (oldViewport.width < temp.image.width) {
                 ratio = 1 / 1.035
             }
         }
@@ -341,7 +339,7 @@ class ImagePanel : View() {
             oldViewport.width / ratio,
             oldViewport.height / ratio,
         )
-        updateViewPort(newViewport)
+        updateViewPort(temp, newViewport)
     }
 
     fun sliderInit() {
@@ -357,31 +355,31 @@ class ImagePanel : View() {
         verticalSlider.max = newMaxHeight
         verticalSlider.maxHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
 
-        horizontalSlider.valueProperty()
-            .unbindBidirectional(horizontalSpinner.valueFactory.valueProperty())
-        verticalSlider.valueProperty()
-            .unbindBidirectional(verticalSpinner.valueFactory.valueProperty())
-        @Suppress("UNCHECKED_CAST")
-        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
-            verticalSlider.min,
-            verticalSlider.max,
-            verticalSlider.blockIncrement
-        ) as SpinnerValueFactory<Number>
-        @Suppress("UNCHECKED_CAST")
-        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
-            verticalSlider.min,
-            verticalSlider.max,
-            verticalSlider.blockIncrement
-        ) as SpinnerValueFactory<Number>
-        try {
-            horizontalSlider.valueProperty().bindBidirectional(
-                horizontalSpinner.valueFactory.valueProperty()
-            )
-            verticalSlider.valueProperty().bindBidirectional(
-                verticalSpinner.valueFactory.valueProperty()
-            )
-        } catch (e: NumberFormatException) {
-        }
+//        horizontalSlider.valueProperty()
+//            .unbindBidirectional(horizontalSpinner.valueFactory.valueProperty())
+//        verticalSlider.valueProperty()
+//            .unbindBidirectional(verticalSpinner.valueFactory.valueProperty())
+//        @Suppress("UNCHECKED_CAST")
+//        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+//            verticalSlider.min,
+//            verticalSlider.max,
+//            verticalSlider.blockIncrement
+//        ) as SpinnerValueFactory<Number>
+//        @Suppress("UNCHECKED_CAST")
+//        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+//            verticalSlider.min,
+//            verticalSlider.max,
+//            verticalSlider.blockIncrement
+//        ) as SpinnerValueFactory<Number>
+//        try {
+//            horizontalSlider.valueProperty().bindBidirectional(
+//                horizontalSpinner.valueFactory.valueProperty()
+//            )
+//            verticalSlider.valueProperty().bindBidirectional(
+//                verticalSpinner.valueFactory.valueProperty()
+//            )
+//        } catch (e: NumberFormatException) {
+//        }
     }
 
     // cast given value in given range
@@ -396,15 +394,20 @@ class ImagePanel : View() {
 
     // update both images' viewport in engine
     fun updateViewPort(viewPort: Rectangle2D) {
-        oriView.viewport = viewPort
-        newView.viewport = viewPort
-        excessWidth = oriView.image.width - viewPort.width
-        excessHeight = oriView.image.height - viewPort.height
+        updateViewPort(oriView, viewPort)
+        updateViewPort(newView, viewPort)
+    }
+
+    fun updateViewPort(view: ImageView, viewPort: Rectangle2D) {
+        view.viewport = viewPort
+        excessWidth = view.image.width - viewPort.width
+        excessHeight = view.image.height - viewPort.height
     }
 
     // from scene / screen / stage / view coordinates to image coordinates
     private fun localToImage(value: Double): Double {
-        val viewport = oriView.viewport!!
+        val temp = if (oriView.isVisible) oriView else newView
+        val viewport = temp.viewport
         val localToImage = WINDOW_WIDTH / viewport.width
 
         return value / localToImage

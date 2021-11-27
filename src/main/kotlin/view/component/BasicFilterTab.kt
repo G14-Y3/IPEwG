@@ -15,8 +15,7 @@ class BasicFilterTab : Fragment("Basic Actions") {
         "Flip Horizontal" to engineController::flipHorizontal,
         "Flip Vertical" to engineController::flipVertical,
         "Edge Detection" to engineController::edgeDetection,
-        "Sharpen" to engineController::sharpen,
-        "Histogram Equalization" to engineController::histogramEqualization
+        "Sharpen" to engineController::sharpen
     )
 
     override val root = vbox {
@@ -39,6 +38,31 @@ class BasicFilterTab : Fragment("Basic Actions") {
                          in them, or the border will change when tabs clicked. */
                         prefWidth = 60.0
                     }.setOnAction { callback.call() }
+                }
+            }
+        }
+
+        label("Rotation") {
+            vboxConstraints {
+                margin = Insets(10.0, 20.0, 10.0, 10.0)
+            }
+            style {
+                fontWeight = FontWeight.BOLD
+                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+            }
+        }
+
+        vbox {
+            val slider = SliderWithSpinner(0.0, 360.0, ChangeListener { _, _, new ->
+                engineController.rotate(new as Double)
+            }).withLabel("Rotate Degree")
+            this.children.add(slider.build())
+            button("Apply Rotation") {
+                vboxConstraints {
+                    margin = Insets(10.0, 20.0, 10.0, 10.0)
+                }
+                action {
+                    engineController.submitAdjustment()
                 }
             }
         }

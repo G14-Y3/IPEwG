@@ -14,14 +14,14 @@ import java.util.concurrent.TimeUnit
 class RGBIntensity(private val factor: Double, private val rgbType: RGBType) :
     ImageProcessing {
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(image, numCores)
+        multiThreadedProcess(srcImage, destImage, numCores)
     }
 
 
-    private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
-        val partitions = splitImageVertical(num_threads, image)
+    private fun multiThreadedProcess(srcImage: WritableImage, destImage: WritableImage, num_threads: Int) {
+        val partitions = splitImageVertical(num_threads, srcImage)
         val executorService = Executors.newFixedThreadPool(num_threads)
 
         // Divide
@@ -64,7 +64,7 @@ class RGBIntensity(private val factor: Double, private val rgbType: RGBType) :
         executorService.awaitTermination(1, TimeUnit.MINUTES)
 
         // Merge & Conquer
-        val writer = image.pixelWriter
+        val writer = destImage.pixelWriter
         for (partition in partitions) {
             for (x in 0 until partition.image.width.toInt()) {
                 for (y in 0 until partition.image.height.toInt()) {

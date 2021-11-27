@@ -34,6 +34,7 @@ class FilterPanel : View() {
                         tab<BasicFilterTab>()
                         tab<ConversionTab>()
                         tab<ResizerTab>()
+                        tab<BlackAndWhiteTab>()
                         tab<ColorAdjustTab>()
                         tab<StyleTransferTab>()
                         tab<BlurFilterTab>()
@@ -43,6 +44,8 @@ class FilterPanel : View() {
                         tab<SaltPepperTab>()
                         tab<DepthEstimationTab>()
                         tab<WaterMarkTab>()
+                        tab<DenoiseTab>()
+                        tab<FalseColoringTab>()
                     },
                     TransformationList().root
                 ) {
