@@ -43,6 +43,7 @@ class FilterPanel : View() {
                         tab<DepthEstimationTab>()
                         tab<WaterMarkTab>()
                         tab<DenoiseTab>()
+                        tab<FalseColoringTab>()
                     },
                     TransformationList().root
                 ) {
