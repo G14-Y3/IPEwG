@@ -9,11 +9,16 @@ import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 enum class ResampleMethod(val create: (Double, Double, WritableImage) -> Interpolation) {
     Point(::PointInterpolation),
     PointWithZeros(::PointWithZeros),
+
+    // Box(:BoxInterpolation), // only show difference to Point with subsampling
+    Bilinear(::BilinearInterpolation),
 }
 
 // an (assumed) linear RGBA pixel
@@ -30,7 +35,18 @@ class RGBA(var R: Double, var G: Double, var B: Double, var A: Double) {
     // clamp to .0 - 1.0 (incl.)
     private fun clamp(x: Double): Double =
         if (x <= .0) .0 else (if (x >= 1.0) 1.0 else x)
+
+    operator fun plus(other: RGBA) = RGBA(R + other.R, G + other.G, B + other.B, A + other.A)
+    operator fun times(scalar: Double) = RGBA(scalar * R, scalar * G, scalar * B, scalar * A)
+    operator fun times(scalar: Int) = RGBA(scalar * R, scalar * G, scalar * B, scalar * A)
 }
+
+fun Color.toRGBA() = RGBA.fromColor(this)
+operator fun Double.times(vector: RGBA) = vector * this
+operator fun Int.times(vector: RGBA) = vector * this
+
+// 4 is an adjustable threshold
+fun Double.equalsDelta(other: Double) = abs(this - other) < max(Math.ulp(this), Math.ulp(other)) * 4
 
 private const val name = "Resample"
 
