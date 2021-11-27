@@ -9,6 +9,7 @@ import processing.filters.blur.BoxBlur
 import processing.filters.blur.GaussianBlur
 import processing.filters.blur.LensBlur
 import processing.filters.blur.MotionBlur
+import processing.rotation.Rotation
 
 enum class RGBType { R, G, B }
 enum class HSVType {
@@ -47,6 +48,8 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "MOTION_90" -> MotionBlur(v.toInt(), 90.0)
                 "MOTION_135" -> MotionBlur(v.toInt(), 135.0)
                 "BLACK_AND_WHITE" -> BlackAndWhite(v)
+                // Rotation
+                "ROTATION" -> Rotation(v)
                 else -> null
             }
             string += adjustment.toString() + " "
