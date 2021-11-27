@@ -26,8 +26,8 @@ class ImagePanel : View() {
 
     lateinit var horizontalSlider: Slider
     lateinit var verticalSlider: Slider
-//    lateinit var horizontalSpinner: Spinner<Number>
-//    lateinit var verticalSpinner: Spinner<Number>
+    lateinit var horizontalSpinner: Spinner<Number>
+    lateinit var verticalSpinner: Spinner<Number>
 
     lateinit var stack: StackPane
 
@@ -60,7 +60,6 @@ class ImagePanel : View() {
             alignment = Pos.CENTER
             stack = stackpane {
                 oriView = imageview(engine.originalImage) {
-                    this.depthTest
                     isVisible = false
                     isPreserveRatio = true
                 }
@@ -358,31 +357,31 @@ class ImagePanel : View() {
         verticalSlider.max = newMaxHeight
         verticalSlider.maxHeight = WINDOW_WIDTH / oriView.image.width * oriView.image.height
 
-//        horizontalSlider.valueProperty()
-//            .unbindBidirectional(horizontalSpinner.valueFactory.valueProperty())
-//        verticalSlider.valueProperty()
-//            .unbindBidirectional(verticalSpinner.valueFactory.valueProperty())
-//        @Suppress("UNCHECKED_CAST")
-//        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
-//            verticalSlider.min,
-//            verticalSlider.max,
-//            verticalSlider.blockIncrement
-//        ) as SpinnerValueFactory<Number>
-//        @Suppress("UNCHECKED_CAST")
-//        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
-//            verticalSlider.min,
-//            verticalSlider.max,
-//            verticalSlider.blockIncrement
-//        ) as SpinnerValueFactory<Number>
-//        try {
-//            horizontalSlider.valueProperty().bindBidirectional(
-//                horizontalSpinner.valueFactory.valueProperty()
-//            )
-//            verticalSlider.valueProperty().bindBidirectional(
-//                verticalSpinner.valueFactory.valueProperty()
-//            )
-//        } catch (e: NumberFormatException) {
-//        }
+        horizontalSlider.valueProperty()
+            .unbindBidirectional(horizontalSpinner.valueFactory.valueProperty())
+        verticalSlider.valueProperty()
+            .unbindBidirectional(verticalSpinner.valueFactory.valueProperty())
+        @Suppress("UNCHECKED_CAST")
+        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+            verticalSlider.min,
+            verticalSlider.max,
+            verticalSlider.blockIncrement
+        ) as SpinnerValueFactory<Number>
+        @Suppress("UNCHECKED_CAST")
+        verticalSpinner.valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(
+            verticalSlider.min,
+            verticalSlider.max,
+            verticalSlider.blockIncrement
+        ) as SpinnerValueFactory<Number>
+        try {
+            horizontalSlider.valueProperty().bindBidirectional(
+                horizontalSpinner.valueFactory.valueProperty()
+            )
+            verticalSlider.valueProperty().bindBidirectional(
+                verticalSpinner.valueFactory.valueProperty()
+            )
+        } catch (e: NumberFormatException) {
+        }
     }
 
     // cast given value in given range

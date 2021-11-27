@@ -13,13 +13,13 @@ import java.util.concurrent.TimeUnit
 @SerialName("HSVIntensity")
 class HSVIntensity(private val factor: Double, private val hsvType: HSVType) :
     ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(srcImage, destImage, numCores)
+        multiThreadedProcess(image, numCores)
     }
 
-    private fun multiThreadedProcess(srcImage: WritableImage, destImage: WritableImage, num_threads: Int) {
-        val partitions = splitImageVertical(num_threads, srcImage)
+    private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
+        val partitions = splitImageVertical(num_threads, image)
         val executorService = Executors.newFixedThreadPool(num_threads)
 
         // Divide
@@ -62,7 +62,7 @@ class HSVIntensity(private val factor: Double, private val hsvType: HSVType) :
         executorService.awaitTermination(1, TimeUnit.MINUTES)
 
         // Merge & Conquer
-        val writer = destImage.pixelWriter
+        val writer = image.pixelWriter
         for (partition in partitions) {
             for (x in 0 until partition.image.width.toInt()) {
                 for (y in 0 until partition.image.height.toInt()) {

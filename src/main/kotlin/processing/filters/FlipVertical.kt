@@ -13,31 +13,31 @@ import kotlin.math.roundToInt
 @Serializable
 @SerialName("FlipVertical")
 class FlipVertical : ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(srcImage, destImage, numCores)
+        multiThreadedProcess(image, numCores)
 
     }
 
-    private fun multiThreadedProcess(srcImage: WritableImage, destImage: WritableImage, num_threads: Int) {
+    private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
         val executorService = Executors.newFixedThreadPool(num_threads)
-        val stripeWidth = (srcImage.width / num_threads).roundToInt()
+        val stripeWidth = (image.width / num_threads).roundToInt()
 
-        val reader: PixelReader = srcImage.pixelReader
-        val writer: PixelWriter = destImage.pixelWriter
+        val reader: PixelReader = image.pixelReader
+        val writer: PixelWriter = image.pixelWriter
 
         for (i in 0 until num_threads) {
             val xStart = i * stripeWidth
-            val xEnd = minOf((i + 1) * stripeWidth, srcImage.width.toInt())
+            val xEnd = minOf((i + 1) * stripeWidth, image.width.toInt())
 
             executorService.execute {
                 for (x in xStart until xEnd) {
-                    for (y in 0 until srcImage.height.toInt() / 2) {
+                    for (y in 0 until image.height.toInt() / 2) {
                         val colour =
-                            reader.getColor(x, srcImage.height.toInt() - y - 1)
+                            reader.getColor(x, image.height.toInt() - y - 1)
                         writer.setColor(
                             x,
-                            srcImage.height.toInt() - y - 1,
+                            image.height.toInt() - y - 1,
                             reader.getColor(x, y)
                         )
                         writer.setColor(x, y, colour)

@@ -54,18 +54,17 @@ class BatchProcessTab : Fragment("Batch") {
         });
     }
 
-    override val root = splitpane (Orientation.HORIZONTAL,
-        borderpane {
+    override val root = borderpane {
+        padding = Insets(10.0)
+        left = borderpane {
 
             center = splitpane (Orientation.HORIZONTAL,
                 imagesListView,
 
                 tabpane {
-                    prefWidth = 400.0
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
                     tab<BasicFilterTab>()
-                    tab<BlackAndWhiteTab>()
                     tab<StyleTransferTab>()
                     tab<ColorAdjustTab>()
                     tab<BlurFilterTab>()
@@ -73,10 +72,6 @@ class BatchProcessTab : Fragment("Batch") {
                     tab<ConversionTab>()
                     tab<HistogramFilterTab>()
                     tab<BlendTab>()
-                    tab<SaltPepperTab>()
-                    tab<DepthEstimationTab>()
-                    tab<WaterMarkTab>()
-                    tab<DenoiseTab>()
                 }
             )
 
@@ -95,9 +90,9 @@ class BatchProcessTab : Fragment("Batch") {
                 button("Export").action { exportImages() }
                 padding = Insets(15.0)
             }
-        },
+        }
 
-        splitpane(
+        right = splitpane(
             Orientation.VERTICAL,
             vbox {
                 padding = Insets(5.0)
@@ -110,7 +105,7 @@ class BatchProcessTab : Fragment("Batch") {
             },
             find<TransformationList>().root
         )
-    )
+    }
 
     private fun importImages() {
         val fileChooser = FileChooser.ExtensionFilter(

@@ -142,7 +142,7 @@ class EncodeImageTab : Fragment("Encode/Decode Image") {
                             action {
                                 engine.transform(
                                     SteganographyDecoder(true),
-                                    "decode", 0.0, 0.0
+                                    "decode"
                                 )
                             }
                         }

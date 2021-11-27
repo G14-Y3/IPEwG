@@ -24,15 +24,15 @@ class WaterMark(val encodeImage: Image, verticalGap: Int, horizontalGap: Int, va
     }
 
     // Use the LSB technique that is used in Steganography
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
-        val reader = srcImage.pixelReader
+    override fun process(image: WritableImage) {
+        val reader = image.pixelReader
         val encodeReader = encodeImage.pixelReader
-        val writer = destImage.pixelWriter
+        val writer = image.pixelWriter
         val encodeWidth = encodeImage.width.toInt()
         val encodeHeight = encodeImage.height.toInt()
 
-        for (x in 0 until srcImage.width.toInt()) {
-            for (y in 0 until srcImage.height.toInt()) {
+        for (x in 0 until image.width.toInt()) {
+            for (y in 0 until image.height.toInt()) {
                 var color: Color = reader.getColor(x, y)
                 val encodeColor: Color = encodeReader.getColor(x % encodeWidth, y % encodeHeight)
 

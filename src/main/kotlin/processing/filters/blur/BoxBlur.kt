@@ -9,7 +9,7 @@ import processing.filters.SpatialSeparableConvolution
 @Serializable
 @SerialName("BoxBlur")
 class BoxBlur(private val radius: Int) : ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         if (radius == 0) {
             return
         }
@@ -18,7 +18,7 @@ class BoxBlur(private val radius: Int) : ImageProcessing {
         SpatialSeparableConvolution(
             Array(kernelSize) { 1.0 / (kernelSize * kernelSize) },
             Array(kernelSize) { 1.0 }
-        ).process(srcImage, destImage)
+        ).process(image)
     }
 
     override fun toString(): String = "BoxBlur with radius $radius"

@@ -23,12 +23,12 @@ class FrequencyFilters(
     private val order: Int): ImageProcessing {
 
 
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         // 1. multiplt by (-1)^(i+j) to move top left of image to center
         //    and pad the image to side length of power of 2
-        val reader: PixelReader = srcImage.pixelReader
-        val oriHeight = srcImage.height.toInt()
-        val oriWidth = srcImage.width.toInt()
+        val reader: PixelReader = image.pixelReader
+        val oriHeight = image.height.toInt()
+        val oriWidth = image.width.toInt()
         val height = nextPow2(oriHeight)
         val width = nextPow2(oriWidth)
         val matrix: Array<Array<Array<Complex>>> = Array(3) { Array(height) { Array(width) { Complex() } } }
@@ -73,7 +73,7 @@ class FrequencyFilters(
         }
 
         // 7. write matrix back to image
-        val writer = destImage.pixelWriter
+        val writer = image.pixelWriter
         for (x in 0 until oriHeight) {
             for (y in 0 until oriWidth) {
                 val newColor: Color = Color.color(
