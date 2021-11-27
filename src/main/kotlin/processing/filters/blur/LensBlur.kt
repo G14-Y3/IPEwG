@@ -10,7 +10,7 @@ import kotlin.math.pow
 @Serializable
 @SerialName("LensBlur")
 class LensBlur(private val radius: Int) : ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         if (radius == 0) {
             return
         }
@@ -33,7 +33,7 @@ class LensBlur(private val radius: Int) : ImageProcessing {
                 kernel[i][j] = kernel[i][j] / total
             }
         }
-        Convolution(kernel).process(srcImage, destImage)
+        Convolution(kernel).process(image)
     }
 
     override fun toString(): String = "Lens blur with radius $radius"

@@ -20,22 +20,21 @@ class SpatialSeparableConvolution(
         }
     }
 
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
-        alterImage(srcImage, destImage, kernelCol, transpose = true)
-        alterImage(srcImage, destImage, kernelRow, transpose = false)
+    override fun process(image: WritableImage) {
+        alterImage(image, kernelCol, transpose = true)
+        alterImage(image, kernelRow, transpose = false)
     }
 
     private fun alterImage(
-        srcImage: WritableImage,
-        destImage: WritableImage,
+        image: WritableImage,
         vector: Array<Double>,
         transpose: Boolean
     ) {
         val deviation = vector.size / 2
-        val width = srcImage.width.toInt()
-        val height = srcImage.height.toInt()
-        val reader = srcImage.pixelReader
-        val writer = destImage.pixelWriter
+        val width = image.width.toInt()
+        val height = image.height.toInt()
+        val reader = image.pixelReader
+        val writer = image.pixelWriter
         val original = WritableImage(
             reader,
             width,

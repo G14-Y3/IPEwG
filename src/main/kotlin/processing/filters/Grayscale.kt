@@ -11,13 +11,13 @@ import java.util.concurrent.TimeUnit
 @Serializable
 @SerialName("Grayscale")
 class Grayscale : ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         val numCores = Runtime.getRuntime().availableProcessors()
-        multiThreadedProcess(srcImage, destImage, numCores)
+        multiThreadedProcess(image, numCores)
     }
 
-    private fun multiThreadedProcess(srcImage: WritableImage, destImage: WritableImage, num_threads: Int) {
-        val partitions = splitImageHorizontal(num_threads, srcImage)
+    private fun multiThreadedProcess(image: WritableImage, num_threads: Int) {
+        val partitions = splitImageHorizontal(num_threads, image)
         val executorService = Executors.newFixedThreadPool(num_threads)
 
         // Divide
@@ -39,7 +39,7 @@ class Grayscale : ImageProcessing {
         executorService.awaitTermination(1, TimeUnit.MINUTES)
 
         // Merge & Conquer
-        val writer = destImage.pixelWriter
+        val writer = image.pixelWriter
         for (partition in partitions) {
             for (x in 0 until partition.image.width.toInt()) {
                 for (y in 0 until partition.image.height.toInt()) {

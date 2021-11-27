@@ -5,18 +5,21 @@ import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import processing.ImageProcessing
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class SteganographyDecoder(private val isDecodeImage: Boolean): ImageProcessing {
 
     private var result_image: WritableImage? = null
     private var result_text: String = ""
 
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         if (isDecodeImage) {
-            decodeImage(srcImage)
+            decodeImage(image)
         } else {
-            decodeText(srcImage)
+            decodeText(image)
         }
     }
 

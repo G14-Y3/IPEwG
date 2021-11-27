@@ -13,22 +13,23 @@ import kotlin.math.sqrt
 @Serializable
 @SerialName("EdgeDetection")
 class EdgeDetection : ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
-        Grayscale().process(srcImage, destImage)
-        GaussianBlur(4).process(srcImage, destImage)
+    override fun process(image: WritableImage) {
+        Grayscale().process(image)
+        GaussianBlur(4).process(image)
+
 
         // Apply Sobel operator for basic edge detection
         val horizontalKernel = arrayOf(arrayOf(1.0, 2.0, 1.0), arrayOf(0.0, 0.0, 0.0), arrayOf(-1.0, -2.0, -1.0))
-        val horizontal = Convolution(horizontalKernel).convolutionGreyScaleNegative(srcImage)
+        val horizontal = Convolution(horizontalKernel).convolutionGreyScaleNegative(image)
 
         val verticalKernel = arrayOf(arrayOf(1.0, 0.0, -1.0), arrayOf(2.0, 0.0, -2.0), arrayOf(1.0, 0.0, -1.0))
-        val vertical = Convolution(verticalKernel).convolutionGreyScaleNegative(srcImage)
+        val vertical = Convolution(verticalKernel).convolutionGreyScaleNegative(image)
 
-        val direction = Array(srcImage.width.toInt()) { DoubleArray(srcImage.height.toInt()) }
-        val grayImage = Array(srcImage.width.toInt()) { DoubleArray(srcImage.height.toInt()) }
+        val direction = Array(image.width.toInt()) { DoubleArray(image.height.toInt()) }
+        val grayImage = Array(image.width.toInt()) { DoubleArray(image.height.toInt()) }
 
-        for (x in 0 until srcImage.width.toInt()) {
-            for (y in 0 until srcImage.height.toInt()) {
+        for (x in 0 until image.width.toInt()) {
+            for (y in 0 until image.height.toInt()) {
                 val horizontalPx = horizontal[x][y]
                 val verticalPx = vertical[x][y]
                 grayImage[x][y] = sqrt(horizontalPx * horizontalPx + verticalPx * verticalPx).coerceIn(0.0, 1.0)
@@ -38,7 +39,7 @@ class EdgeDetection : ImageProcessing {
         }
         nonMaxSuppression(grayImage, direction)
         thresholdAndEdgeTracking(grayImage)
-        writeGrayImage(grayImage, destImage)
+        writeGrayImage(grayImage, image)
     }
 
     private fun nonMaxSuppression(input: Array<DoubleArray>, direction: Array<DoubleArray>) {
