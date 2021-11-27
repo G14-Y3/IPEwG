@@ -46,6 +46,7 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "MOTION_45" -> MotionBlur(v.toInt(), 45.0)
                 "MOTION_90" -> MotionBlur(v.toInt(), 90.0)
                 "MOTION_135" -> MotionBlur(v.toInt(), 135.0)
+                "BLACK_AND_WHITE" -> BlackAndWhite(v)
                 else -> null
             }
             string += adjustment.toString() + " "

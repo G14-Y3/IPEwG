@@ -86,4 +86,6 @@ class EngineController : Controller() {
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap) = engine.transform(DepthEstimation(modelType, colormap), "depth")
 
     fun denoise(denoiseMethod: DenoiseMethod, noise: Double) = engine.transform(Denoise(denoiseMethod, noise))
+
+    fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
 }
