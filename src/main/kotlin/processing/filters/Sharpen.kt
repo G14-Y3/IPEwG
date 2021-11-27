@@ -8,13 +8,13 @@ import processing.ImageProcessing
 @Serializable
 @SerialName("Sharpen")
 class Sharpen : ImageProcessing {
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         val kernel = arrayOf(
             arrayOf(-1.0, -1.0, -1.0),
             arrayOf(-1.0, 9.0, -1.0),
             arrayOf(-1.0, -1.0, -1.0)
         )
-        Convolution(kernel).process(image)
+        Convolution(kernel).process(srcImage, destImage)
     }
 
     override fun toString(): String = "Sharpen"
