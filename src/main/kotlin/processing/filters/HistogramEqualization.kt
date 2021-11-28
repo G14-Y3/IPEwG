@@ -8,17 +8,65 @@ import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import kotlin.math.max
 
+enum class LabColor(override val range: Int) : ColorSpace {
+    L(101) {
+        override fun getter(pixel: Color): Double {
+            TODO("Not yet implemented")
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            TODO("Not yet implemented")
+        }
+    },
+    A(256) {
+        override fun getter(pixel: Color): Double {
+            TODO("Not yet implemented")
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            TODO("Not yet implemented")
+        }
+    },
+    B(256) {
+        override fun getter(pixel: Color): Double {
+            TODO("Not yet implemented")
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            TODO("Not yet implemented")
+        }
+    };
+    override fun toString(): String {
+        return "LabColour" + super.toString()
+    }
+}
+
+/**
+ * Dummy class representing Histogram Equalization using GrayScaled value
+ */
+class GrayScaleColorSpace(override val range: Int = 256) : ColorSpace {
+    override fun getter(pixel: Color): Double {
+        return pixel.grayscale().red
+    }
+
+    override fun setter(pixel: Color, value: Double): Color {
+        return Color.color(value, value, value)
+    }
+
+    override fun toString(): String {
+        return "GrayScale"
+    }
+}
+
 @Serializable
 @SerialName("HistogramEqualization")
-class HistogramEqualization: ImageProcessing {
-    val PIXEL_RANGE = 256
-    val cdf: Array<Int> = Array(PIXEL_RANGE) {0}
-    val pdf: Array<Int> = Array(PIXEL_RANGE) {0}
-    val pixelMap: Array<Double> = Array(PIXEL_RANGE) {0.0}
+class HistogramEqualization(private val space: ColorSpace): ImageProcessing {
+    val cdf: Array<Int> = Array(space.range) {0}
+    val pdf: Array<Int> = Array(space.range) {0}
+    val pixelMap: Array<Double> = Array(space.range) {0.0}
 
     override fun process(image: WritableImage) {
-        // 0. transfer to grayscale
-        Grayscale().process(image)
+
 
         // 1. generate pdf of each pixel value, ASSUME image is in gray scale,
         val reader : PixelReader = image.pixelReader
@@ -31,15 +79,41 @@ class HistogramEqualization: ImageProcessing {
             for (j in 0 until width) {
                 // in this nested for loop, CDF is generated as PDF, transfer to cdf in the next step
                 val pixel = reader.getColor(j, i)
-                val pixelVal = pixel.red * (PIXEL_RANGE - 1) // -1 for avoid index out off bound
+                val pixelVal = space.getter(pixel) * (space.range - 1)
                 pdf[pixelVal.toInt()] += 1
             }
         }
 
         // 2. generate cdf w.r.t. pdf and record the count of pixel value which is the smallest among all pixel values
+        histogramEqualize(height * width)
+
+        // 4. write back to image
+        val writer = image.pixelWriter
+        for (i in 0 until height) {
+            for (j in 0 until width) {
+                val originPixel = reader.getColor(j, i)
+                val readPixelVal = space.getter(originPixel) * (space.range - 1)
+                val pixelVal = pixelMap[readPixelVal.toInt()] / space.range
+                writer.setColor(j, i, space.setter(originPixel, pixelVal))
+            }
+        }
+    }
+
+    /**
+     * Equalize the distribution recorded in pdf field
+     * @param pixelCnt: number of pixels in the image
+     * Operations:
+     *   Overwrite private field cdf by using data from field pdf
+     *   Overwrite private field pixelMap using algorithm from https://en.wikipedia.org/wiki/Histogram_equalization
+     * Reference:
+     *   https://opentextbc.ca/graphicdesign/chapter/4-4-lab-colour-space-and-delta-e-measurements/
+     *   https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
+     *   https://en.wikipedia.org/wiki/Histogram_equalization
+     */
+    fun histogramEqualize(pixelCnt: Int) {
         var cdfMin = 0
         cdf[0] = pdf[0]
-        for (i in 1 until PIXEL_RANGE) {
+        for (i in 1 until space.range) {
             cdf[i] = cdf[i-1] + pdf[i]
             if (cdf[i-1] == 0) {
                 cdfMin = cdf[i]
@@ -47,23 +121,13 @@ class HistogramEqualization: ImageProcessing {
         }
 
         // 3. generate map from original pixel value to new pixel value
-        for (i in 0 until PIXEL_RANGE) {
-            pixelMap[i] = (cdf[i] - cdfMin).toDouble() / (height * width - cdfMin) * (PIXEL_RANGE - 2) + 1
-        }
-
-        // 4. write back to image
-        val writer = image.pixelWriter
-        for (i in 0 until height) {
-            for (j in 0 until width) {
-                val readPixelVal = reader.getColor(j, i).red * (PIXEL_RANGE - 1)
-                val pixelVal = pixelMap[readPixelVal.toInt()] / PIXEL_RANGE
-                writer.setColor(j, i, Color.color(pixelVal, pixelVal, pixelVal))
-            }
+        for (i in 0 until space.range) {
+            pixelMap[i] = (cdf[i] - cdfMin).toDouble() / (pixelCnt - cdfMin) * (space.range - 2) + 1
         }
     }
 
     override fun toString(): String {
-        return "Histogram Equalization"
+        return "Histogram Equalization in $space space"
     }
 
     fun getOriginalCdf(): Array<Int> {
@@ -71,7 +135,7 @@ class HistogramEqualization: ImageProcessing {
     }
 
     fun getResultCdf(): Array<Int> {
-        val newCount = Array(PIXEL_RANGE) {0}
+        val newCount = Array(space.range) {0}
 
         for(i in 0..255)
             newCount[pixelMap[i].toInt()] = cdf[i]
