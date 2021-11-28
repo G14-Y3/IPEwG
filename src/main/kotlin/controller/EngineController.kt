@@ -11,6 +11,7 @@ import processing.depthestimation.DepthEstimation
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
 import processing.frequency.FrequencyFilters
+import processing.resample.Params
 import processing.resample.Resample
 import processing.resample.ResampleMethod
 import processing.steganography.SteganographyEncoder
@@ -86,7 +87,7 @@ class EngineController : Controller() {
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 
-    fun resample(srcWidth: Int, srcHeight: Int, width: Int, height: Int, method: ResampleMethod) = engine.transform(Resample(srcWidth, srcHeight, width, height, method), "preview", width.toDouble(), height.toDouble())
+    fun resample(srcWidth: Int, srcHeight: Int, width: Int, height: Int, method: ResampleMethod, params: Params?) = engine.transform(Resample(srcWidth, srcHeight, width, height, params, method), "preview", width.toDouble(), height.toDouble())
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap, width: Double, height: Double) = engine.transform(DepthEstimation(modelType, colormap), "preview", width, height)
 

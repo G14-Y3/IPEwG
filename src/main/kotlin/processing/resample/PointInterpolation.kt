@@ -14,6 +14,7 @@ class PointInterpolation(
     private val sourceHeight: Int,
     private val targetWidth: Int,
     private val targetHeight: Int,
+    private val params: Params?,
 ) : Interpolation {
     override fun getPixel(reader: PixelReader, x: Int, y: Int): RGBA {
         // the corresponding coordinate to the pixel in the source
@@ -43,6 +44,7 @@ class PointWithZeros(
     private val sourceHeight: Int,
     private val targetWidth: Int,
     private val targetHeight: Int,
+    private val params: Params?,
 ) : Interpolation {
     private val scaleX = targetWidth / sourceWidth
     private val scaleY = targetHeight / sourceHeight

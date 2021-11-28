@@ -14,7 +14,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 // srcW, srcH, tarW, tarH
-enum class ResampleMethod(val create: (Int, Int, Int, Int) -> Interpolation) {
+enum class ResampleMethod(val create: (Int, Int, Int, Int, Params?) -> Interpolation) {
     Point(::PointInterpolation),
     PointWithZeros(::PointWithZeros),
 
@@ -58,6 +58,7 @@ class Resample(
     private val sourceHeight: Int,
     private val targetWidth: Int,
     private val targetHeight: Int,
+    private val params: Params?,
     private val method: ResampleMethod,
 ) : ImageProcessing {
     private val interpolator: Interpolation = method.create(
@@ -65,6 +66,7 @@ class Resample(
         sourceHeight,
         targetWidth,
         targetHeight,
+        params,
     )
 
     override fun process(srcImage: WritableImage, destImage: WritableImage) {

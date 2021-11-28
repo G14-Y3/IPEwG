@@ -8,3 +8,7 @@ sealed interface Interpolation {
 
     override fun toString(): String
 }
+
+sealed interface Params {
+    override fun toString(): String
+}

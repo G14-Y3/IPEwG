@@ -79,6 +79,7 @@ class ResizerTab : Fragment("Resize Image") {
                             model.width.value,
                             model.height.value,
                             comboBox.value,
+                            null,
                         )
                     }
                 }

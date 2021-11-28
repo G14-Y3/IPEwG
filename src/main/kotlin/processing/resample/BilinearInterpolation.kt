@@ -14,6 +14,7 @@ class BilinearInterpolation(
     private val srcH: Int,
     private val tarW: Int,
     private val tarH: Int,
+    private val params: Params?,
 ) : Interpolation {
     private val scaleX: Double = tarW.toDouble() / srcW
     private val scaleY: Double = tarH.toDouble() / srcH
