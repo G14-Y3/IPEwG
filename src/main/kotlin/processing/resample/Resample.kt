@@ -20,13 +20,15 @@ enum class ResampleMethod(val create: (Int, Int, Int, Int, Params?) -> Interpola
 
     // Box(:BoxInterpolation), // only show difference to Point with subsampling
     Bilinear(::BilinearInterpolation),
+    Bicubic(::BicubicInterpolation),
 }
 
 // an (assumed) linear RGBA pixel
 // This is used to avoid Clamping.
 // Ref: https://web.archive.org/web/20190214200551/http://entropymine.com/imageworsener/clamp-int/
-class RGBA(var R: Double, var G: Double, var B: Double, var A: Double) {
+data class RGBA(val R: Double, val G: Double, val B: Double, val A: Double) {
     companion object {
+        val addIdentity = RGBA(.0, .0, .0, .0)
         fun fromColor(x: Color): RGBA = RGBA(x.red, x.green, x.blue, x.opacity)
     }
 
