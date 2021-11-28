@@ -41,13 +41,13 @@ enum class RGBType(override val range: Int) : ColorSpace {
     }
 }
 enum class HSVType(override val range: Int) : ColorSpace {
-    H(180) { // Hue
+    H(360) { // Hue
         override fun getter(pixel: Color): Double {
-            return pixel.hue
+            return pixel.hue / range.toDouble()
         }
 
         override fun setter(pixel: Color, value: Double): Color {
-            return pixel.deriveColor(value / pixel.hue, 1.0, 1.0, 1.0)
+            return pixel.deriveColor((value * range.toDouble()) / pixel.hue, 1.0, 1.0, 1.0)
         }
     },
     S(256) { // Saturation

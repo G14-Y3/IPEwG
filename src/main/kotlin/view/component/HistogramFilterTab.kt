@@ -3,6 +3,7 @@ package view.component
 import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.chart.AreaChart
+import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Alert
@@ -20,7 +21,7 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
     private val engineController: EngineController by inject()
 //    private var originalCdf: Array<Int>? = null
 //    private var resultCdf: Array<Int>? = null
-    private var chart: AreaChart<Number, Number>? = null
+    private var chart: LineChart<Number, Number>? = null
 
     override val root = vbox {
 
@@ -35,8 +36,10 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
         }
         hbox {
             vbox {
-                this.minWidth = 300.0
-                label("Equalize in space: ") { addClass(CssStyle.labelTag) }
+                padding = Insets(20.0, 10.0, 20.0, 10.0)
+                label("Equalize in color space: ") {
+                    minWidth = 200.0
+                }
                 val colorSpaceBox = combobox(values =
                     RGBType.values().toList() +
                     HSVType.values().toList() +
@@ -45,9 +48,6 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
                 ))
 
                 button("Apply") {
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 0.0, 20.0)
-                    }
                     action {
                         if (colorSpaceBox.value == null) {
                             alert(
@@ -62,7 +62,7 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
                     }
                 }
             }
-            chart = areachart(
+            chart = linechart(
                 "Cumulative Distribution Histogram",
                 NumberAxis(),
                 NumberAxis()
@@ -79,7 +79,7 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
             XYChart.Series()
         val resultCdfSeries: XYChart.Series<Number, Number> =
             XYChart.Series()
-        for (i in 0..255) {
+        for (i in 0 until space.range) {
             originalCdfSeries.data.add(
                 XYChart.Data(
                     i,
@@ -98,5 +98,6 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
         chart!!.data.clear()
         chart!!.data.addAll(originalCdfSeries)
         chart!!.data.addAll(resultCdfSeries)
+        chart!!.createSymbols = false;
     }
 }
