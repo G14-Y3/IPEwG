@@ -41,59 +41,54 @@ class Basic : Fragment("Basic") {
     )
 
 
-    override val root =
+    override val root = splitpane {
+        orientation = Orientation.HORIZONTAL
         splitpane {
-            orientation = Orientation.HORIZONTAL
-            splitpane {
-                orientation = Orientation.VERTICAL
-                padding = Insets(20.0)
-                vbox {
-                    label("Quick Actions")
-                    flowpane {
-                        for ((s, callback) in basicFilterButtonList)
-                            button(s) {
-                                action { callback() }
-                            }
-
-                        hgap = 10.0
-                        vgap = 10.0
-                        padding = Insets(15.0)
-                    }
-
-
-                    label("Transformations")
-                    flowpane {
-                        for ((s, node) in basicFilters)
-                            button(s) {
-                                action { mainPanel.replaceChildren(node.root) }
-                            }
-
-                        hgap = 10.0
-                        vgap = 10.0
-                        padding = Insets(15.0)
-                    }
-
-                    separator()
-
-                    scrollpane{
-                        mainPanel = vbox {
-                            isFitToWidth = true
-                            label("Pick a transformation!")
+            orientation = Orientation.VERTICAL
+            padding = Insets(20.0)
+            vbox {
+                label("Quick Actions")
+                flowpane {
+                    for ((s, callback) in basicFilterButtonList)
+                        button(s) {
+                            action { callback() }
                         }
-                    }
-                    children.asSequence()
-                        .filter { it is Label }
-                        .forEach { it.addClass(h1) }
-                }
-                add(TransformationList())
 
+                    hgap = 10.0
+                    vgap = 10.0
+                    padding = Insets(15.0)
+                }
+
+
+                label("Transformations")
+                flowpane {
+                    for ((s, node) in basicFilters)
+                        button(s) {
+                            action { mainPanel.replaceChildren(node.root) }
+                        }
+
+                    hgap = 10.0
+                    vgap = 10.0
+                    padding = Insets(15.0)
+                }
+
+                separator()
+
+                scrollpane {
+                    mainPanel = vbox {
+                        isFitToWidth = true
+                        label("Pick a transformation!")
+                    }
+                }
+                children.asSequence()
+                    .filter { it is Label }
+                    .forEach { it.addClass(h1) }
             }
-//            splitpane {
-//                orientation = Orientation.VERTICAL
-            add(ImagePanel())
-//            }
+            add(TransformationList())
 
         }
+        add(ImagePanel())
+    }
 
 
 }
