@@ -45,8 +45,9 @@ class Basic : Fragment("Basic") {
         orientation = Orientation.HORIZONTAL
         splitpane {
             orientation = Orientation.VERTICAL
-            padding = Insets(20.0)
             vbox {
+                padding = Insets(20.0)
+
                 label("Quick Actions")
                 flowpane {
                     for ((s, callback) in basicFilterButtonList)

@@ -55,7 +55,6 @@ class BatchProcessorModel : ViewModel() {
         val transformations =
             engine.transformations.subList(0, engine.currIndex + 1)
 
-        print("asdf")
         for (image in transformedImages) {
             transformations.forEach { transformation ->
                 transformation.process(image, image)

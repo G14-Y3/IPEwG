@@ -7,6 +7,7 @@ import javafx.scene.control.Alert
 import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
 import javafx.stage.FileChooser
+import models.BlenderModel
 import models.EngineModel
 import processing.filters.BlendType
 import tornadofx.*
@@ -16,7 +17,7 @@ class BlendTab : Fragment("Blend") {
 
     private val engine: EngineModel by inject()
     private val engineController: EngineController by inject()
-    private val fileController: FileController by inject()
+    private val blenderModel: BlenderModel by inject()
 
     override val root = vbox {
         label("Blend") {
@@ -58,36 +59,23 @@ class BlendTab : Fragment("Blend") {
     }
 
     private fun importBlendImage() {
-        val importFilter = arrayOf(
-            FileChooser.ExtensionFilter(
-                "PNG files (*.png)",
-                "*.png"
-            ),
-            FileChooser.ExtensionFilter(
-                "Bitmap files (*.bmp)",
-                "*.bmp"
-            ),
-            FileChooser.ExtensionFilter(
-                "JPEG files (*.jpeg, *.jpg)",
-                "*.jpeg",
-                "*.jpg"
-            )
+        val extensionFilter = FileChooser.ExtensionFilter(
+            "PNG, JPEG, JPG, BMP files",
+            "*.png", "*.bmp", "*.jpeg", "*.jpg"
         )
+
 
         try {
             val fileSelectorTitle = "Import image"
             val fileSelectorMode = FileChooserMode.Single
 
-            val dir = chooseFile(
+            val file = chooseFile(
                 title = fileSelectorTitle,
-                filters = importFilter,
+                filters = arrayOf(extensionFilter),
                 mode = fileSelectorMode
-            ) {
-                initialDirectory = File(File("").canonicalPath)
-                initialFileName = "IPEwG_result_image"
-            }
-            if (dir.isNotEmpty()) {
-                fileController.loadBlendImage("file:///" + dir[0].toString())
+            )
+            if (file.isNotEmpty()) {
+                blenderModel.loadBlendImage(file.first())
             }
 
         } catch (e: IllegalArgumentException) {
