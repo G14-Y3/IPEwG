@@ -17,8 +17,6 @@ class FileController : Controller() {
 
     fun loadEncodeImage(path: String) = engine.loadEncodeImage(path)
 
-    fun loadBlendImage(path: String) = engine.loadBlendImage(path)
-
     fun undo() = engine.undo()
 
     fun redo() = engine.redo()

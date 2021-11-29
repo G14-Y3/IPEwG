@@ -72,7 +72,6 @@ class BatchProcessTab : Fragment("Batch") {
                     tab<FrequencyTab>()
                     tab<ConversionTab>()
                     tab<HistogramFilterTab>()
-                    tab<BlendTab>()
                     tab<SaltPepperTab>()
                     tab<DepthEstimationTab>()
                     tab<WaterMarkTab>()

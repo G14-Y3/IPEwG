@@ -47,9 +47,6 @@ class EngineModel(
     val decodeImage =
         SimpleObjectProperty(this, "decodeImage", originalImage)
 
-    val blendImage =
-        SimpleObjectProperty(this, "blendImage", originalImage)
-
     val depthImage =
         SimpleObjectProperty(this, "depthImage", originalImage)
 
@@ -99,11 +96,6 @@ class EngineModel(
     fun loadEncodeImage(path: String) {
         val image = Image(path)
         encodeImage.value = image
-    }
-
-    fun loadBlendImage(path: String) {
-        val image = Image(path)
-        blendImage.value = image
     }
 
     fun save(path: String, format: String = "png", mode: String = "") {
