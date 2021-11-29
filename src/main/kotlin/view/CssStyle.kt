@@ -1,6 +1,7 @@
 package view
 
 import javafx.geometry.Pos
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 class CssStyle : Stylesheet() {
@@ -8,6 +9,7 @@ class CssStyle : Stylesheet() {
         val checkBox by cssclass()
         val labelTag by cssclass()
         val filterSlider by cssclass()
+        val h1 by cssclass()
     }
 
     init {
@@ -26,6 +28,11 @@ class CssStyle : Stylesheet() {
 
         listCell {
             alignment = Pos.CENTER
+        }
+
+        h1 {
+            fontWeight = FontWeight.BOLD
+            fontSize = Dimension(15.0, Dimension.LinearUnits.px)
         }
     }
 }

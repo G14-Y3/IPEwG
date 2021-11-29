@@ -3,6 +3,7 @@ package view.component
 import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.control.Slider
+import javafx.scene.layout.Priority
 import javafx.scene.text.FontWeight
 import processing.filters.HSVType
 import processing.filters.RGBType

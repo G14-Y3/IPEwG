@@ -21,7 +21,7 @@ class TransformationList : Fragment() {
             style {
                 fontWeight = FontWeight.BOLD
                 fontSize =
-                    Dimension(20.0, Dimension.LinearUnits.px)
+                    Dimension(15.0, Dimension.LinearUnits.px)
             }
         }
 

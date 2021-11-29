@@ -21,7 +21,6 @@ class GUI : View("IPEwG") {
         center = splitpane(
             Orientation.HORIZONTAL,
             find<FilterPanel>().root,
-            find<ImagePanel>().root.managedWhen(batchModel.isBatchTabOpened).visibleWhen(batchModel.isBatchTabOpened)
         ) {
             batchModel.isBatchTabOpened.addListener { observable, oldValue, newValue ->
                 if (newValue) {
