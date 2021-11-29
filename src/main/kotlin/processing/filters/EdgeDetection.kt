@@ -15,20 +15,20 @@ import kotlin.math.sqrt
 class EdgeDetection : ImageProcessing {
     override fun process(srcImage: WritableImage, destImage: WritableImage) {
         Grayscale().process(srcImage, destImage)
-        GaussianBlur(4).process(srcImage, destImage)
+        GaussianBlur(4).process(destImage, destImage)
 
         // Apply Sobel operator for basic edge detection
         val horizontalKernel = arrayOf(arrayOf(1.0, 2.0, 1.0), arrayOf(0.0, 0.0, 0.0), arrayOf(-1.0, -2.0, -1.0))
-        val horizontal = Convolution(horizontalKernel).convolutionGreyScaleNegative(srcImage)
+        val horizontal = Convolution(horizontalKernel).convolutionGreyScaleNegative(destImage)
 
         val verticalKernel = arrayOf(arrayOf(1.0, 0.0, -1.0), arrayOf(2.0, 0.0, -2.0), arrayOf(1.0, 0.0, -1.0))
-        val vertical = Convolution(verticalKernel).convolutionGreyScaleNegative(srcImage)
+        val vertical = Convolution(verticalKernel).convolutionGreyScaleNegative(destImage)
 
-        val direction = Array(srcImage.width.toInt()) { DoubleArray(srcImage.height.toInt()) }
-        val grayImage = Array(srcImage.width.toInt()) { DoubleArray(srcImage.height.toInt()) }
+        val direction = Array(destImage.width.toInt()) { DoubleArray(destImage.height.toInt()) }
+        val grayImage = Array(destImage.width.toInt()) { DoubleArray(destImage.height.toInt()) }
 
-        for (x in 0 until srcImage.width.toInt()) {
-            for (y in 0 until srcImage.height.toInt()) {
+        for (x in 0 until destImage.width.toInt()) {
+            for (y in 0 until destImage.height.toInt()) {
                 val horizontalPx = horizontal[x][y]
                 val verticalPx = vertical[x][y]
                 grayImage[x][y] = sqrt(horizontalPx * horizontalPx + verticalPx * verticalPx).coerceIn(0.0, 1.0)
