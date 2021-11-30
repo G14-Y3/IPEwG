@@ -5,7 +5,6 @@ import javafx.geometry.Insets
 import javafx.scene.chart.AreaChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
-import javafx.scene.layout.HBox
 import javafx.scene.text.FontWeight
 import processing.filters.HistogramEqualization
 import tornadofx.*
