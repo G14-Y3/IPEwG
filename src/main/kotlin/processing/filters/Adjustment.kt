@@ -9,13 +9,66 @@ import processing.filters.blur.BoxBlur
 import processing.filters.blur.GaussianBlur
 import processing.filters.blur.LensBlur
 import processing.filters.blur.MotionBlur
+import javafx.scene.paint.Color
 import processing.rotation.Rotation
 
-enum class RGBType { R, G, B }
-enum class HSVType {
-    H, // Hue
-    S, // Saturation
-    V // Value (Brightness)
+enum class RGBType(override val range: Int) : ColorSpace {
+    R(256) {
+        override fun getter(pixel: Color): Double {
+            return pixel.red
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            return Color.color(value, pixel.green, pixel.blue)
+        }
+    },
+    G(256) {
+        override fun getter(pixel: Color): Double {
+            return pixel.green
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            return Color.color(pixel.red, value, pixel.blue)
+        }
+    },
+    B(256) {
+        override fun getter(pixel: Color): Double {
+            return pixel.blue
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            return Color.color(pixel.red, pixel.green, value)
+        }
+    }
+}
+enum class HSVType(override val range: Int) : ColorSpace {
+    H(360) { // Hue
+        override fun getter(pixel: Color): Double {
+            return pixel.hue / range.toDouble()
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            return pixel.deriveColor((value * range.toDouble()) / pixel.hue, 1.0, 1.0, 1.0)
+        }
+    },
+    S(256) { // Saturation
+        override fun getter(pixel: Color): Double {
+            return pixel.saturation
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            return pixel.deriveColor(1.0, value / pixel.saturation, 1.0, 1.0)
+        }
+    },
+    V(256) { // Value (Brightness)
+        override fun getter(pixel: Color): Double {
+            return pixel.brightness
+        }
+
+        override fun setter(pixel: Color, value: Double): Color {
+            return pixel.deriveColor(1.0, 1.0, value / pixel.brightness, 1.0)
+        }
+    }
 }
 
 enum class BlurType {
