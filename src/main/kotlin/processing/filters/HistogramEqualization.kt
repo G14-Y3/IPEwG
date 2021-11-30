@@ -97,7 +97,7 @@ class HistogramEqualization(private val space: ColorSpace): ImageProcessing {
         histogramEqualize(height * width)
 
         // 3. write back to image
-        val writer = image.pixelWriter
+        val writer = destImage.pixelWriter
         for (i in 0 until height) {
             for (j in 0 until width) {
                 val originPixel = reader.getColor(j, i)
