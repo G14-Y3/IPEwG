@@ -15,7 +15,7 @@ class GUI : View("IPEwG") {
     private val batchModel: BatchProcessorModel by inject()
 
     override val root = borderpane {
-        setPrefSize(1300.0, 780.0)
+        setPrefSize(1600.0, 780.0)
         top<TopBar>()
 
         center = splitpane(
