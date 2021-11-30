@@ -26,11 +26,11 @@ class NeuralStyleTransfer(val style: NeuralStyles) : ImageProcessing {
     @Transient
     val mod: Module = Module.load(styleToPath[style])
 
-    override fun process(image: WritableImage) {
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
-        val h = image.height.toInt()
-        val w = image.width.toInt()
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
+        val h = srcImage.height.toInt()
+        val w = srcImage.width.toInt()
         val pixels = Array(3) {
             Array(w) {
                 DoubleArray(

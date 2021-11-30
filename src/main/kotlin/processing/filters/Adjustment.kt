@@ -10,6 +10,7 @@ import processing.filters.blur.GaussianBlur
 import processing.filters.blur.LensBlur
 import processing.filters.blur.MotionBlur
 import javafx.scene.paint.Color
+import processing.rotation.Rotation
 
 enum class RGBType(override val range: Int) : ColorSpace {
     R(256) {
@@ -80,7 +81,7 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
     @Transient
     var string: String = ""
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         for ((k, v) in properties) {
             val adjustment = when (k) {
                 // RGB filters
@@ -99,10 +100,13 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "MOTION_45" -> MotionBlur(v.toInt(), 45.0)
                 "MOTION_90" -> MotionBlur(v.toInt(), 90.0)
                 "MOTION_135" -> MotionBlur(v.toInt(), 135.0)
+                "BLACK_AND_WHITE" -> BlackAndWhite(v)
+                // Rotation
+                "ROTATION" -> Rotation(v)
                 else -> null
             }
             string += adjustment.toString() + " "
-            adjustment?.process(image)
+            adjustment?.process(srcImage, destImage)
         }
     }
 

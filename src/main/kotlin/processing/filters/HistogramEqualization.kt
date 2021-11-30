@@ -76,13 +76,13 @@ class HistogramEqualization(private val space: ColorSpace): ImageProcessing {
     private val pdf: Array<Int> = Array(space.range) {0}
     private val pixelMap: Array<Double> = Array(space.range) {0.0}
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
 
         // 1. generate pdf of each pixel value, ASSUME image is in gray scale,
         //    element at position i in pdf is count of pixel value i in the image
-        val reader : PixelReader = image.pixelReader
-        val height = image.height.toInt()
-        val width = image.width.toInt()
+        val reader : PixelReader = srcImage.pixelReader
+        val height = srcImage.height.toInt()
+        val width = srcImage.width.toInt()
 
         for (i in 0 until height) {
             for (j in 0 until width) {
