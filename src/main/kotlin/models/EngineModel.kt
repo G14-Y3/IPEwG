@@ -4,22 +4,18 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
-import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
-import javafx.scene.paint.Color
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.depthestimation.DepthEstimation
 import processing.filters.Adjustment
 import processing.jsonFormatter
-import processing.steganography.SteganographyDecoder
 import tornadofx.ViewModel
 import tornadofx.observableListOf
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
-import java.lang.Integer.min
 import javax.imageio.ImageIO
 import kotlin.collections.set
 
@@ -43,9 +39,6 @@ class EngineModel(
 
     val encodeImage =
         SimpleObjectProperty(this, "encodeImage", originalImage)
-
-    val decodeImage =
-        SimpleObjectProperty(this, "decodeImage", originalImage)
 
     val depthImage =
         SimpleObjectProperty(this, "depthImage", originalImage)
@@ -209,13 +202,6 @@ class EngineModel(
                 transformation.process(snapshots[currIndex++], snapshots[currIndex])
                 previewImage.value = snapshots[currIndex]
                 parallelImage.value = previewImage.value
-            }
-            "decode" -> {
-                if (transformation is SteganographyDecoder) {
-                    val decoder: SteganographyDecoder = transformation
-                    transformation.process(previous as WritableImage, previous as WritableImage)
-                    decodeImage.value = decoder.get_result_image()
-                }
             }
             "depth" -> {
                 if (transformation is DepthEstimation) {

@@ -10,13 +10,11 @@ import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimation
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
-import processing.steganography.SteganographyEncoder
 import processing.frequency.FrequencyFilters
-import processing.rotation.Rotation
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
 import processing.steganography.WaterMark
 import processing.steganography.WaterMarkingTechnique
+import processing.styletransfer.NeuralStyleTransfer
+import processing.styletransfer.NeuralStyles
 import tornadofx.Controller
 
 /** IMPORTANT:
@@ -56,16 +54,10 @@ class EngineController : Controller() {
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
-    
+
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
 
     fun sharpen() = engine.transform(Sharpen())
-
-    fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
-        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview", encodeImage.width, encodeImage.height)
-
-    fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
-        engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
 
     fun waterMark(encodeImage: Image, horizontalGap: Int, verticalGap: Int, technique: WaterMarkingTechnique) = engine.transform(WaterMark(encodeImage, horizontalGap, verticalGap, technique))
 
@@ -75,7 +67,7 @@ class EngineController : Controller() {
     fun convertsRGBToLinearRGB() = convertColorSpace(ColorSpaceType.sRGB, ColorSpaceType.LinearRGB)
 
     fun convertLinearRGBTosRGB() = convertColorSpace(ColorSpaceType.LinearRGB, ColorSpaceType.sRGB)
-    
+
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
