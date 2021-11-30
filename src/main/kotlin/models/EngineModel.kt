@@ -79,7 +79,7 @@ class EngineModel(
             imagePanel.sliderInit()
         }
 
-        currIndex = -1
+        currIndex = 0
         transformations.clear()
         snapshots.clear()
         snapshots.add(WritableImage(originalImage.value.pixelReader, originalImage.value.width.toInt(), originalImage.value.height.toInt()))
