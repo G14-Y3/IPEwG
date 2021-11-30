@@ -103,6 +103,8 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "BLACK_AND_WHITE" -> BlackAndWhite(v)
                 // Rotation
                 "ROTATION" -> Rotation(v)
+                // Contrast
+                "CONTRAST" -> Contrast(v)
                 else -> null
             }
             string += adjustment.toString() + " "
