@@ -1,159 +1,137 @@
 package view.component
 
-import controller.EngineController
-import controller.FileController
 import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.control.Alert
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.ButtonType
-import javafx.scene.layout.HBox
+import javafx.scene.control.ComboBox
+import javafx.scene.control.TextArea
 import javafx.scene.text.FontWeight
-import models.EngineModel
+import javafx.stage.FileChooser
 import models.SteganographyModel
-import processing.steganography.SteganographyDecoder
 import tornadofx.*
 
 class EncodeImageTab : Fragment("Encode/Decode Image") {
 
-    private var bits = 4
-    private var key = ""
-    private var isByPixelOrder = false
-    private var hasUndone = false
-
-//    private val engine: EngineModel by inject()
-//    private val engineController: EngineController by inject()
-    private val fileController: FileController by inject()
+    private lateinit var bitPicker: ComboBox<Int>
+    private lateinit var encodingMethodPicker: ComboBox<String>
+    private lateinit var inputKeyArea: TextArea
 
     private val steganography: SteganographyModel by inject()
 
+    override val root = vbox {
+        spacing = 5.0
+        padding = Insets(10.0)
+        label("Encode/Decode Image") {
+            padding = Insets(10.0)
+            style {
+                fontWeight = FontWeight.BOLD
+                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+            }
+        }
 
-    override val root = hbox {
-//        vbox {
-//            label("Encode/Decode Image") {
-//                vboxConstraints {
-//                    margin = Insets(10.0, 20.0, 0.0, 20.0)
-//                }
-//                style {
-//                    fontWeight = FontWeight.BOLD
-//                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
-//                }
-//            }
-//            hbox {
-//                imageview(steganography.encodeImage) {
-//                    isPreserveRatio = true
-//                    fitWidth = 200.0
-//                    fitHeight = 200.0
-//                    hboxConstraints {
-//                        margin = Insets(20.0)
-//                    }
-//                }
-//                vbox {
-//                    hbox {
-//                        button("Upload") {
-//                            action {
-//                                Utils.imageOperation(
-//                                    mode = "encode",
-//                                    fileController
-//                                )
-//                            }
-//                        }
-//                        label("  an image and encode with the options below") {
-//                            hboxConstraints {
-//                                marginTop = 5.0
-//                                marginBottom = 20.0
-//                            }
-//                        }
-//                    }
-//                    checkbox("with a random key (not supported yet)") {
-//                        isDisable = true
-//                        action {
-//                            key = if (this.isSelected) "randomsequence!" else ""
-//                        }
-//                    }
-//                    hbox {
-//                        label("with the  ") {
-//                            hboxConstraints {
-//                                marginTop = 5.0
-//                            }
-//                        }
-//                        combobox(values = listOf(1, 2, 3, 4)) {
-//                            valueProperty()
-//                                .addListener(ChangeListener { _, _, new ->
-//                                    bits = new
-//                                })
-//
-//                            value = 4
-//                        }
-//                        label("  lower bits encoded") {
-//                            hboxConstraints {
-//                                marginTop = 5.0
-//                            }
-//                        }
-//                    }
-//                    hbox {
-//                        label("encode by the  ") {
-//                            hboxConstraints {
-//                                marginTop = 5.0
-//                            }
-//                        }
-//                        combobox(values = listOf("dimension", "pixel order")) {
-//                            valueProperty()
-//                                .addListener(ChangeListener { _, _, new ->
-//                                    isByPixelOrder = new != "dimension"
-//                                })
-//                            value = "dimension"
-//                        }
-//                        label("  of the encode image") {
-//                            hboxConstraints {
-//                                marginTop = 5.0
-//                            }
-//                        }
-//                    }
-//                    buttonbar {
-//                        vboxConstraints {
-//                            marginTop = 20.0
-//                        }
-//                        button("Encode") {
-//                            action {
-//                                val encode_image = steganography.encodeImage.value
-//                                val original_image = engine.originalImage.value
-//
-//                                if (isByPixelOrder && encode_image.width * encode_image.height > original_image.width * original_image.height) {
-//                                    alert(
-//                                        type = Alert.AlertType.ERROR,
-//                                        header = "Could not encode the image by pixel order",
-//                                        content = "The encode image size is bigger than the original image",
-//                                        ButtonType.OK
-//                                    )
-//                                } else {
-//                                    hasUndone = false
-//                                    engineController.encodeImage(
-//                                        encode_image,
-//                                        key,
-//                                        bits,
-//                                        isByPixelOrder
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        button("Undo") {
-//                            action {
-//                                if (!hasUndone) fileController.undo()
-//                                hasUndone = true
-//                            }
-//                        }
-//                        button("Decode") {
-//                            action {
-//                                engine.transform(
-//                                    SteganographyDecoder(true),
-//                                    "decode", 0.0, 0.0
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        hbox {
+            spacing = 5.0
+            button("Upload") {
+                action { importHiddenImage() }
+            }
+            label("an image and encode with the options below") {
+                isWrapText = true
+            }
+        }
 
+        label("using passphrase:")
+        inputKeyArea = textarea("RandomKey123") {
+            isEditable = true
+            prefRowCount = 1
+            prefColumnCount = 50
+        }
+
+        hbox {
+            spacing = 5.0
+            label("with the")
+            bitPicker = combobox(values = listOf(1, 2, 3, 4)) {
+                value = 4
+            }
+            label("lower bits encoded")
+        }
+
+        hbox {
+            spacing = 5.0
+            label("encode by the")
+            encodingMethodPicker =
+                combobox(values = listOf("dimension", "pixel order")) {
+                    selectionModel.selectFirst()
+                }
+            label("of the encode image")
+        }
+
+        buttonbar {
+            padding = Insets(10.0)
+            button("Encode") {
+                action {
+                    steganography.encodeImage(
+                        inputKeyArea.text,
+                        bitPicker.value,
+                        encodingMethodPicker.value == "pixel order"
+                    )
+                }
+                disableProperty().bind(
+                    steganography.imageToHide.isNull.or(
+                        steganography.mainImageProperty.isNull
+                    )
+                )
+            }
+            button("Decode") {
+                action { steganography.decodeImage() }
+                disableProperty().bind(steganography.mainImageProperty.isNull)
+            }
+        }
+
+
+        vbox {
+            padding = Insets(10.0)
+            label("Image to hide") {
+                style {
+                    fontWeight = FontWeight.BOLD
+                }
+            }
+            imageview(steganography.imageToHide) {
+                alignment = Pos.CENTER
+                isPreserveRatio = true
+                fitWidth = 200.0
+                fitHeight = 300.0
+            }
+            visibleProperty().bind(steganography.imageToHide.isNotNull)
+        }
+    }
+
+    private fun importHiddenImage() {
+        val extensionFilter = FileChooser.ExtensionFilter(
+            "PNG, JPEG, JPG, BMP files",
+            "*.png", "*.bmp", "*.jpeg", "*.jpg"
+        )
+
+        try {
+            val fileSelectorTitle = "Import image"
+            val fileSelectorMode = FileChooserMode.Single
+
+            val file = chooseFile(
+                title = fileSelectorTitle,
+                filters = arrayOf(extensionFilter),
+                mode = fileSelectorMode
+            )
+
+            if (file.isNotEmpty()) {
+                steganography.importEncodeImage(file.first())
+            }
+
+        } catch (e: IllegalArgumentException) {
+            alert(
+                type = Alert.AlertType.ERROR,
+                header = "Invalid image path",
+                content = "The image path you entered is incorrect.\n" +
+                        "Please check!" + e.toString()
+            )
+        }
     }
 }

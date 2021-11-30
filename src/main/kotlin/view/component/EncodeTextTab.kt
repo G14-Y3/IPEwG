@@ -104,33 +104,4 @@ class EncodeTextTab : Fragment("Encode/Decode Text") {
 
         }
     }
-
-    private fun importSourceImage() {
-        val extensionFilter = FileChooser.ExtensionFilter(
-            "PNG, JPEG, JPG, BMP files",
-            "*.png", "*.bmp", "*.jpeg", "*.jpg"
-        )
-
-        try {
-            val fileSelectorTitle = "Import image"
-            val fileSelectorMode = FileChooserMode.Single
-
-            val file = chooseFile(
-                title = fileSelectorTitle,
-                filters = arrayOf(extensionFilter),
-                mode = fileSelectorMode
-            )
-            if (file.isNotEmpty()) {
-                steganographyModel.importMainImage(file.first())
-            }
-
-        } catch (e: IllegalArgumentException) {
-            alert(
-                type = Alert.AlertType.ERROR,
-                header = "Invalid image path",
-                content = "The image path you entered is incorrect.\n" +
-                        "Please check!" + e.toString()
-            )
-        }
-    }
 }

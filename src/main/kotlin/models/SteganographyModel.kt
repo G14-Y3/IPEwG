@@ -1,6 +1,5 @@
 package models
 
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.embed.swing.SwingFXUtils
@@ -16,23 +15,18 @@ import java.io.IOException
 import javax.imageio.ImageIO
 
 class SteganographyModel : ViewModel() {
-    private val engine: EngineModel by inject()
 
-    val encodeImage = SimpleObjectProperty<Image>(null)
-
-    val decodeImage = SimpleObjectProperty<Image>(null)
     val mainImageProperty = SimpleObjectProperty<Image>(null)
-
     private var mainImage by mainImageProperty
-    val targetImageProperty = SimpleObjectProperty<Image>(null)
 
+    val targetImageProperty = SimpleObjectProperty<Image>(null)
     private var targetImage by targetImageProperty
 
     val decodedText = SimpleStringProperty("")
+    val imageToHide = SimpleObjectProperty<Image>(null)
 
     private var importedImage: Image? = null
 
-    val useCurrentImage = SimpleObjectProperty(false)
 
     fun encodeText(
         text: String,
@@ -90,8 +84,43 @@ class SteganographyModel : ViewModel() {
         decodedText.value = transformation.get_result_text()
     }
 
-    fun encode() {
-        TODO("Not yet implemented")
+    fun encodeImage(key: String, bits: Int, isByPixelOrder: Boolean) {
+        val transformation = SteganographyEncoder(imageToHide.value, key, bits, isByPixelOrder)
+        val destImage =
+            WritableImage(
+                mainImage.width.toInt(),
+                mainImage.height.toInt()
+            )
+
+        transformation.process(
+            srcImage = WritableImage(
+                mainImage.pixelReader,
+                mainImage.width.toInt(),
+                mainImage.height.toInt()
+            ),
+            destImage = destImage
+        )
+        targetImage = destImage
+    }
+
+    fun decodeImage() {
+        val transformation = SteganographyDecoder(true)
+        val destImage =
+            WritableImage(
+                mainImage.pixelReader,
+                mainImage.width.toInt(),
+                mainImage.height.toInt()
+            )
+
+        transformation.process(
+            srcImage = WritableImage(
+                mainImage.pixelReader,
+                mainImage.width.toInt(),
+                mainImage.height.toInt()
+            ),
+            destImage = destImage
+        )
+        targetImage = transformation.get_result_image()
     }
 
     fun importMainImage(file: File) {
@@ -114,6 +143,10 @@ class SteganographyModel : ViewModel() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    fun importEncodeImage(file: File) {
+        imageToHide.value = Image(file.toURI().toString())
     }
 
 }
