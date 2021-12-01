@@ -3,6 +3,7 @@ package view.component
 import controller.EngineController
 import javafx.geometry.Insets
 import javafx.scene.control.Alert
+import javafx.scene.control.ComboBox
 import javafx.scene.text.FontWeight
 import javafx.stage.FileChooser
 import processing.filters.CNNVisualization
@@ -53,6 +54,11 @@ class CNNVisualTab : View("CNN Visualize") {
         this.children.add(netBox)
     }
 
+    /**
+     * Load net from given path,
+     * Call python script to load into project directory,
+     * Update netBox containing network's structure
+     */
     private fun importNet(path: String) {
         val exitCode = CNNVisualization.loadNet(path)
         if (exitCode != 0) {
@@ -63,15 +69,15 @@ class CNNVisualTab : View("CNN Visualize") {
                         "Please check!" + path
             )
         } else {
+            netBox.clear()
             val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
                 .readLines()
             for (lineIndex in 1 until metadata.size) {
-                val tokens = metadata[lineIndex].split(' ')
-                println(tokens)
+                val tokens = metadata[lineIndex].split('|')
                 val moduleDepth = tokens[0].toInt()
-                val layerName = tokens.subList(1, tokens.size - 1).reduce { x, y -> x + y }
-                val channelNum = tokens[tokens.size - 1].toIntOrNull()
-                if (channelNum == null) {
+                val layerName = tokens[1]
+
+                if (tokens.size == 2) { // module head line
                     netBox.children.add(
                         label(layerName) {
                             vboxConstraints {
@@ -82,10 +88,24 @@ class CNNVisualTab : View("CNN Visualize") {
                     continue
                 }
 
-                val channelBox = combobox(values = listOf(0 until channelNum).flatten())
+                // Convolution layer
+                val channelNum: List<Int> = tokens.subList(2, tokens.size).map { x -> x.toInt() }
+                val channelBox = hbox{}
+                for (dimension in channelNum) {
+                    channelBox.children.add(
+                        combobox(values = listOf(0 until dimension).flatten()) {
+                            value = 0
+                        }
+                    )
+                }
+
                 val applyButton = button("View CNN Output") {
                     action {
-                        engineController.CNNVisualize(path, lineIndex - 1, channelBox.value)
+                        val dimentions = mutableListOf<Int>()
+                        for (dimentionBox in channelBox.children) {
+                            dimentions.add((dimentionBox as ComboBox<Int>).value)
+                        }
+                        engineController.CNNVisualize(path, lineIndex - 1, dimentions.toList())
                     }
                     isVisible = false
                 }

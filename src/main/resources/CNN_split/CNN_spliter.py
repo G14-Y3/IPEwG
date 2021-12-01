@@ -6,6 +6,10 @@ import torch.nn as nn
 import torchvision.models as models
 import os
 
+'''
+debug: run `python3 ./src/main/resources/CNN_split/CNN_spliter.py {TARGET NET PATH}` to see why import failed
+'''
+
 image_mean = torch.tensor([0.485, 0.456, 0.406])
 image_std = torch.tensor([0.229, 0.224, 0.225])
 
@@ -24,10 +28,14 @@ net = torch.load(sys.argv[1])
 '''
 Metadata file
 First line is path to imported CNN 
-Each following lines includes: separated by space
+Each layer in CNN generate line: (separated by '|')
   module depth
   the layer name 
-  number of channels outputed from that layer, (if the module is a CNN layers)
+  shape of output channels from that layer
+Each group of layer generate following line: (separated by '|')
+  module depth
+  module name
+  (layer contained in module generate their lines after this module line)
 
 '''
 os.makedirs("./src/main/resources/CNN_split/CNN_traced/", exist_ok=True)
@@ -45,7 +53,7 @@ def construct(net, img, path, depth):
   module_index = 0
   for module in net:
     if isinstance(module, torch.nn.modules.container.Sequential):
-      file.write(f"{depth} {format % (module_index)} module/\n")
+      file.write(f"{depth}|{format % (module_index)} module\n")
       construct(module, img, path + f"{format % (module_index)} module/", depth + 1)
       img = module(img)
     else:
@@ -53,9 +61,13 @@ def construct(net, img, path, depth):
       traced_module.save(path + f"{format % (module_index)} layer.pt")
       img = module(img)
       if len(img.shape) < 2:
+        print(f"ERR: layer {module} output channel with shape {img.shape} not visualizable")
         exit -1
       else:
-        file.write(f"{depth} {format % (module_index)} layer {torch.prod(torch.tensor(list(img.shape[:-2])))}\n")
+        file.write(f"{depth}|{format % (module_index)} layer")
+        for d in img.shape[:-2]:
+          file.write(f"|{d}")
+        file.write("\n")
     
     module_index += 1
 

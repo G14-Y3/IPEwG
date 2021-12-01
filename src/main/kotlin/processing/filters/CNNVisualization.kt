@@ -13,7 +13,7 @@ import java.io.File
 
 @Serializable
 @SerialName("CNNVisualize")
-class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: Int): ImageProcessing {
+class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: List<Int>): ImageProcessing {
 
     @Transient
     var net: List<String> = listOf()
@@ -63,18 +63,31 @@ class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: I
             if (layerCnt == layerNum) {
                 break
             }
+            layerCnt ++
         }
 
         val output = data.toTensor().dataAsFloatArray
+        val dimensionIndex = channelNum.reduce { x, y -> x * y }
         for (i in 0 until w) {
             for (j in 0 until h) {
-                val r = output[j * w + i]
-                val g = output[j * w + i + h * w]
-                val b = output[j * w + i + h * w * 2]
-                val color = Color(r.toDouble(), g.toDouble(), b.toDouble(), reader.getColor(i, j).opacity)
+                val r = output[dimensionIndex + j * w + i].toDouble()
+                val g = output[dimensionIndex + j * w + i + h * w].toDouble()
+                val b = output[dimensionIndex + j * w + i + h * w * 2].toDouble()
+                // 'stretch' pixel range to 0-1
+                val min = Math.min(Math.min(r, g), b)
+                val range = Math.max(Math.max(r, g), b) - min
+                val color = Color(
+                    (r - min) / range,
+                    (g - min) / range,
+                    (b - min) / range,
+                    reader.getColor(i, j).opacity)
                 writer.setColor(i, j, color)
             }
         }
+    }
+
+    override fun toString(): String {
+        return "Visualize CNN layer: $layerNum channel: $channelNum from $netName"
     }
 
     companion object {
