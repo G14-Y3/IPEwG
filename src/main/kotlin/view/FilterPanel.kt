@@ -45,6 +45,7 @@ class FilterPanel : View() {
                         tab<WaterMarkTab>()
                         tab<DenoiseTab>()
                         tab<FalseColoringTab>()
+                        tab<PosterizeTab>()
                     },
                     TransformationList().root
                 ) {

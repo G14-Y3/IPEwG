@@ -1,6 +1,7 @@
 package processing.filters
 
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -9,7 +10,6 @@ import processing.filters.blur.BoxBlur
 import processing.filters.blur.GaussianBlur
 import processing.filters.blur.LensBlur
 import processing.filters.blur.MotionBlur
-import javafx.scene.paint.Color
 import processing.rotation.Rotation
 
 enum class RGBType(override val range: Int) : ColorSpace {
@@ -41,6 +41,7 @@ enum class RGBType(override val range: Int) : ColorSpace {
         }
     }
 }
+
 enum class HSVType(override val range: Int) : ColorSpace {
     H(360) { // Hue
         override fun getter(pixel: Color): Double {
@@ -105,6 +106,8 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "ROTATION" -> Rotation(v)
                 // Contrast
                 "CONTRAST" -> Contrast(v)
+                // Posterize
+                "POSTERIZE" -> Posterize(v.toInt())
                 else -> null
             }
             string += adjustment.toString() + " "

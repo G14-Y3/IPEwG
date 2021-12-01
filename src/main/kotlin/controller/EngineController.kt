@@ -58,7 +58,9 @@ class EngineController : Controller() {
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
-    
+
+    fun posterize(level: Double) = engine.adjust("POSTERIZE", level)
+
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
 
     fun sharpen() = engine.transform(Sharpen())
