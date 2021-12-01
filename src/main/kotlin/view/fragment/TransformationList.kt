@@ -33,15 +33,9 @@ class TransformationList : Fragment() {
                 prefWidth = 400.0
                 engine.currIndexProperty.addListener(
                     ChangeListener { _, _, newValue ->
-                        selectionModel.select(newValue.toInt())
+                        selectionModel.select(newValue.toInt() - 1)
                     }
                 )
-//                selectionModel.selectedIndexProperty()
-//                    .onChange {
-//                        engine.setCurrentIndex(it)
-//                    }
-//                engine.updateListSelection =
-//                    { selectionModel.select(engine.currIndex) }
             }
         }
         hbox {
