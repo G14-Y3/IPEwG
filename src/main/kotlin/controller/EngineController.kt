@@ -87,5 +87,5 @@ class EngineController : Controller() {
 
     fun denoise(denoiseMethod: DenoiseMethod, noise: Double) = engine.transform(Denoise(denoiseMethod, noise))
 
-    fun CNNVisualize(netName: String) = engine.transform(CNNVisualization(netName))
+    fun CNNVisualize(netName: String, layerNum: Int) = engine.transform(CNNVisualization(netName, layerNum))
 }

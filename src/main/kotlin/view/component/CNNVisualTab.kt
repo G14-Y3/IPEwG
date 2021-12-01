@@ -5,8 +5,7 @@ import javafx.geometry.Insets
 import javafx.scene.control.Alert
 import javafx.scene.text.FontWeight
 import javafx.stage.FileChooser
-import org.pytorch.IValue
-import org.pytorch.Module
+import processing.filters.CNNVisualization
 import tornadofx.*
 import java.io.File
 
@@ -51,17 +50,11 @@ class CNNVisualTab : View("CNN Visualize") {
                 }
             }
         }
-
-        button("apply") {
-            action {
-                engineController.CNNVisualize("./src/main/resources/CNN_split/CNN_trace")
-            }
-        }
+        this.children.add(netBox)
     }
 
     private fun importNet(path: String) {
-        val process = Runtime.getRuntime().exec("python3 ./src/main/resources/CNN_split/CNN_spliter.py $path")
-        val exitCode = process.waitFor()
+        val exitCode = CNNVisualization.loadNet(path)
         if (exitCode != 0) {
             alert(
                 type = Alert.AlertType.ERROR,
@@ -69,8 +62,24 @@ class CNNVisualTab : View("CNN Visualize") {
                 content = "The torch network provided couldn't be imported.\n" +
                         "Please check!" + path
             )
+        } else {
+            val layerPaths = CNNVisualization.getLayerPaths()
+            for ((layerIndex, s) in layerPaths.withIndex()) {
+                val relativeLayerPath = s.substringAfter("CNN_traced/")
+                val moduleDepth = relativeLayerPath.filter { it == '/' }.count()
+                val layerName = relativeLayerPath.substring(relativeLayerPath.lastIndexOf('/') + 1)
+                netBox.children.add(
+                    button(layerName) {
+                        vboxConstraints {
+                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
+                        }
+
+                        action {
+                            engineController.CNNVisualize(path, layerIndex)
+                        }
+                    }
+                )
+            }
         }
-
-
     }
 }
