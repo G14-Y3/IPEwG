@@ -252,6 +252,15 @@ class EngineModel(
      * @param factor a value between 0.0 and 2.0
      */
     fun adjust(property: String, factor: Double) {
+        /* only delete the properties that are not in the same group */
+        val colorAdj = setOf("R", "G", "B", "H", "S", "V")
+        var isColorAdj = false
+        for (i in colorAdj)
+            isColorAdj = isColorAdj || i in adjustmentProperties
+        if (!(isColorAdj && property in colorAdj)) {
+            adjustmentProperties.clear()
+        }
+
         adjustmentProperties[property] = factor
 
         val previous = snapshots[currIndex]
