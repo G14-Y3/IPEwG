@@ -45,6 +45,8 @@ class EngineController : Controller() {
 
     fun hsvFilter(factor: Double, type: HSVType) = engine.adjust(type.name, factor)
 
+    fun contrast(factor: Double) = engine.adjust("CONTRAST", factor)
+
     fun submitAdjustment() = engine.submitAdjustment()
 
     fun resetAdjustment() = engine.resetAdjustment()
