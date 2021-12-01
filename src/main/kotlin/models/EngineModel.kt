@@ -1,5 +1,6 @@
 package models
 
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
@@ -14,8 +15,7 @@ import processing.depthestimation.DepthEstimation
 import processing.filters.Adjustment
 import processing.jsonFormatter
 import processing.steganography.SteganographyDecoder
-import tornadofx.ViewModel
-import tornadofx.observableListOf
+import tornadofx.*
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
@@ -62,7 +62,9 @@ class EngineModel(
 
     // historical snapshots for quick undo-ing
     private val snapshots = mutableListOf<WritableImage>(WritableImage(originalImage.pixelReader, originalImage.width.toInt(), originalImage.height.toInt()))
-    var currIndex = 0
+
+    val currIndexProperty = SimpleIntegerProperty(0)
+    var currIndex by currIndexProperty
 
     // all view components using this model, assigned in view port initialization
     var imagePanels = observableListOf<ImagePanel>()
