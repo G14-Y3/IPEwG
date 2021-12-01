@@ -286,11 +286,11 @@ class EngineModel(
     }
 
     fun undo() {
-        if (currIndex < 0) return
+        if (currIndex == 0) return
 
         currIndex--
         updateListSelection()
-        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        previewImage.value = snapshots[currIndex]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
@@ -313,7 +313,7 @@ class EngineModel(
         if (index < 0) return
 
         currIndex = index
-        previewImage.value = snapshots[currIndex]
+        previewImage.value = snapshots[currIndex + 1]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
