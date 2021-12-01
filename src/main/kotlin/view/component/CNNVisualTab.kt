@@ -63,23 +63,63 @@ class CNNVisualTab : View("CNN Visualize") {
                         "Please check!" + path
             )
         } else {
-            val layerPaths = CNNVisualization.getLayerPaths()
-            for ((layerIndex, s) in layerPaths.withIndex()) {
-                val relativeLayerPath = s.substringAfter("CNN_traced/")
-                val moduleDepth = relativeLayerPath.filter { it == '/' }.count()
-                val layerName = relativeLayerPath.substring(relativeLayerPath.lastIndexOf('/') + 1)
-                netBox.children.add(
-                    button(layerName) {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
+            val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
+                .readLines()
+            for (lineIndex in 1 until metadata.size) {
+                val tokens = metadata[lineIndex].split(' ')
+                println(tokens)
+                val moduleDepth = tokens[0].toInt()
+                val layerName = tokens.subList(1, tokens.size - 1).reduce { x, y -> x + y }
+                val channelNum = tokens[tokens.size - 1].toIntOrNull()
+                if (channelNum == null) {
+                    netBox.children.add(
+                        label(layerName) {
+                            vboxConstraints {
+                                margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
+                            }
                         }
+                    )
+                    continue
+                }
 
-                        action {
-                            engineController.CNNVisualize(path, layerIndex)
+                val channelBox = combobox(values = listOf(0 until channelNum).flatten())
+                val applyButton = button("View CNN Output") {
+                    action {
+                        engineController.CNNVisualize(path, lineIndex - 1, channelBox.value)
+                    }
+                    isVisible = false
+                }
+                netBox.children.add(
+                    hbox {
+                        label(layerName) {
+                            vboxConstraints {
+                                margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
+                            }
                         }
+                        this.children.add(channelBox)
+                        this.children.add(applyButton)
+
+                        this.onHover { applyButton.isVisible = it }
                     }
                 )
             }
+//            val layerPaths = CNNVisualization.getLayerPaths()
+//            for ((layerIndex, s) in layerPaths.withIndex()) {
+//                val relativeLayerPath = s.substringAfter("CNN_traced/")
+//                val moduleDepth = relativeLayerPath.filter { it == '/' }.count()
+//                val layerName = relativeLayerPath.substring(relativeLayerPath.lastIndexOf('/') + 1)
+//                netBox.children.add(
+//                    button(layerName) {
+//                        vboxConstraints {
+//                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
+//                        }
+//
+//                        action {
+//                            engineController.CNNVisualize(path, layerIndex)
+//                        }
+//                    }
+//                )
+//            }
         }
     }
 }

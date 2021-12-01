@@ -1,22 +1,80 @@
 package processing.filters
 
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import org.pytorch.IValue
 import org.pytorch.Module
+import org.pytorch.Tensor
 import processing.ImageProcessing
 import java.io.File
 
 @Serializable
 @SerialName("CNNVisualize")
-class CNNVisualization(val netName: String, val layerNum: Int): ImageProcessing {
+class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: Int): ImageProcessing {
 
     @Transient
-    val net: List<String> = getLayerPaths()
+    var net: List<String> = listOf()
 
     override fun process(image: WritableImage) {
+        if (!checkLoaded(netName)) {
+            println("loading new net")
+            val exitCode = loadNet(netName)
+            println("loading net finish with exit code $exitCode")
+        }
+        net = getLayerPaths()
 
+        // TODO: use user self defined preprocess method
+        val reader = image.pixelReader
+        val writer = image.pixelWriter
+        val h = image.height.toInt()
+        val w = image.width.toInt()
+        val pixels = Array(3) {
+            Array(w) {
+                DoubleArray(
+                    h
+                )
+            }
+        }
+        for (i in 0 until w) {
+            for (j in 0 until h) {
+                pixels[0][i][j] = reader.getColor(i, j).red
+                pixels[1][i][j] = reader.getColor(i, j).green
+                pixels[2][i][j] = reader.getColor(i, j).blue
+            }
+        }
+        val dimension = 3 * h * w
+        val buf = FloatArray(dimension)
+        for (i in 0 until w) {
+            for (j in 0 until h) {
+                buf[j * w + i] = pixels[0][i][j].toFloat()
+                buf[j * w + i + h*w] = pixels[1][i][j].toFloat()
+                buf[j * w + i + h*w*2] = pixels[2][i][j].toFloat()
+            }
+        }
+
+        var data = IValue.from(Tensor.fromBlob(buf, longArrayOf(1, 3, h.toLong(), w.toLong())))
+        var layerCnt = 0
+        for (path in net) {
+            val layer = Module.load(path)
+            data = layer.forward(data)
+            if (layerCnt == layerNum) {
+                break
+            }
+        }
+
+        val output = data.toTensor().dataAsFloatArray
+        for (i in 0 until w) {
+            for (j in 0 until h) {
+                val r = output[j * w + i]
+                val g = output[j * w + i + h * w]
+                val b = output[j * w + i + h * w * 2]
+                val color = Color(r.toDouble(), g.toDouble(), b.toDouble(), reader.getColor(i, j).opacity)
+                writer.setColor(i, j, color)
+            }
+        }
     }
 
     companion object {
@@ -25,8 +83,10 @@ class CNNVisualization(val netName: String, val layerNum: Int): ImageProcessing 
          *
          * @param expectedNet: path to expectedNet loaded in directory
          */
-        fun checkLoaded(expectedNet: String) {
-            File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log").
+        fun checkLoaded(expectedNet: String): Boolean {
+            val lines = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
+                .readLines()
+            return lines[0] == expectedNet
         }
 
         /**
