@@ -19,7 +19,6 @@ import tornadofx.*
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
-import java.lang.Integer.min
 import javax.imageio.ImageIO
 import kotlin.collections.set
 
@@ -94,7 +93,6 @@ class EngineModel(
         currIndex = 0
         transformations.clear()
         snapshots.clear()
-        snapshots.add(WritableImage(originalImage.value.pixelReader, originalImage.value.width.toInt(), originalImage.value.height.toInt()))
     }
 
     // Parameter 'mode' is empty
@@ -195,57 +193,47 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
-        val previous = snapshots[currIndex]
-        transform(transformation, "preview", previous.width, previous.height)
+        transform(transformation, "preview")
     }
 
     /* the @param destination here refers to where to put the transformed image: the image panel or the decode panel */
-    fun transform(transformation: ImageProcessing, destination: String, width: Double, height: Double) {
-        val previous = snapshots[currIndex]
+    fun transform(transformation: ImageProcessing, destination: String) {
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
         when (destination) {
             "preview" -> {
-                transformations.subList(currIndex, transformations.size).clear()
+                transformations.subList(currIndex + 1, transformations.size).clear()
                 snapshots.subList(currIndex + 1, snapshots.size).clear()
 
                 snapshots.add(
                     WritableImage(
-                        width.toInt(),
-                        height.toInt()
+                        previous.pixelReader,
+                        previous.width.toInt(),
+                        previous.height.toInt()
                     )
                 )
                 transformations.add(transformation)
+                currIndex++
                 updateListSelection()
-
-                transformation.process(snapshots[currIndex++], snapshots[currIndex])
+                transformation.process(snapshots[currIndex])
                 previewImage.value = snapshots[currIndex]
                 parallelImage.value = previewImage.value
             }
             "decode" -> {
                 if (transformation is SteganographyDecoder) {
                     val decoder: SteganographyDecoder = transformation
-                    transformation.process(previous as WritableImage, previous as WritableImage)
+                    transformation.process(previous as WritableImage)
                     decodeImage.value = decoder.get_result_image()
                 }
             }
             "depth" -> {
                 if (transformation is DepthEstimation) {
                     val temp = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
-                    transformation.process(temp, temp)
+                    transformation.process(temp)
                     depthImage.value = transformation.get_depth_image()
                 }
             }
         }
-
         for (imagePanel in imagePanels) {
-            // update all image panel view ports, so that previous image viewport will be overwritten
-            val viewport = Rectangle2D(
-                .0,
-                .0,
-                snapshots[currIndex].width,
-                snapshots[currIndex].height,
-            )
-            imagePanel.updateViewPort(viewport)
-            imagePanel.updateSlider(originalImage.value.width, originalImage.value.height)
             imagePanel.sliderInit()
         }
     }
@@ -265,14 +253,14 @@ class EngineModel(
 
         adjustmentProperties[property] = factor
 
-        val previous = snapshots[currIndex]
+        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
 
         val preview = WritableImage(
             previous.pixelReader,
             previous.width.toInt(),
             previous.height.toInt()
         )
-        Adjustment(adjustmentProperties).process(preview, preview)
+        Adjustment(adjustmentProperties).process(preview)
         previewImage.value = preview
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
@@ -341,11 +329,9 @@ class EngineModel(
         if (snapshots.isEmpty()) return
 
         snapshots.clear()
-        snapshots.add(WritableImage(originalImage.value.pixelReader, originalImage.value.width.toInt(), originalImage.value.height.toInt()))
-
         transformations.clear()
 
-        currIndex = 0
+        currIndex = -1
         updateListSelection()
         previewImage.value = originalImage.value
         parallelImage.value = previewImage.value

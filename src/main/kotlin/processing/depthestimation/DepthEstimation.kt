@@ -21,12 +21,11 @@ class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMa
 
     val mod: Module = Module.load(modelType[type])
 
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
-        val reader = srcImage.pixelReader
-        val writer = destImage.pixelWriter
+    override fun process(image: WritableImage) {
+        val reader = image.pixelReader
 
-        val h = srcImage.height.toInt()
-        val w = srcImage.width.toInt()
+        val h = image.height.toInt()
+        val w = image.width.toInt()
         val pixels = Array(3) {
             Array(w) {
                 DoubleArray(
@@ -70,7 +69,7 @@ class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMa
                 val clipped = clip(MAX_DEPTH / r, MIN_DEPTH, MAX_DEPTH) / MAX_DEPTH
                 val final_color = colormap.get(clipped)
                 val color = Color(final_color.red / 255.0, final_color.green / 255.0, final_color.blue / 255.0, reader.getColor(j, i).opacity)
-                writer.setColor(j, i, color)
+                depthImage.pixelWriter.setColor(j, i, color)
             }
         }
     }

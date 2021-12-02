@@ -32,12 +32,12 @@ import kotlin.random.Random
 @SerialName("Blend")
 class Blend(private val blendImage: Image, val mode: BlendType) :
     ImageProcessing {
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
-        val width = srcImage.width.toInt().coerceAtMost(blendImage.width.toInt())
-        val height = srcImage.height.toInt().coerceAtMost(blendImage.height.toInt())
+    override fun process(image: WritableImage) {
+        val width = image.width.toInt().coerceAtMost(blendImage.width.toInt())
+        val height = image.height.toInt().coerceAtMost(blendImage.height.toInt())
         val readerA: PixelReader = blendImage.pixelReader
-        val readerB: PixelReader = srcImage.pixelReader
-        val writer: PixelWriter = destImage.pixelWriter
+        val readerB: PixelReader = image.pixelReader
+        val writer: PixelWriter = image.pixelWriter
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val oldColorA = readerA.getColor(x, y)

@@ -10,7 +10,7 @@ import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimationModel
 import tornadofx.*
 
-class DepthEstimationTab : Fragment("Depth Estimation") {
+class DepthEstimationTab : View("Depth Estimation") {
     private val engineController: EngineController by inject()
     private val engine: EngineModel by inject()
 
@@ -77,7 +77,7 @@ class DepthEstimationTab : Fragment("Depth Estimation") {
 
                     button("Estimate Depth") {
                         action {
-                            engineController.depthEstimation(modelType, colormap, engine.previewImage.value.width / 2, engine.previewImage.value.height / 2)
+                            engineController.depthEstimation(modelType, colormap)
                         }
                         vboxConstraints {
                             margin = Insets(0.0, 20.0, 10.0, 10.0)

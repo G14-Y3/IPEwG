@@ -20,12 +20,12 @@ class Convolution(private val kernel: Array<Array<Double>>) : ImageProcessing {
         }
     }
 
-    override fun process(srcImage: WritableImage, destImage: WritableImage) {
+    override fun process(image: WritableImage) {
         val deviation = kernel.size / 2
-        val width = srcImage.width.toInt()
-        val height = srcImage.height.toInt()
-        val reader: PixelReader = srcImage.pixelReader
-        val writer: PixelWriter = destImage.pixelWriter
+        val width = image.width.toInt()
+        val height = image.height.toInt()
+        val reader: PixelReader = image.pixelReader
+        val writer: PixelWriter = image.pixelWriter
         val original = WritableImage(
             reader,
             width,
