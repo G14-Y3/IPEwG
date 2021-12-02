@@ -33,7 +33,7 @@ class Posterize(val level: Int) : ImageProcessing {
             palette.add(reader.getColor((0 until width).random(), (0 until height).random()))
         }
         val clusters = HashMap<Color, MutableList<Color>>()
-        while (comparePalettes(palette, newPalette) > 1.0) {
+        while (paletteDistance(palette, newPalette) > 1.0) {
             palette = newPalette
             clusters.clear()
             for (oldColor in allColors) {
@@ -68,7 +68,7 @@ class Posterize(val level: Int) : ImageProcessing {
         )
     }
 
-    private fun comparePalettes(paletteA: List<Color>, paletteB: List<Color>): Double {
+    private fun paletteDistance(paletteA: List<Color>, paletteB: List<Color>): Double {
         return sqrt(
             paletteA.zip(paletteB).map { (colorA, colorB) -> colorDistance(colorA, colorB).pow(2) }
                 .average()
