@@ -3,6 +3,12 @@ Imperial College London Department of Computing Third Year Software Engineer Gro
 Supervisor: Dr. Pancham Shukla
 Currently under development.
 
+Original Overview          |  Histogram Equalization
+:-------------------------:|:-------------------------:
+![ori](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.18.44.png) | ![histeq](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.17.00.png)
+Depth Estimation           |  Style Transfer
+![depth](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.19.16.png) | ![styletransfer](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.19.35.png)
+
 # How to Use
 
 Since it is still under development, we have not yet packaged the software into a single bundle (e.g. dmg/exe/deb). Thus you have to have a JDK 17 environment.
