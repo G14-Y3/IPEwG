@@ -57,7 +57,7 @@ class BatchProcessorModel : ViewModel() {
 
         for (image in transformedImages) {
             transformations.forEach { transformation ->
-                transformation.process(image)
+                transformation.process(image, image)
             }
         }
     }

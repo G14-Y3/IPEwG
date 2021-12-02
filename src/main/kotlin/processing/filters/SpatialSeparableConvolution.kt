@@ -27,15 +27,16 @@ class SpatialSeparableConvolution(
     }
 
     private fun alterImage(
-        image: WritableImage,
+        srcImage: WritableImage,
+        destImage: WritableImage,
         vector: Array<Double>,
         transpose: Boolean
     ) {
         val deviation = vector.size / 2
-        val width = image.width.toInt()
-        val height = image.height.toInt()
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
+        val width = srcImage.width.toInt()
+        val height = srcImage.height.toInt()
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
         val original = WritableImage(
             reader,
             width,
