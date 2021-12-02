@@ -60,12 +60,13 @@ class Posterize(val level: Int) : ImageProcessing {
         }
     }
 
+    // Calculate the color distance using redmean approximation
     private fun colorDistance(colorA: Color, colorB: Color): Double {
-        return sqrt(
-            (colorA.red - colorB.red).pow(2) +
-                    (colorA.green - colorB.green).pow(2) +
-                    (colorA.blue - colorB.blue).pow(2)
-        )
+        val rMean = (colorA.red + colorB.red) / 2
+        val r = colorA.red - colorB.red
+        val g = colorA.green - colorB.green
+        val b = colorA.blue - colorB.blue
+        return sqrt((2 + rMean) * r * r + 4 * g * g + (3 - rMean) * b * b)
     }
 
     private fun paletteDistance(paletteA: List<Color>, paletteB: List<Color>): Double {
