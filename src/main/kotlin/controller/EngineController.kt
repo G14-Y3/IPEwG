@@ -59,7 +59,7 @@ class EngineController : Controller() {
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
 
-    fun posterize(level: Double) = engine.adjust("POSTERIZE", level)
+    fun posterize(level: Double) = engine.adjust("POSTERIZATION", level)
 
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
 

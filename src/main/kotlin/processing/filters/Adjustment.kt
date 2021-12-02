@@ -106,8 +106,8 @@ class Adjustment(private val properties: Map<String, Double>) : ImageProcessing 
                 "ROTATION" -> Rotation(v)
                 // Contrast
                 "CONTRAST" -> Contrast(v)
-                // Posterize
-                "POSTERIZE" -> Posterize(v.toInt())
+                // Posterization
+                "POSTERIZATION" -> Posterization(v.toInt())
                 else -> null
             }
             string += adjustment.toString() + " "

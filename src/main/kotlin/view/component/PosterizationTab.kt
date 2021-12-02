@@ -5,11 +5,11 @@ import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import tornadofx.*
 
-class PosterizeTab : Fragment("Posterize") {
+class PosterizationTab : Fragment("Posterization") {
     private val engineController: EngineController by inject()
 
     override val root = vbox {
-        label("Posterize") {
+        label("Posterization") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)
             }

@@ -10,9 +10,12 @@ import processing.ImageProcessing
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+private const val POSTERIZATION_THRESHOLD = 1.0
+
 @Serializable
-@SerialName("Posterize")
-class Posterize(val level: Int) : ImageProcessing {
+@SerialName("Posterization")
+class Posterization(val level: Int) : ImageProcessing {
+
     override fun process(srcImage: WritableImage, destImage: WritableImage) {
         if (level == 0) {
             return
@@ -33,21 +36,20 @@ class Posterize(val level: Int) : ImageProcessing {
             palette.add(reader.getColor((0 until width).random(), (0 until height).random()))
         }
         val clusters = HashMap<Color, MutableList<Color>>()
-        while (paletteDistance(palette, newPalette) > 1.0) {
+        while (paletteDistance(palette, newPalette) > POSTERIZATION_THRESHOLD) {
             palette = newPalette
             clusters.clear()
+            palette.forEach { clusters[it] = ArrayList() }
             for (oldColor in allColors) {
-                val closestColor = palette.minByOrNull { colorDistance(it, oldColor) }!!
-                if (!clusters.contains(closestColor)) {
-                    clusters[closestColor] = ArrayList()
-                }
+                val closestColor = palette.minByOrNull { colorDistance(it, oldColor) }
                 clusters[closestColor]!!.add(oldColor)
             }
             newPalette = ArrayList(palette.size)
             for ((i, color) in palette.withIndex()) {
-                val red = clusters[color]!!.map { it.red }.average()
-                val green = clusters[color]!!.map { it.green }.average()
-                val blue = clusters[color]!!.map { it.blue }.average()
+                val cluster = clusters[color]!!
+                val red = cluster.map { it.red }.average()
+                val green = cluster.map { it.green }.average()
+                val blue = cluster.map { it.blue }.average()
                 newPalette[i] = Color(red, green, blue, 1.0)
             }
         }
