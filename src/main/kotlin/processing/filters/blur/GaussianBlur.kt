@@ -12,7 +12,7 @@ import kotlin.math.pow
 @Serializable
 @SerialName("GaussianBlur")
 class GaussianBlur(private val radius: Int) : ImageProcessing {
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         if (radius == 0) {
             return
         }
@@ -26,7 +26,7 @@ class GaussianBlur(private val radius: Int) : ImageProcessing {
         SpatialSeparableConvolution(
             rowKernel,
             rowKernel
-        ).process(image)
+        ).process(srcImage, destImage)
     }
 
     override fun toString(): String = "Gaussian Blur with radius $radius"
