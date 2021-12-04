@@ -57,11 +57,11 @@ descriptions.
 
 ### More Features
 
-- Support for different views: Slider and Parallel View
-- Support for batch processing
-- Support for multi-threaded processing
-- Support import/expore sequences of operations
+- [Support for different views: Slider and Parallel View](https://github.com/G14-Y3/IPEwG/blob/master/docs/MoreFeatures.md#support-for-different-views-slider-and-parallel-view)
+- [Support for batch processing](https://github.com/G14-Y3/IPEwG/blob/master/docs/MoreFeatures.md#support-for-batch-processing)
+- [Support for multi-threaded processing](https://github.com/G14-Y3/IPEwG/blob/master/docs/MoreFeatures.md#support-for-multi-threaded-processing)
+- [Support import/expore sequences of operations](https://github.com/G14-Y3/IPEwG/blob/master/docs/MoreFeatures.md#support-importexport-sequences-of-operations)
 
 # Known Issues
 
-- Rotation might lower the quality of image
+- [Rotation might lower the quality of image](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
