@@ -38,7 +38,7 @@ class EdgeDetection : ImageProcessing {
         }
         nonMaxSuppression(grayImage, direction)
         thresholdAndEdgeTracking(grayImage)
-        writeGrayImage(grayImage, image)
+        writeGrayImage(grayImage, destImage)
     }
 
     private fun nonMaxSuppression(input: Array<DoubleArray>, direction: Array<DoubleArray>) {
