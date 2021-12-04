@@ -27,33 +27,33 @@ descriptions.
 
 ### Basic Processing Features
 
-- Inverse Color
-- Greyscale
-- Black and White
-- Flip horizontally or vertically
-- Rotation
-- Contrast
-- Color Adjustment (RGB and HSV)
+- [Inverse Color](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#inverse-color)
+- [Grayscale](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#grayscale)
+- [Black and White](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#black-and-white)
+- [Flip](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#flip)
+- [Rotation](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#rotation)
+- [Contrast](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#contrast)
+- [Color Adjustment](https://github.com/G14-Y3/IPEwG/blob/master/docs/BasicProcessing.md#colour-adjustment) (RGB and HSV)
 
 ### Advanced Processing Features
 
-- Edge Detection
-- Sharpen
-- Neural Style Transfer
-- Blur
-- Frequency Filtering
-- Color Space Conversion
-- Histogram Equalization
-- Blending
-- Salt & Pepper Noise
-- Depth Estimation
-- Water Mark
-- Denoise
-- False Coloring
-- Steganography
-- Visualization of Neural Network\
-- Posterize
-- Rescaling
+- [Edge Detection](https://github.com/G14-Y3/IPEwG/blob/master/docs/EdgeDetection.md)
+- [Sharpen](https://github.com/G14-Y3/IPEwG/blob/master/docs/Sharpen.md)
+- [Neural Style Transfer](https://github.com/G14-Y3/IPEwG/blob/master/docs/NeuralStyleTransfer.md)
+- [Blur](https://github.com/G14-Y3/IPEwG/blob/master/docs/Blur.md)
+- [Frequency Filtering](https://github.com/G14-Y3/IPEwG/blob/master/docs/FrequencyFilter.md)
+- [Color Space Conversion](https://github.com/G14-Y3/IPEwG/blob/master/docs/ColorSpaceConversion.md)
+- [Histogram Equalization](https://github.com/G14-Y3/IPEwG/blob/master/docs/HistogramEqualization.md)
+- [Blending](https://github.com/G14-Y3/IPEwG/blob/master/docs/Blending.md)
+- [Salt & Pepper Noise](https://github.com/G14-Y3/IPEwG/blob/master/docs/SaltAndPepper.md)
+- [Depth Estimation](https://github.com/G14-Y3/IPEwG/blob/master/docs/DepthEstimation.md)
+- [Watermarking](https://github.com/G14-Y3/IPEwG/blob/master/docs/Watermarking.md)
+- [Denoise](https://github.com/G14-Y3/IPEwG/blob/master/docs/Denoise.md)
+- [False Coloring](https://github.com/G14-Y3/IPEwG/blob/master/docs/FalseColouring.md)
+- [Steganography](https://github.com/G14-Y3/IPEwG/blob/master/docs/Steganography.md)
+- [Neural Network Visualization](https://github.com/G14-Y3/IPEwG/blob/master/docs/NeuralNetworkVisualization.md)
+- [Posterize](https://github.com/G14-Y3/IPEwG/blob/master/docs/Posterize.md)
+- [Rescaling](https://github.com/G14-Y3/IPEwG/blob/master/docs/Rescaling.md)
 
 ### More Features
 
