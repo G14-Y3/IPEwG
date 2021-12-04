@@ -14,6 +14,6 @@ version of the PyTorch model. Then you can rename and put the image and the mode
 Go to the panel and select “add new style” to indicate the style image and model you want to use. 
 Details of the training process is available below.
 
-The training process requires a large data set of content image. You can use the ![COCO dataset](https://cocodataset.org/#download) to 
+The training process requires a large data set of content image. You can use the [COCO dataset](https://cocodataset.org/#download) to 
 train your style model. During the training process, you can specify the output folder to see the 
 effect of running the training process after certain epochs.
