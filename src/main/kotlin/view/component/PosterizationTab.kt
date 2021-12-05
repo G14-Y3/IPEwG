@@ -26,10 +26,9 @@ class PosterizationTab : Fragment("Posterization") {
         this.children.add(
             slider.build()
         )
-
-        slider.getSlider().valueProperty()
-            .addListener { _, _, newVal -> slider.getSlider().value = newVal.toInt().toDouble() }
-
+        slider.getSlider().majorTickUnit = 1.0
+        slider.getSlider().minorTickCount = 0
+        slider.getSlider().isSnapToTicks = true
         buttonbar {
             padding = Insets(20.0, 10.0, 20.0, 10.0)
             button("Adjust").setOnAction {
