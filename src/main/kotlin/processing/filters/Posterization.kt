@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 private const val CONVERGENCE_THRESHOLD = 1.0
-private const val MAX_K_MEANS_PLUS_PLUS_LEVEL = 20
+private const val MAX_K_MEANS_PLUS_PLUS_LEVEL = 25
 
 @Serializable
 @SerialName("Posterization")

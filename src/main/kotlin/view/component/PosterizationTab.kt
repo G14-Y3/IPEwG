@@ -9,7 +9,7 @@ class PosterizationTab : Fragment("Posterization") {
     private val engineController: EngineController by inject()
 
     override val root = vbox {
-        label("Posterization") {
+        label("Posterization (Color Quantization)") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)
             }
