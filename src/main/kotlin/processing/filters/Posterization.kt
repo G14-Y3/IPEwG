@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 private const val CONVERGENCE_THRESHOLD = 1.0
-private const val MAX_K_MEANS_PLUS_PLUS_LEVEL = 10
+private const val MAX_K_MEANS_PLUS_PLUS_LEVEL = 20
 
 @Serializable
 @SerialName("Posterization")
@@ -36,13 +36,16 @@ class Posterization(val level: Int) : ImageProcessing {
         if (level <= MAX_K_MEANS_PLUS_PLUS_LEVEL) {
             // Do k-means++ for small palettes
             palette.add(allColors.random())
+            val probabilities = DoubleArray(allColors.size)
+            val allColorsWithIndex = allColors.withIndex().map { (i, color) -> Pair(i, color) }
             for (i in 2..level) {
-                val probabilities = ArrayList<Double>()
-                for (oldColor in allColors) {
+                allColorsWithIndex.parallelStream().forEach { (index, oldColor) ->
                     val shortestDistance = palette.map { colorDistance(it, oldColor) }.minOrNull()!!
-                    probabilities.add(
-                        (probabilities.lastOrNull() ?: 0.0) + shortestDistance * shortestDistance
-                    )
+                    probabilities[index] = shortestDistance * shortestDistance
+                }
+                // Make the probabilities cumulative
+                for (index in 1 until probabilities.size) {
+                    probabilities[index] += probabilities[index - 1]
                 }
                 if (probabilities.last() > 0.0) {
                     var index =
