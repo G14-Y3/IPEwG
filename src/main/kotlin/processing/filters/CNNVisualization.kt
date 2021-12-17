@@ -13,7 +13,7 @@ import java.io.File
 
 @Serializable
 @SerialName("CNNVisualize")
-class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: List<Int>): ImageProcessing {
+class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: List<Int>, val height: Int, val width: Int): ImageProcessing {
 
     @Transient
     var net: List<String> = listOf()
@@ -68,18 +68,18 @@ class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: L
 
         val output = data.toTensor().dataAsFloatArray
         val dimensionIndex = channelNum.reduce { x, y -> x * y }
-        for (i in 0 until w) {
-            for (j in 0 until h) {
-                val r = output[dimensionIndex + j * w + i].toDouble()
-                val g = output[dimensionIndex + j * w + i + h * w].toDouble()
-                val b = output[dimensionIndex + j * w + i + h * w * 2].toDouble()
-                // 'stretch' pixel range to 0-1
-                val min = Math.min(Math.min(r, g), b)
-                val range = Math.max(Math.max(r, g), b) - min
+        for (i in 0 until width) {
+            val min =
+                output.copyOfRange(dimensionIndex * width * height, (dimensionIndex + 1) * width * height).minOrNull()!!
+            val range =
+                output.copyOfRange(dimensionIndex * width * height, (dimensionIndex + 1) * width * height).maxOrNull()!! - min
+
+            for (j in 0 until height) {
+                val pixelVal = output[dimensionIndex * width * height + j * width + i].toDouble()
                 val color = Color(
-                    (r - min) / range,
-                    (g - min) / range,
-                    (b - min) / range,
+                    (pixelVal - min) / range,
+                    (pixelVal - min) / range,
+                    (pixelVal - min) / range,
                     reader.getColor(i, j).opacity)
                 writer.setColor(i, j, color)
             }

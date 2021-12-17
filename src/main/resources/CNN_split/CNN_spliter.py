@@ -31,7 +31,7 @@ First line is path to imported CNN
 Each layer in CNN generate line: (separated by '|')
   module depth
   the layer name 
-  shape of output channels from that layer
+  shape of output from that layer (last 2 numbers are visualized image shape in one channel)
 Each group of layer generate following line: (separated by '|')
   module depth
   module name
@@ -65,7 +65,7 @@ def construct(net, img, path, depth):
         exit -1
       else:
         file.write(f"{depth}|{format % (module_index)} layer")
-        for d in img.shape[:-2]:
+        for d in img.shape:
           file.write(f"|{d}")
         file.write("\n")
     

@@ -17,6 +17,9 @@ class CNNVisualTab : View("CNN Visualize") {
 
     private val netBox = vbox {}
 
+    private var outputHeight = 0
+    private var outputWidth = 0
+
     override val root = vbox {
         padding = Insets(20.0, 10.0, 20.0, 10.0)
 
@@ -89,7 +92,7 @@ class CNNVisualTab : View("CNN Visualize") {
                 }
 
                 // Convolution layer
-                val channelNum: List<Int> = tokens.subList(2, tokens.size).map { x -> x.toInt() }
+                val channelNum: List<Int> = tokens.subList(2, tokens.size-2).map { x -> x.toInt() }
                 val channelBox = hbox{}
                 for (dimension in channelNum) {
                     channelBox.children.add(
@@ -98,6 +101,8 @@ class CNNVisualTab : View("CNN Visualize") {
                         }
                     )
                 }
+                outputHeight = tokens[tokens.size-2].toInt()
+                outputWidth = tokens[tokens.size-1].toInt()
 
                 val applyButton = button("View CNN Output") {
                     action {
@@ -105,7 +110,7 @@ class CNNVisualTab : View("CNN Visualize") {
                         for (dimentionBox in channelBox.children) {
                             dimentions.add((dimentionBox as ComboBox<Int>).value)
                         }
-                        engineController.CNNVisualize(path, lineIndex - 1, dimentions.toList())
+                        engineController.CNNVisualize(path, lineIndex - 1, dimentions.toList(), outputHeight, outputWidth)
                     }
                     isVisible = false
                 }
