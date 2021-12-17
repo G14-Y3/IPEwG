@@ -1,5 +1,6 @@
 package models
 
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
@@ -14,11 +15,11 @@ import processing.depthestimation.DepthEstimation
 import processing.filters.Adjustment
 import processing.jsonFormatter
 import processing.steganography.SteganographyDecoder
-import tornadofx.ViewModel
-import tornadofx.observableListOf
+import tornadofx.*
 import view.ImagePanel
 import java.io.File
 import java.io.IOException
+import java.lang.Integer.min
 import javax.imageio.ImageIO
 import kotlin.collections.set
 
@@ -60,8 +61,10 @@ class EngineModel(
     var updateListSelection: () -> Unit = {}
 
     // historical snapshots for quick undo-ing
-    private val snapshots = mutableListOf<WritableImage>()
-    var currIndex = -1
+    private val snapshots = mutableListOf<WritableImage>(WritableImage(originalImage.pixelReader, originalImage.width.toInt(), originalImage.height.toInt()))
+
+    val currIndexProperty = SimpleIntegerProperty(0)
+    var currIndex by currIndexProperty
 
     // all view components using this model, assigned in view port initialization
     var imagePanels = observableListOf<ImagePanel>()
@@ -88,9 +91,10 @@ class EngineModel(
             imagePanel.sliderInit()
         }
 
-        currIndex = -1
+        currIndex = 0
         transformations.clear()
         snapshots.clear()
+        snapshots.add(WritableImage(originalImage.value.pixelReader, originalImage.value.width.toInt(), originalImage.value.height.toInt()))
     }
 
     // Parameter 'mode' is empty
@@ -191,47 +195,57 @@ class EngineModel(
     }
 
     fun transform(transformation: ImageProcessing) {
-        transform(transformation, "preview")
+        val previous = snapshots[currIndex]
+        transform(transformation, "preview", previous.width, previous.height)
     }
 
     /* the @param destination here refers to where to put the transformed image: the image panel or the decode panel */
-    fun transform(transformation: ImageProcessing, destination: String) {
-        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+    fun transform(transformation: ImageProcessing, destination: String, width: Double, height: Double) {
+        val previous = snapshots[currIndex]
         when (destination) {
             "preview" -> {
-                transformations.subList(currIndex + 1, transformations.size).clear()
+                transformations.subList(currIndex, transformations.size).clear()
                 snapshots.subList(currIndex + 1, snapshots.size).clear()
 
                 snapshots.add(
                     WritableImage(
-                        previous.pixelReader,
-                        previous.width.toInt(),
-                        previous.height.toInt()
+                        width.toInt(),
+                        height.toInt()
                     )
                 )
                 transformations.add(transformation)
-                currIndex++
                 updateListSelection()
-                transformation.process(snapshots[currIndex])
+
+                transformation.process(snapshots[currIndex++], snapshots[currIndex])
                 previewImage.value = snapshots[currIndex]
                 parallelImage.value = previewImage.value
             }
             "decode" -> {
                 if (transformation is SteganographyDecoder) {
                     val decoder: SteganographyDecoder = transformation
-                    transformation.process(previous as WritableImage)
+                    transformation.process(previous as WritableImage, previous as WritableImage)
                     decodeImage.value = decoder.get_result_image()
                 }
             }
             "depth" -> {
                 if (transformation is DepthEstimation) {
                     val temp = WritableImage(previous.pixelReader, previous.width.toInt(), previous.height.toInt())
-                    transformation.process(temp)
+                    transformation.process(temp, temp)
                     depthImage.value = transformation.get_depth_image()
                 }
             }
         }
+
         for (imagePanel in imagePanels) {
+            // update all image panel view ports, so that previous image viewport will be overwritten
+            val viewport = Rectangle2D(
+                .0,
+                .0,
+                snapshots[currIndex].width,
+                snapshots[currIndex].height,
+            )
+            imagePanel.updateViewPort(viewport)
+            imagePanel.updateSlider(originalImage.value.width, originalImage.value.height)
             imagePanel.sliderInit()
         }
     }
@@ -240,16 +254,25 @@ class EngineModel(
      * @param factor a value between 0.0 and 2.0
      */
     fun adjust(property: String, factor: Double) {
+        /* only delete the properties that are not in the same group */
+        val colorAdj = setOf("R", "G", "B", "H", "S", "V")
+        var isColorAdj = false
+        for (i in colorAdj)
+            isColorAdj = isColorAdj || i in adjustmentProperties
+        if (!(isColorAdj && property in colorAdj)) {
+            adjustmentProperties.clear()
+        }
+
         adjustmentProperties[property] = factor
 
-        val previous = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        val previous = snapshots[currIndex]
 
         val preview = WritableImage(
             previous.pixelReader,
             previous.width.toInt(),
             previous.height.toInt()
         )
-        Adjustment(adjustmentProperties).process(preview)
+        Adjustment(adjustmentProperties).process(preview, preview)
         previewImage.value = preview
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
@@ -276,9 +299,11 @@ class EngineModel(
     fun undo() {
         if (currIndex < 0) return
 
+        println(currIndex - 1)
+
         currIndex--
         updateListSelection()
-        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        previewImage.value = snapshots[currIndex + 1]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
@@ -286,7 +311,9 @@ class EngineModel(
     }
 
     fun redo() {
-        if (currIndex == snapshots.size - 1) return
+        if (currIndex >= snapshots.size - 1) return
+
+        println(currIndex + 1)
 
         currIndex++
         updateListSelection()
@@ -301,7 +328,9 @@ class EngineModel(
         if (index < 0) return
 
         currIndex = index
-        previewImage.value = snapshots[currIndex]
+        println(currIndex)
+        println(snapshots.size)
+        previewImage.value = snapshots[currIndex + 1]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
@@ -312,9 +341,11 @@ class EngineModel(
         if (snapshots.isEmpty()) return
 
         snapshots.clear()
+        snapshots.add(WritableImage(originalImage.value.pixelReader, originalImage.value.width.toInt(), originalImage.value.height.toInt()))
+
         transformations.clear()
 
-        currIndex = -1
+        currIndex = 0
         updateListSelection()
         previewImage.value = originalImage.value
         parallelImage.value = previewImage.value

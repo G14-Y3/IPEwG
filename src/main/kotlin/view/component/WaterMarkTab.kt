@@ -13,7 +13,7 @@ import processing.steganography.SteganographyDecoder
 import processing.steganography.WaterMarkingTechnique
 import tornadofx.*
 
-class WaterMarkTab: View("Water Mark") {
+class WaterMarkTab: Fragment("Water Mark") {
     private val fileController: FileController by inject()
     private val engine: EngineModel by inject()
     private val engineController: EngineController by inject()

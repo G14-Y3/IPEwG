@@ -49,6 +49,6 @@ val jsonFormatter = Json {
 }
 
 interface ImageProcessing {
-    fun process(image: WritableImage)
+    fun process(srcImage: WritableImage, destImage: WritableImage)
 }
 

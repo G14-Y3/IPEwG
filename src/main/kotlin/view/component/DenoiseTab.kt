@@ -7,7 +7,7 @@ import javafx.scene.text.FontWeight
 import processing.denoise.DenoiseMethod
 import tornadofx.*
 
-class DenoiseTab: View("Denoise") {
+class DenoiseTab: Fragment("Denoise") {
 
     private val engineController: EngineController by inject()
 

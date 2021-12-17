@@ -32,6 +32,7 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
+                        tab<BlackAndWhiteTab>()
                         tab<StyleTransferTab>()
                         tab<ColorAdjustTab>()
                         tab<BlurFilterTab>()
@@ -44,6 +45,7 @@ class FilterPanel : View() {
                         tab<WaterMarkTab>()
                         tab<DenoiseTab>()
                         tab<CNNVisualTab>()
+                        tab<FalseColoringTab>()
                     },
                     TransformationList().root
                 ) {

@@ -13,18 +13,18 @@ class Denoise(val denoiseMethod: DenoiseMethod, val noise: Double): ImageProcess
               DenoiseMethod.DRUNET to "./src/main/resources/denoise_model/drunet.pt")
     val model: Module = Module.load(methodToModel[denoiseMethod])
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         when (denoiseMethod) {
-            DenoiseMethod.RIDNET -> ridnet(image)
-            DenoiseMethod.DRUNET -> drunet(image)
+            DenoiseMethod.RIDNET -> ridnet(srcImage, destImage)
+            DenoiseMethod.DRUNET -> drunet(srcImage, destImage)
         }
     }
 
-    private fun drunet(image: WritableImage) {
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
-        val h = image.height.toInt()
-        val w = image.width.toInt()
+    private fun drunet(srcImage: WritableImage, destImage: WritableImage) {
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
+        val h = srcImage.height.toInt()
+        val w = srcImage.width.toInt()
         val pixels = Array(3) {
             Array(w) {
                 DoubleArray(
@@ -66,11 +66,11 @@ class Denoise(val denoiseMethod: DenoiseMethod, val noise: Double): ImageProcess
         }
     }
 
-    private fun ridnet(image: WritableImage) {
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
-        val h = image.height.toInt()
-        val w = image.width.toInt()
+    private fun ridnet(srcImage: WritableImage, destImage: WritableImage) {
+        val reader = srcImage.pixelReader
+        val writer = destImage.pixelWriter
+        val h = srcImage.height.toInt()
+        val w = srcImage.width.toInt()
         val pixels = Array(3) {
             Array(w) {
                 DoubleArray(
