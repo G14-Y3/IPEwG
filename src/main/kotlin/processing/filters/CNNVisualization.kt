@@ -1,5 +1,6 @@
 package processing.filters
 
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 import kotlinx.serialization.SerialName
@@ -18,7 +19,7 @@ class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: L
     @Transient
     var net: List<String> = listOf()
 
-    override fun process(image: WritableImage) {
+    override fun process(srcImage: WritableImage, destImage: WritableImage) {
         if (!checkLoaded(netName)) {
             println("loading new net")
             val exitCode = loadNet(netName)
@@ -27,10 +28,9 @@ class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: L
         net = getLayerPaths()
 
         // TODO: use user self defined preprocess method
-        val reader = image.pixelReader
-        val writer = image.pixelWriter
-        val h = image.height.toInt()
-        val w = image.width.toInt()
+        val reader = srcImage.pixelReader
+        val h = srcImage.height.toInt()
+        val w = srcImage.width.toInt()
         val pixels = Array(3) {
             Array(w) {
                 DoubleArray(
@@ -66,6 +66,8 @@ class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: L
             layerCnt ++
         }
 
+        val outputImage = WritableImage(width, height)
+        val writer = outputImage.pixelWriter
         val output = data.toTensor().dataAsFloatArray
         val dimensionIndex = channelNum.reduce { x, y -> x * y }
         for (i in 0 until width) {
@@ -76,14 +78,27 @@ class CNNVisualization(val netName: String, val layerNum: Int, val channelNum: L
 
             for (j in 0 until height) {
                 val pixelVal = output[dimensionIndex * width * height + j * width + i].toDouble()
-                val color = Color(
-                    (pixelVal - min) / range,
-                    (pixelVal - min) / range,
-                    (pixelVal - min) / range,
-                    reader.getColor(i, j).opacity)
+                val castedVal = ((pixelVal - min) / range).coerceIn(0.0, 1.0)
+                val color = Color.color(
+                    castedVal,
+                    castedVal,
+                    castedVal)
                 writer.setColor(i, j, color)
             }
         }
+
+        // stretch to dst image size
+        val view = ImageView(outputImage)
+        view.fitWidth = w.toDouble()
+        view.fitHeight = h.toDouble()
+        val stretchedImage = view.snapshot(null, null)
+        print("streched image: " + stretchedImage.width.toString() + ' ' + stretchedImage.height)
+        print("expected: " + w + " " + h)
+        val outputReader = stretchedImage.pixelReader
+        val dstWriter = destImage.pixelWriter
+        for (i in 0 until w)
+            for (j in 0 until h)
+                dstWriter.setColor(i, j, outputReader.getColor(i, j))
     }
 
     override fun toString(): String {

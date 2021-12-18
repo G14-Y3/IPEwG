@@ -94,6 +94,7 @@ class EngineController : Controller() {
 
     fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
     
-    fun CNNVisualize(netName: String, layerNum: Int, channelNum: List<Int>, height: Int, width: Int) = engine.transform(CNNVisualization(netName, layerNum, channelNum, height, width))
+    fun CNNVisualize(netName: String, layerNum: Int, channelNum: List<Int>, height: Int, width: Int) =
+        engine.transform(CNNVisualization(netName, layerNum, channelNum, height, width))
 
 }
