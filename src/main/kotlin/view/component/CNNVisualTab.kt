@@ -20,7 +20,7 @@ class CNNVisualTab : View("CNN Visualize") {
     private var outputHeight = 0
     private var outputWidth = 0
 
-    private val shapeBox = textfield("1x3x150x255")
+    private val shapeBox = textfield("1x3x512x512")
 
     override val root = vbox {
         padding = Insets(20.0, 10.0, 20.0, 10.0)
@@ -65,7 +65,7 @@ class CNNVisualTab : View("CNN Visualize") {
                 }
             }
         }
-        scrollpane { netBox }
+        this.children.add(netBox)
     }
 
     /**
