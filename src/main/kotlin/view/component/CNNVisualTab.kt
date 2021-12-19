@@ -20,6 +20,8 @@ class CNNVisualTab : View("CNN Visualize") {
     private var outputHeight = 0
     private var outputWidth = 0
 
+    private val shapeBox = textfield("1x3x150x255")
+
     override val root = vbox {
         padding = Insets(20.0, 10.0, 20.0, 10.0)
 
@@ -30,15 +32,24 @@ class CNNVisualTab : View("CNN Visualize") {
             }
         }
 
+        hbox {
+            label("input tensor shape") {
+                prefWidth = 150.0
+            }
+            this.children.add(shapeBox)
+        }
+
         button("Import CNN") {
             action {
                 try {
                     val dir = chooseFile(
                         title = "Import pytorch CNN",
-                        filters = arrayOf(FileChooser.ExtensionFilter(
-                            "pythorch file",
-                            "*.pt", "*.log"
-                        )),
+                        filters = arrayOf(
+                            FileChooser.ExtensionFilter(
+                                "pythorch file",
+                                "*.pt", "*.log"
+                            )
+                        ),
                         mode = FileChooserMode.Single
                     )
                     if (dir.isNotEmpty()) {
@@ -54,7 +65,7 @@ class CNNVisualTab : View("CNN Visualize") {
                 }
             }
         }
-        this.children.add(netBox)
+        scrollpane { netBox }
     }
 
     /**
@@ -63,88 +74,74 @@ class CNNVisualTab : View("CNN Visualize") {
      * Update netBox containing network's structure
      */
     private fun importNet(path: String) {
-        val exitCode = CNNVisualization.loadNet(path)
-        if (exitCode != 0) {
+        val shape = observableListOf<Int>()
+        shapeBox.characters.toString().split('x').forEach { s -> shape.add(s.toInt()) }
+
+        val exitCode = CNNVisualization.loadNet(path, shape) // shape is dummy constant for initialize metadata
+        if (exitCode != 0)
             alert(
                 type = Alert.AlertType.ERROR,
                 header = "Load torch network failed",
                 content = "The torch network provided couldn't be imported.\n" +
                         "Please check!" + path
             )
-        } else {
-            netBox.clear()
-            val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
-                .readLines()
-            for (lineIndex in 1 until metadata.size) {
-                val tokens = metadata[lineIndex].split('|')
-                val moduleDepth = tokens[0].toInt()
-                val layerName = tokens[1]
 
-                if (tokens.size == 2) { // module head line
-                    netBox.children.add(
-                        label(layerName) {
-                            vboxConstraints {
-                                margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-                            }
-                        }
-                    )
-                    continue
-                }
+        netBox.clear()
+        val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
+            .readLines()
+        for (lineIndex in 1 until metadata.size) {
+            val tokens = metadata[lineIndex].split('|')
+            val moduleDepth = tokens[0].toInt()
+            val layerName = tokens[1]
 
-                // Convolution layer
-                val channelNum: List<Int> = tokens.subList(2, tokens.size-2).map { x -> x.toInt() }
-                val channelBox = hbox{}
-                for (dimension in channelNum) {
-                    channelBox.children.add(
-                        combobox(values = listOf(0 until dimension).flatten()) {
-                            value = 0
-                        }
-                    )
-                }
-                outputHeight = tokens[tokens.size-2].toInt()
-                outputWidth = tokens[tokens.size-1].toInt()
-
-                val applyButton = button("View CNN Output") {
-                    action {
-                        val dimentions = mutableListOf<Int>()
-                        for (dimentionBox in channelBox.children) {
-                            dimentions.add((dimentionBox as ComboBox<Int>).value)
-                        }
-                        engineController.CNNVisualize(path, lineIndex - 1, dimentions.toList(), outputHeight, outputWidth)
-                    }
-                    isVisible = false
-                }
+            if (tokens.size == 2) { // module head line
                 netBox.children.add(
-                    hbox {
-                        label(layerName) {
-                            vboxConstraints {
-                                margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-                            }
+                    label(layerName) {
+                        vboxConstraints {
+                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
                         }
-                        this.children.add(channelBox)
-                        this.children.add(applyButton)
+                    }
+                )
+                continue
+            }
 
-                        this.onHover { applyButton.isVisible = it }
+            // Convolution layer
+            val channelNum: List<Int> = tokens.subList(2, tokens.size - 2).map { x -> x.toInt() }
+            val channelBox = hbox {}
+            for (dimension in channelNum) {
+                channelBox.children.add(
+                    combobox(values = listOf(0 until dimension).flatten()) {
+                        value = 0
                     }
                 )
             }
-//            val layerPaths = CNNVisualization.getLayerPaths()
-//            for ((layerIndex, s) in layerPaths.withIndex()) {
-//                val relativeLayerPath = s.substringAfter("CNN_traced/")
-//                val moduleDepth = relativeLayerPath.filter { it == '/' }.count()
-//                val layerName = relativeLayerPath.substring(relativeLayerPath.lastIndexOf('/') + 1)
-//                netBox.children.add(
-//                    button(layerName) {
-//                        vboxConstraints {
-//                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-//                        }
-//
-//                        action {
-//                            engineController.CNNVisualize(path, layerIndex)
-//                        }
-//                    }
-//                )
-//            }
+            outputHeight = tokens[tokens.size - 2].toInt()
+            outputWidth = tokens[tokens.size - 1].toInt()
+
+            val applyButton = button("View Output Tensor($outputHeight x $outputWidth)") {
+                action {
+                    val dimentions = mutableListOf<Int>()
+                    for (dimentionBox in channelBox.children) {
+                        dimentions.add((dimentionBox as ComboBox<Int>).value)
+                    }
+                    engineController.CNNVisualize(path, shape, lineIndex - 1, dimentions.toList())
+                }
+                isVisible = false
+            }
+            netBox.children.add(
+                hbox {
+                    label(layerName) {
+                        vboxConstraints {
+                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
+                        }
+                    }
+                    this.children.add(channelBox)
+                    this.children.add(applyButton)
+
+                    this.onHover { applyButton.isVisible = it }
+                }
+            )
         }
     }
+
 }

@@ -7,22 +7,12 @@ import torchvision.models as models
 import os
 
 '''
-debug: run `python3 ./src/main/resources/CNN_split/CNN_spliter.py {TARGET NET PATH}` to see why import failed
+debug: run `python3 ./src/main/resources/CNN_split/CNN_spliter.py {TARGET NET PATH} {INPUT IMAGE SHAPE}` to see why import failed
+           INPUT IMAGE SHAPE should be of format {int},{int}, ...
 '''
 
-image_mean = torch.tensor([0.485, 0.456, 0.406])
-image_std = torch.tensor([0.229, 0.224, 0.225])
-
-transform = transforms.Compose([
-  transforms.Resize((150, 225)),
-  transforms.ToTensor(),
-  transforms.Normalize(image_mean, image_std)
-])
-
-'''
-TODO: can these lines be changed to zero tensors instead of real imported image
-'''
-img = transform(Image.open('./src/main/resources/test_image.png')).reshape((1, 3, 150, 225))
+shape = tuple(map(int, sys.argv[2].split(',')))
+img = torch.zeros(shape)
 net = torch.load(sys.argv[1])
 
 '''
@@ -40,7 +30,7 @@ Each group of layer generate following line: (separated by '|')
 '''
 os.makedirs("./src/main/resources/CNN_split/CNN_traced/", exist_ok=True)
 file = open("./src/main/resources/CNN_split/CNN_traced/.Metadata.log", "w")
-file.write(sys.argv[1] + '\n')
+file.write(sys.argv[1] + ' ' + sys.argv[2] + '\n')
 
 '''
 NOTE: the name of module direcotries and layer files cannot be changed, 
@@ -53,13 +43,14 @@ def construct(net, img, path, depth):
   module_index = 0
   for module in net:
     if isinstance(module, torch.nn.modules.container.Sequential):
-      file.write(f"{depth}|{format % (module_index)} module\n")
+      # file.write(f"{depth}|{format % (module_index)} module\n")
       construct(module, img, path + f"{format % (module_index)} module/", depth + 1)
       img = module(img)
     else:
       traced_module = torch.jit.trace(module, img)
       traced_module.save(path + f"{format % (module_index)} layer.pt")
       img = module(img)
+      print("first pixels: ", img.reshape((-1, ))[:10])
       if len(img.shape) < 2:
         print(f"ERR: layer {module} output channel with shape {img.shape} not visualizable")
         exit -1
