@@ -1,5 +1,6 @@
 package models
 
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
@@ -61,7 +62,9 @@ class EngineModel(
 
     // historical snapshots for quick undo-ing
     private val snapshots = mutableListOf<WritableImage>(WritableImage(originalImage.pixelReader, originalImage.width.toInt(), originalImage.height.toInt()))
-    var currIndex = 0
+
+    val currIndexProperty = SimpleIntegerProperty(0)
+    var currIndex by currIndexProperty
 
     // all view components using this model, assigned in view port initialization
     var imagePanels = observableListOf<ImagePanel>()
@@ -88,7 +91,7 @@ class EngineModel(
             imagePanel.sliderInit()
         }
 
-        currIndex = -1
+        currIndex = 0
         transformations.clear()
         snapshots.clear()
         snapshots.add(WritableImage(originalImage.value.pixelReader, originalImage.value.width.toInt(), originalImage.value.height.toInt()))
@@ -253,6 +256,15 @@ class EngineModel(
      * @param factor a value between 0.0 and 2.0
      */
     fun adjust(property: String, factor: Double) {
+        /* only delete the properties that are not in the same group */
+        val colorAdj = setOf("R", "G", "B", "H", "S", "V")
+        var isColorAdj = false
+        for (i in colorAdj)
+            isColorAdj = isColorAdj || i in adjustmentProperties
+        if (!(isColorAdj && property in colorAdj)) {
+            adjustmentProperties.clear()
+        }
+
         adjustmentProperties[property] = factor
 
         val previous = snapshots[currIndex]
@@ -289,9 +301,11 @@ class EngineModel(
     fun undo() {
         if (currIndex < 0) return
 
+        println(currIndex - 1)
+
         currIndex--
         updateListSelection()
-        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
+        previewImage.value = snapshots[currIndex + 1]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
@@ -299,7 +313,9 @@ class EngineModel(
     }
 
     fun redo() {
-        if (currIndex == snapshots.size - 1) return
+        if (currIndex >= snapshots.size - 1) return
+
+        println(currIndex + 1)
 
         currIndex++
         updateListSelection()
@@ -314,7 +330,9 @@ class EngineModel(
         if (index < 0) return
 
         currIndex = index
-        previewImage.value = snapshots[currIndex]
+        println(currIndex)
+        println(snapshots.size)
+        previewImage.value = snapshots[currIndex + 1]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()

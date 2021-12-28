@@ -109,7 +109,7 @@ class FrequencyTab : Fragment("Frequency Transfer") {
                     alert(
                         type = Alert.AlertType.ERROR,
                         header = "No Operation Selected",
-                        content = "Select one frequency filter before click 'Adjust'",
+                        content = "Select one frequency filter and range before click 'Adjust'",
                         ButtonType.OK
                     )
                 }

@@ -20,6 +20,7 @@ class SaltPepperNoise(val noiseRatio: Double, val seed: Int): ImageProcessing {
      * add salt & pepper noise to image,
      */
     override fun process(srcImage: WritableImage, destImage: WritableImage) {
+        val reader = srcImage.pixelReader
         val writer = destImage.pixelWriter
         val rand = Random(seed)
         for (x in 0 until srcImage.width.toInt()) {
@@ -31,6 +32,8 @@ class SaltPepperNoise(val noiseRatio: Double, val seed: Int): ImageProcessing {
                     } else {
                         writer.setColor(x, y, Color.color(1.0, 1.0, 1.0))
                     }
+                } else {
+                    writer.setColor(x, y, reader.getColor(x, y))
                 }
             }
         }
