@@ -60,14 +60,12 @@ class BicubicInterpolation(
         val yDist: Double = y.toDouble() / scaleY - y1
 
         // interpolate in horizontal direction
-        val pVertical = getSupports(y1, x1, yInc) { _y, _x ->
+        val pVertical = getSupports(y1, x1, yInc, srcH, srcW) { _y, _x ->
             interpolate(
                 xDist,
-                getSupports(
-                    _x,
-                    _y,
-                    xInc,
-                ) { __x, __y -> reader.getColor(__x, __y).toRGBA() },
+                getSupports(_x, _y, xInc, srcW, srcH) { __x, __y ->
+                    reader.getColor(__x, __y).toRGBA()
+                },
             )
         }
 
@@ -94,16 +92,23 @@ class BicubicInterpolation(
 
     // Always return 4 points in the same horizontal direction
     // take [x], [y] as in src coordinate space.
-    // If [y] exceeds [srcH], returns an empty list.
-    private fun getSupports(x: Int, y: Int, xInc: Int, reader: RGBAReader): List<RGBA> {
-        if (y >= srcH) {
+    // If [y] exceeds [maxY], returns an empty list.
+    private fun getSupports(
+        x: Int,
+        y: Int,
+        xInc: Int,
+        maxX: Int,
+        maxY: Int,
+        reader: RGBAReader,
+    ): List<RGBA> {
+        if (y >= maxY) {
             return listOf()
         }
 
         val list: MutableList<RGBA> = mutableListOf()
         for (i in -1..2) {
             val xPos = x + i * xInc
-            if (xPos in 0 until srcW) {
+            if (xPos in 0 until maxX) {
                 list.add(reader(xPos, y))
             } else if (list.isNotEmpty()) {
                 list.add(list.last())
