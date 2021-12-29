@@ -44,6 +44,7 @@ data class RGBA(val R: Double, val G: Double, val B: Double, val A: Double) {
     operator fun plus(other: RGBA) = RGBA(R + other.R, G + other.G, B + other.B, A + other.A)
     operator fun times(scalar: Double) = RGBA(scalar * R, scalar * G, scalar * B, scalar * A)
     operator fun times(scalar: Int) = RGBA(scalar * R, scalar * G, scalar * B, scalar * A)
+    operator fun div(scalar: Double) = RGBA(R / scalar, G / scalar , B / scalar, A / scalar)
 }
 
 fun Color.toRGBA() = RGBA.fromColor(this)
@@ -109,5 +110,5 @@ class Resample(
         executorService.awaitTermination(1, TimeUnit.MINUTES)
     }
 
-    override fun toString(): String = "$name($interpolator)"
+    override fun toString(): String = "$name ($interpolator)"
 }
