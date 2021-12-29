@@ -6,8 +6,10 @@ import javafx.event.EventTarget
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
 import processing.resample.BicubicParams
+import processing.resample.LanczosParams
 import processing.resample.Params
 import processing.resample.ResampleMethod
+import processing.resample.ResampleMethod.*
 import tornadofx.*
 
 class ResizerTab : Fragment("Resize Image") {
@@ -16,7 +18,7 @@ class ResizerTab : Fragment("Resize Image") {
     private val previewHeight get() = engineController.previewHeight.toInt()
 
     private val widthValidator = mapOf(
-        ResampleMethod.PointWithZeros to { width: Int ->
+        PointWithZeros to { width: Int ->
             if (width % previewWidth != 0)
                 "Width must be a multiple of source for this method"
             else null
@@ -24,7 +26,7 @@ class ResizerTab : Fragment("Resize Image") {
     )
 
     private val heightValidator = mapOf(
-        ResampleMethod.PointWithZeros to { height: Int ->
+        PointWithZeros to { height: Int ->
             if (height % previewHeight != 0)
                 "Height must be a multiple of source for this method"
             else null
@@ -48,7 +50,7 @@ class ResizerTab : Fragment("Resize Image") {
 
             padding = Insets(20.0, 20.0, 10.0, 10.0)
 
-            val resizerList = ResampleMethod.values().toList()
+            val resizerList = values().toList()
             val comboBox = combobox(values = resizerList) {
                 itemsProperty().onChange { }
                 value = resizerList[0]
@@ -94,7 +96,18 @@ class ResizerTab : Fragment("Resize Image") {
                         }
                         visibleWhen {
                             comboBox.selectionModel.selectedItemProperty()
-                                .isEqualTo(ResampleMethod.Bicubic)
+                                .isEqualTo(Bicubic)
+                        }
+                        managedProperty().bind(visibleProperty())
+                    }
+                    lanczosParamsField(paramsModel) {
+                        whenVisible {
+                            paramsModel.intArg1.value = 3
+                            paramsModel.boolArg1.value = false
+                        }
+                        visibleWhen {
+                            comboBox.selectionModel.selectedItemProperty()
+                                .isEqualTo(Lanczos)
                         }
                         managedProperty().bind(visibleProperty())
                     }
@@ -154,19 +167,57 @@ fun EventTarget.bicubicParamsField(
         }
     }.also(op)
 
+fun EventTarget.lanczosParamsField(
+    model: KernelParamsModel,
+    op: Fieldset.() -> Unit = {},
+): Fieldset =
+    fieldset("Lanczos Kernel Params") {
+        field("Lobes (taps) (larger => sharper & more ringing):") {
+            textfield(model.intArg1).validator {
+                if (it.isNullOrBlank()) error("This field is required")
+                else if (it.isInt() && it.toInt() >= 1) {
+                    null
+                } else {
+                    error("taps must be positive integer")
+                }
+            }
+        }
+        text(
+            """
+            3 taps for downscale and 4 taps for upscale are recommended.
+            It should be noted that although a sharp result would be produced usually,
+            the side-effect of ringing is commonly observed.
+            """.trimIndent()
+        )
+        checkbox("Enable EWA (Better result at a cost of performance)", model.boolArg1)
+        text(
+            """
+            EWA (Elliptical Weighted Averaging): 
+                enable for a better result, 
+                disable for better performance;
+                EWA mode will using more pixels in calculation. 
+            """.trimIndent()
+        )
+    }.also(op)
+
 class KernelParams {
     val doubleArg1Property = SimpleDoubleProperty(this, "doubleArg1", .0)
     val doubleArg2Property = SimpleDoubleProperty(this, "doubleArg2", .0)
+    val intArg1Property = SimpleIntegerProperty(this, "intArg1", 0)
+    val boolArg1Property = SimpleBooleanProperty(this, "boolArg1", false)
 }
 
 class KernelParamsModel(params: KernelParams) : ItemViewModel<KernelParams>(params) {
     val doubleArg1 = bind(KernelParams::doubleArg1Property) as DoubleProperty
     val doubleArg2 = bind(KernelParams::doubleArg2Property) as DoubleProperty
+    val intArg1 = bind(KernelParams::intArg1Property) as IntegerProperty
+    val boolArg1 = bind(KernelParams::boolArg1Property) as BooleanProperty
 
     fun getParams(method: ResampleMethod): Params? = when (method) {
-        ResampleMethod.Point -> null
-        ResampleMethod.PointWithZeros -> null
-        ResampleMethod.Bilinear -> null
-        ResampleMethod.Bicubic -> BicubicParams(doubleArg1.value, doubleArg1.value)
+        Point -> null
+        PointWithZeros -> null
+        Bilinear -> null
+        Bicubic -> BicubicParams(doubleArg1.value, doubleArg2.value)
+        Lanczos -> LanczosParams(intArg1.value, boolArg1.value)
     }
 }
