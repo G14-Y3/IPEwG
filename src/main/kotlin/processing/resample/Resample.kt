@@ -13,6 +13,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+typealias RGBAReader = (Int, Int) -> RGBA
+
 // srcW, srcH, tarW, tarH
 enum class ResampleMethod(val create: (Int, Int, Int, Int, Params?) -> Interpolation) {
     Point(::PointInterpolation),
