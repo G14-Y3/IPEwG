@@ -81,13 +81,16 @@ class BicubicInterpolation(
     private fun interpolate(d: Double, P: List<RGBA>): RGBA {
         var dPow = 1.0
         var accumulated: RGBA = RGBA.addIdentity
+        var coefTotal = .0
+
         for (i in 0..3) {
+            coefTotal += dPow * pCoef[i].sum()
             accumulated += dPow * pCoef[i].zip(P)
                 .fold(RGBA.addIdentity) { acc, pair -> acc + pair.first * pair.second }
             dPow *= d
         }
 
-        return accumulated
+        return accumulated / coefTotal
     }
 
     // Always return 4 points in the same horizontal direction
