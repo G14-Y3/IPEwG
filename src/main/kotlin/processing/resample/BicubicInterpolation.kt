@@ -13,7 +13,6 @@ data class BicubicParams(val B: Double, val C: Double) : Params {
     override fun toString(): String = "(B: $B, C: $C)"
 }
 
-// TODO: DEBUG: Have brighter corners at right bottom of each tile
 @Serializable
 @SerialName(bicubic)
 class BicubicInterpolation(
