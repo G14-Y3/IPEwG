@@ -5,11 +5,9 @@ import javafx.beans.property.*
 import javafx.event.EventTarget
 import javafx.geometry.Insets
 import javafx.scene.text.FontWeight
-import processing.resample.BicubicParams
-import processing.resample.LanczosParams
-import processing.resample.Params
-import processing.resample.ResampleMethod
+import processing.resample.*
 import processing.resample.ResampleMethod.*
+import processing.resample.ResampleMethod.PointWithZeros
 import tornadofx.*
 
 class ResizerTab : Fragment("Resize Image") {
@@ -111,6 +109,17 @@ class ResizerTab : Fragment("Resize Image") {
                         }
                         managedProperty().bind(visibleProperty())
                     }
+                    lagrangeParamsField(paramsModel) {
+                        whenVisible {
+                            paramsModel.intArg1.value = 2
+                        }
+                        visibleWhen {
+                            comboBox.selectionModel.selectedItemProperty()
+                                .isEqualTo(Lagrange)
+                        }
+                        managedProperty().bind(visibleProperty())
+                    }
+
                     button("Resize") {
                         enableWhen(model.valid)
                         action {
@@ -200,6 +209,24 @@ fun EventTarget.lanczosParamsField(
         )
     }.also(op)
 
+fun EventTarget.lagrangeParamsField(
+    model: KernelParamsModel,
+    op: Fieldset.() -> Unit = {},
+): Fieldset =
+    fieldset("Lagrange Kernel Params") {
+        field("Degree:") {
+            textfield(model.intArg1).validator {
+                if (it.isNullOrBlank()) error("This field is required")
+                else if (it.isInt() && it.toInt() >= 0) {
+                    null
+                } else {
+                    error("degree must be a non-positive integer")
+                }
+            }
+        }
+        text("(degree + 1) pixels will be involved when calculating in each direction")
+    }.also(op)
+
 class KernelParams {
     val doubleArg1Property = SimpleDoubleProperty(this, "doubleArg1", .0)
     val doubleArg2Property = SimpleDoubleProperty(this, "doubleArg2", .0)
@@ -219,5 +246,6 @@ class KernelParamsModel(params: KernelParams) : ItemViewModel<KernelParams>(para
         Bilinear -> null
         Bicubic -> BicubicParams(doubleArg1.value, doubleArg2.value)
         Lanczos -> LanczosParams(intArg1.value, boolArg1.value)
+        Lagrange -> LagrangeParams(intArg1.value)
     }
 }
