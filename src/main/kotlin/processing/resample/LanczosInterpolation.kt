@@ -10,7 +10,7 @@ private const val lanczos = "Lanczos"
 @Serializable
 @SerialName("$lanczos-Params")
 data class LanczosParams(val taps: Int, val EWA: Boolean) : Params {
-    override fun toString(): String = "($taps taps${if (EWA) ", EWA" else "2-pass"})"
+    override fun toString(): String = "$taps ${if (EWA) "EWA" else "2-pass"}"
 }
 
 // Ref: https://en.wikipedia.org/wiki/Lanczos_resampling#Definition
@@ -87,5 +87,5 @@ class LanczosInterpolation(
     private fun windowedSinc(x: Double, radius: Double): Double =
         if (x > radius) .0 else sinc(x) * sinc(x / taps)
 
-    override fun toString(): String = "$lanczos $params"
+    override fun toString(): String = "$lanczos$params"
 }
