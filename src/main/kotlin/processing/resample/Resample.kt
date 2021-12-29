@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 typealias RGBAReader = (Int, Int) -> RGBA
 
@@ -23,6 +24,7 @@ enum class ResampleMethod(val create: (Int, Int, Int, Int, Params?) -> Interpola
     // Box(:BoxInterpolation), // only show difference to Point with subsampling
     Bilinear(::BilinearInterpolation),
     Bicubic(::BicubicInterpolation),
+    Lanczos(::LanczosInterpolation),
 }
 
 // an (assumed) linear RGBA pixel
@@ -111,4 +113,17 @@ class Resample(
     }
 
     override fun toString(): String = "$name ($interpolator)"
+}
+
+fun directionalEllipticalRadius(x: Double, y: Double, radiusX: Double, radiusY: Double): Double {
+    if (x in -1e-8..1e-8) {
+        return radiusY
+    }
+    val slope = y / x
+    val a = radiusX * radiusX * x * x + radiusY * radiusY
+    val c = -radiusX * radiusX * radiusY * radiusY
+    val deltaSqr = -4 * a * c // b^2 - 4ac
+    val xSqr = deltaSqr / (2 * a * 2 * a) // (-b + delta) / 2a
+    val ySqr = xSqr * (slope * slope)
+    return sqrt(xSqr + ySqr)
 }
