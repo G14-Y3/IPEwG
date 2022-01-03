@@ -24,11 +24,6 @@ class TopBar : View() {
                     fileOperation(mode = "export image")
                 }
             }
-            item("Export Current _Parallel View...") {
-                action {
-                    fileOperation(mode = "export_parallel")
-                }
-            }
             item("I_mport Transformations...") {
                 action {
                     fileOperation(mode = "import JSON")
@@ -110,12 +105,6 @@ class TopBar : View() {
                     fileSelectorMode = FileChooserMode.Save
                 }
 
-                "export_parallel" -> {
-                    fileSelectorTitle = "Export image in parallel mode"
-                    fileSelectorFilter = exportFilter
-                    fileSelectorMode = FileChooserMode.Save
-                }
-
                 "import JSON" -> {
                     fileSelectorTitle = "import JSON"
                     fileSelectorFilter = jsonFilter
@@ -147,16 +136,6 @@ class TopBar : View() {
                                 dir[0].toString().lastIndexOf(".") + 1,
                                 dir[0].toString().length
                             )
-                        )
-
-                    "export_parallel" ->
-                        fileController.saveImage(
-                            dir[0].toString(),
-                            dir[0].toString().substring(
-                                dir[0].toString().lastIndexOf(".") + 1,
-                                dir[0].toString().length
-                            ),
-                            mode = "parallel"
                         )
 
                     "import JSON" -> fileController.loadJson(dir[0].toString())

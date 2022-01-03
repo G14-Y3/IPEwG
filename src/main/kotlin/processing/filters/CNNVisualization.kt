@@ -11,6 +11,7 @@ import org.pytorch.Module
 import org.pytorch.Tensor
 import processing.ImageProcessing
 import java.io.File
+import java.util.stream.Collectors
 
 @Serializable
 @SerialName("CNNVisualize")
@@ -18,6 +19,7 @@ class CNNVisualization(
     val netName: String,
     val imgShape: List<Int>,
     val layerNum: Int,
+    val lineIndex: Int,
     val channelNum: List<Int>): ImageProcessing {
 
     @Transient
@@ -54,7 +56,7 @@ class CNNVisualization(
             }
         }
 
-        var data = IValue.from(Tensor.fromBlob(buf, longArrayOf(1, 3, srcHeight.toLong(), srcWidth.toLong())))
+        var data = IValue.from(Tensor.fromBlob(buf, imgShape.map { x -> x.toLong() }.toLongArray()))
         var layerCnt = 0
         for (path in net) {
             val layer = Module.load(path)
@@ -66,13 +68,12 @@ class CNNVisualization(
         }
 
         val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log").readLines()
-        val tokens = metadata[layerNum + 1].split('|') // +1 for the first line of metadata is not layer information
+        val tokens = metadata[lineIndex].split('|') // +1 for the first line of metadata is not layer information
         val outputWidth = tokens[tokens.size-1].toInt()
         val outputHeight = tokens[tokens.size-2].toInt()
         val outputImage = WritableImage(outputWidth, outputHeight)
         val writer = outputImage.pixelWriter
         val output = data.toTensor().dataAsFloatArray
-//        val dimensionIndex = channelNum.reduce { x, y -> x * y }
         val dimensionIndex = 0
         for (i in 0 until outputWidth) {
             val min =
@@ -90,16 +91,6 @@ class CNNVisualization(
                 writer.setColor(i, j, color)
             }
         }
-//
-//        for (i in 0 until outputHeight) {
-//            for (j in 0 until 3) {
-//                print(output[dimensionIndex * outputWidth * outputHeight + i * outputWidth + j].toString() + ' ')
-//            }
-//            print("...")
-//            for (j in outputWidth - 3 until outputWidth)
-//                print(output[dimensionIndex * outputWidth * outputHeight + i * outputWidth + j].toString() + ' ')
-//            println()
-//        }
 
         // stretch to dst image size
         val view = ImageView(outputImage)
@@ -114,7 +105,7 @@ class CNNVisualization(
     }
 
     override fun toString(): String {
-        return "Visualize CNN layer: $layerNum channel: $channelNum from $netName"
+        return "Visualize CNN with input: $imgShape, layer: $layerNum, channel: $channelNum, from $netName"
     }
 
     companion object {

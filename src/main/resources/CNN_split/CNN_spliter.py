@@ -43,7 +43,7 @@ def construct(net, img, path, depth):
   module_index = 0
   for module in net:
     if isinstance(module, torch.nn.modules.container.Sequential):
-      # file.write(f"{depth}|{format % (module_index)} module\n")
+      file.write(f"{depth}|{module.__class__.__name__} module\n")
       construct(module, img, path + f"{format % (module_index)} module/", depth + 1)
       img = module(img)
     else:
@@ -55,7 +55,7 @@ def construct(net, img, path, depth):
         print(f"ERR: layer {module} output channel with shape {img.shape} not visualizable")
         exit -1
       else:
-        file.write(f"{depth}|{format % (module_index)} layer")
+        file.write(f"{depth}|{module.__class__.__name__} layer")
         for d in img.shape:
           file.write(f"|{d}")
         file.write("\n")
