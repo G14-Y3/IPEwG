@@ -65,28 +65,13 @@ class ImagePanel : View() {
                         }
                         newView = imageview(engine.parallelImage)
 
-                // listen to zoomProperty to detect zoom in & out action
-                // Use ctrl+scroll in Windows as compatibility issue occurs for zoom
-                // Use scroll only to move around image
-                this.addEventFilter(ScrollEvent.SCROLL) {
-                    //this.addEventFilter(KeyEvent.KEY_PRESSED) {
-                    if (it.isControlDown) {
-                        zoom(it.deltaY, it.x, it.y)
-                    } else {
-                        val temp = if (oriView.isVisible) oriView else newView
-                        var leftTopX = temp.viewport.minX - it.deltaX
-                        leftTopX = cast(leftTopX, 0.0, excessWidth)
-                        var leftTopY = temp.viewport.minY - it.deltaY
-                        leftTopY = cast(leftTopY, 0.0, excessHeight)
                         val viewport = Rectangle2D(
-                            leftTopX,
-                            leftTopY,
-                            temp.viewport.width,
-                            temp.viewport.height,
+                            .0,
+                            .0,
+                            oriView.image.width,
+                            oriView.image.height,
                         )
-                        updateViewPort(temp, viewport)
-                    }
-                }
+                        updateViewPort(viewport)
 
                         var dragging = false
                         this.addEventHandler(MouseEvent.ANY) {
@@ -124,19 +109,10 @@ class ImagePanel : View() {
                             }
                         }
 
-                addEventFilter(MouseEvent.MOUSE_DRAGGED) {
-                    if (lastMousePoint != null) {
-                        val oldViewport = if (oriView.isVisible) oriView.viewport else newView.viewport
-
-                        var leftTopX =
-                            oldViewport.minX - localToImage(it.screenX - lastMousePoint!!.x)
-                        leftTopX = cast(leftTopX, 0.0, excessWidth)
-                        var leftTopY =
-                            oldViewport.minY - localToImage(it.screenY - lastMousePoint!!.y)
-                        leftTopY = cast(leftTopY, 0.0, excessHeight)
-
-                        val newViewport = Rectangle2D(leftTopX, leftTopY, oldViewport.width, oldViewport.height)
-                        updateViewPort(if (oriView.isVisible) oriView else newView, newViewport)
+                        // Zoom event for Mac users
+                        this.addEventFilter(ZoomEvent.ANY) {
+                            zoom(it.zoomFactor, it.x, it.y)
+                        }
 
                         // Drag image handlers
                         fun stopDrag(event: MouseEvent) {
@@ -333,13 +309,12 @@ class ImagePanel : View() {
     // Zoom the image
     private fun zoom(factor: Double, x: Double, y: Double) {
         var ratio = 1.0
-        val temp = if (oriView.isVisible) oriView else newView
-        val oldViewport = temp.viewport
+        val oldViewport = oriView.viewport!!
         if (factor > 1) {
             ratio = 1.035
         } else if (factor < 1) {
             // only zoom out when viewport is smaller than original image
-            if (oldViewport.width < temp.image.width) {
+            if (oldViewport.width < oriView.image.width) {
                 ratio = 1 / 1.035
             }
         }
@@ -356,7 +331,7 @@ class ImagePanel : View() {
             oldViewport.width / ratio,
             oldViewport.height / ratio,
         )
-        updateViewPort(temp, newViewport)
+        updateViewPort(newViewport)
     }
 
     fun sliderInit() {
@@ -385,20 +360,15 @@ class ImagePanel : View() {
 
     // update both images' viewport in engine
     fun updateViewPort(viewPort: Rectangle2D) {
-        updateViewPort(oriView, viewPort)
-        updateViewPort(newView, viewPort)
-    }
-
-    fun updateViewPort(view: ImageView, viewPort: Rectangle2D) {
-        view.viewport = viewPort
-        excessWidth = view.image.width - viewPort.width
-        excessHeight = view.image.height - viewPort.height
+        oriView.viewport = viewPort
+        newView.viewport = viewPort
+        excessWidth = oriView.image.width - viewPort.width
+        excessHeight = oriView.image.height - viewPort.height
     }
 
     // from scene / screen / stage / view coordinates to image coordinates
     private fun localToImage(value: Double): Double {
-        val temp = if (oriView.isVisible) oriView else newView
-        val viewport = temp.viewport
+        val viewport = oriView.viewport!!
         val localToImage = WINDOW_WIDTH / viewport.width
 
         return value / localToImage
