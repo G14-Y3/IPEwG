@@ -77,7 +77,7 @@ class CNNVisualTab : View("CNN Visualize") {
         val shape = observableListOf<Int>()
         shapeBox.characters.toString().split('x').forEach { s -> shape.add(s.toInt()) }
 
-        val exitCode = CNNVisualization.loadNet(path, shape) // shape is dummy constant for initialize metadata
+        val exitCode = CNNVisualization.loadNet(path, shape)
         if (exitCode != 0)
             alert(
                 type = Alert.AlertType.ERROR,
@@ -94,7 +94,8 @@ class CNNVisualTab : View("CNN Visualize") {
             val moduleDepth = tokens[0].toInt()
             val layerName = tokens[1]
 
-            if (tokens.size == 2) { // module head line
+            // module head line
+            if (tokens.size == 2) {
                 netBox.children.add(
                     label(layerName) {
                         vboxConstraints {
