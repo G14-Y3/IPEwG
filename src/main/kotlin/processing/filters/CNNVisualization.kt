@@ -18,6 +18,7 @@ class CNNVisualization(
     val netName: String,
     val imgShape: List<Int>,
     val layerNum: Int,
+    val lineIndex: Int,
     val channelNum: List<Int>): ImageProcessing {
 
     @Transient
@@ -66,7 +67,7 @@ class CNNVisualization(
         }
 
         val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log").readLines()
-        val tokens = metadata[layerNum + 1].split('|') // +1 for the first line of metadata is not layer information
+        val tokens = metadata[lineIndex].split('|') // +1 for the first line of metadata is not layer information
         val outputWidth = tokens[tokens.size-1].toInt()
         val outputHeight = tokens[tokens.size-2].toInt()
         val outputImage = WritableImage(outputWidth, outputHeight)

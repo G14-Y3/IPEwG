@@ -82,33 +82,32 @@ class CNNVisualTab : View("CNN Visualize") {
             alert(
                 type = Alert.AlertType.ERROR,
                 header = "Load torch network failed",
-                content = "The torch network provided couldn't be imported.\n" +
-                        "Please check!" + path
+                content = "Please check if input tensor shape, file path and network structure are valid"
             )
 
         netBox.clear()
         val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
             .readLines()
-        var layerIndex = 0
+        var nonLayer = 1
         for (lineIndex in 1 until metadata.size) {
             val tokens = metadata[lineIndex].split('|')
             val moduleDepth = tokens[0].toInt()
             val layerName = tokens[1]
+            val layerNum = lineIndex - nonLayer
 
             // module head line
             if (tokens.size == 2) {
                 netBox.children.add(
-                    label(layerName) {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-                        }
+                    hbox {
+                        padding = Insets(.0, .0, .0, 20.0 * moduleDepth)
+                        label(layerName)
                     }
                 )
+                nonLayer += 1
                 continue
             }
 
             // Convolution layer
-            layerIndex += 1
             val channelNum: List<Int> = tokens.subList(2, tokens.size - 2).map { x -> x.toInt() }
             val channelBox = hbox {}
             for (dimension in channelNum) {
@@ -127,17 +126,14 @@ class CNNVisualTab : View("CNN Visualize") {
                     for (dimentionBox in channelBox.children) {
                         dimentions.add((dimentionBox as ComboBox<Int>).value)
                     }
-                    engineController.CNNVisualize(path, shape, layerIndex, dimentions.toList())
+                    engineController.CNNVisualize(path, shape, layerNum, lineIndex, dimentions.toList())
                 }
                 isVisible = false
             }
             netBox.children.add(
                 hbox {
-                    label(layerName) {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-                        }
-                    }
+                    padding = Insets(.0, .0, .0, 20.0 * moduleDepth)
+                    label(layerName)
                     this.children.add(channelBox)
                     this.children.add(applyButton)
 
