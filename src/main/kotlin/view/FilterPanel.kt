@@ -26,7 +26,6 @@ class FilterPanel : View() {
                         tab<BasicFilterTab>()
                         tab<ConversionTab>()
                         tab<ResizerTab>()
-                        tab<BlackAndWhiteTab>()
                         tab<ColorAdjustTab>()
                         tab<StyleTransferTab>()
                         tab<BlurFilterTab>()
@@ -43,7 +42,7 @@ class FilterPanel : View() {
                     },
                     TransformationList().root
                 ) {
-                    setDividerPosition(0, 0.4)
+                    setDividerPosition(0, 0.55)
                 }
             }
         }

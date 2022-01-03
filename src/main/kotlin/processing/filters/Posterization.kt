@@ -109,6 +109,6 @@ class Posterization(val level: Int) : ImageProcessing {
     }
 
     override fun toString(): String {
-        return "Posterize level=level$"
+        return "Posterize with level $level"
     }
 }

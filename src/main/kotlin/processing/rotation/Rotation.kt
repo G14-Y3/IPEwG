@@ -61,4 +61,6 @@ class Rotation(val angle: Double): ImageProcessing {
             for (y in 0 until height)
                 writer.setColor(x, y, tempReader.getColor(x, y))
     }
+
+    override fun toString(): String = "Rotation clockwise by $angle degree"
 }

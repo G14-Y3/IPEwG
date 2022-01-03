@@ -96,15 +96,6 @@ class SteganographyDecoder(private val isDecodeImage: Boolean): ImageProcessing 
         }
     }
 
-    fun get_result_image(): WritableImage {
-        return result_image!!
-    }
-
-    fun get_result_text(): String {
-        return result_text
-    }
-
-    override fun toString(): String {
-        return "Decoded target " + if (isDecodeImage) "image" else "text"
-    }
+    fun get_result_image() = result_image!!
+    fun get_result_text() = result_text
 }

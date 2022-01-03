@@ -40,7 +40,6 @@ class SteganographyEncoder(
         } else {
             // Encoding text only works with calling this twice somehow
             encodeText(srcImage, destImage)
-            encodeText(srcImage, destImage)
         }
     }
 
@@ -107,7 +106,34 @@ class SteganographyEncoder(
         val reader: PixelReader = srcImage.pixelReader
         val writer: PixelWriter = destImage.pixelWriter
 
+        // first copy srcImage to destImage (destImage is initially empty)
+        for (x in 0 until srcImage.width.toInt())
+            for (y in 0 until srcImage.height.toInt())
+                writer.setColor(x, y, reader.getColor(x, y))
+
         var count = 0
+        loop@for (x in 0 until srcImage.width.toInt()) {
+            for (y in 0 until srcImage.height.toInt()) {
+                if (count >= encodeText.length) break@loop
+                var color = reader.getColor(x, y)
+                val ch1 = encodeText[count++]
+                val r = transformBits(color.red, ch1.code and 0b1111)
+                val g = transformBits(color.green, (ch1.code shr 4) and 0b1111)
+                if (count >= encodeText.length) {
+                    color = Color.color(r, g, color.blue, color.opacity)
+                    writer.setColor(x, y, color)
+                    break@loop
+                }
+                val ch2 = encodeText[count++]
+                val b = transformBits(color.blue, ch2.code and 0b1111)
+                val a = transformBits(color.opacity, (ch2.code shr 4) and 0b1111)
+                color = Color.color(r, g, b, a)
+                writer.setColor(x, y, color)
+            }
+        }
+
+        // This process indeed needs to repeat for twice
+        count = 0
         loop@for (x in 0 until srcImage.width.toInt()) {
             for (y in 0 until srcImage.height.toInt()) {
                 if (count >= encodeText.length) break@loop

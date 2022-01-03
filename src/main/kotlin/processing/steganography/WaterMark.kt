@@ -57,4 +57,6 @@ class WaterMark(val encodeImage: Image, verticalGap: Int, horizontalGap: Int, va
             }
         }
     }
+
+    override fun toString() = "Watermarking with the method of $technique"
 }

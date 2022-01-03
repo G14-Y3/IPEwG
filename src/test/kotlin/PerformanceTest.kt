@@ -27,14 +27,14 @@ class PerformanceTest: ApplicationTest() {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     fun performanceTest() {
         val imagePaths = listOf(
-//            "./test_images/test_120p.jpeg",
+            "./test_images/test_120p.jpeg",
             "./test_images/test_240p.jpeg",
-//            "./test_images/test_360p.jpeg",
+            "./test_images/test_360p.jpeg",
             "./test_images/test_480p.jpeg",
-//            "./test_images/test_720p.jpeg",
+            "./test_images/test_720p.jpeg",
         )
 
         val images = imagePaths.map { path -> Image(path) }

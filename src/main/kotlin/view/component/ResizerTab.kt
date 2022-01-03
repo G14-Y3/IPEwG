@@ -4,6 +4,7 @@ import controller.EngineController
 import javafx.beans.property.*
 import javafx.event.EventTarget
 import javafx.geometry.Insets
+import javafx.scene.control.ComboBox
 import javafx.scene.text.FontWeight
 import processing.resample.*
 import processing.resample.ResampleMethod.*
@@ -38,20 +39,39 @@ class ResizerTab : Fragment("Resize Image") {
 
             label("Resize Image") {
                 vboxConstraints {
-                    margin = Insets(20.0, 20.0, 10.0, 10.0)
+                    margin = Insets(0.0, 20.0, 10.0, 0.0)
                 }
                 style {
                     fontWeight = FontWeight.BOLD
                     fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                 }
             }
+            hbox {
+                textflow {
+                    text("Image rescale is the process of changing the " +
+                            "dimension of the image by downsampling or upsampling/" +
+                            "super-resolutionusing different techniques. You can choose " +
+                            "a method below and resize the image to a specific dimension. " +
+                            "Notice that a large dimension might take longer time to process.")
+                    padding = Insets(10.0, 0.0, 10.0, 0.0)
+                }
+            }
 
             padding = Insets(20.0, 20.0, 10.0, 10.0)
 
             val resizerList = values().toList()
-            val comboBox = combobox(values = resizerList) {
-                itemsProperty().onChange { }
-                value = resizerList[0]
+
+            var comboBox: ComboBox<ResampleMethod>? = null
+
+            hbox {
+                textflow {
+                    text("Please choose a resize/rescale method  ")
+                    comboBox = combobox(values = resizerList) {
+                        itemsProperty().onChange { }
+                        value = resizerList[0]
+                    }
+                    text("  and choose a dimension you want to resize below.")
+                }
             }
 
             form {
@@ -61,7 +81,7 @@ class ResizerTab : Fragment("Resize Image") {
                             if (it.isNullOrBlank()) error("This field is required")
                             else {
                                 val message =
-                                    widthValidator[comboBox.value]?.let { it1 -> it1(it.toInt()) }
+                                    widthValidator[comboBox?.value]?.let { it1 -> it1(it.toInt()) }
                                 if (message != null) error(message) else null
                             }
                         }
@@ -71,7 +91,7 @@ class ResizerTab : Fragment("Resize Image") {
                             if (it.isNullOrBlank()) error("This field is required")
                             else {
                                 val message =
-                                    heightValidator[comboBox.value]?.let { it1 -> it1(it.toInt()) }
+                                    heightValidator[comboBox?.value]?.let { it1 -> it1(it.toInt()) }
                                 if (message != null) error(message) else null
                             }
                         }
@@ -93,7 +113,7 @@ class ResizerTab : Fragment("Resize Image") {
                             paramsModel.doubleArg2.value = 1.0 / 3
                         }
                         visibleWhen {
-                            comboBox.selectionModel.selectedItemProperty()
+                            comboBox!!.selectionModel.selectedItemProperty()
                                 .isEqualTo(Bicubic)
                         }
                         managedProperty().bind(visibleProperty())
@@ -104,7 +124,7 @@ class ResizerTab : Fragment("Resize Image") {
                             paramsModel.boolArg1.value = false
                         }
                         visibleWhen {
-                            comboBox.selectionModel.selectedItemProperty()
+                            comboBox!!.selectionModel.selectedItemProperty()
                                 .isEqualTo(Lanczos)
                         }
                         managedProperty().bind(visibleProperty())
@@ -114,7 +134,7 @@ class ResizerTab : Fragment("Resize Image") {
                             paramsModel.intArg1.value = 2
                         }
                         visibleWhen {
-                            comboBox.selectionModel.selectedItemProperty()
+                            comboBox!!.selectionModel.selectedItemProperty()
                                 .isEqualTo(Lagrange)
                         }
                         managedProperty().bind(visibleProperty())
@@ -123,14 +143,16 @@ class ResizerTab : Fragment("Resize Image") {
                     button("Resize") {
                         enableWhen(model.valid)
                         action {
-                            engineController.resample(
-                                previewWidth,
-                                previewHeight,
-                                model.width.value,
-                                model.height.value,
-                                comboBox.value,
-                                paramsModel.getParams(comboBox.value),
-                            )
+                            comboBox?.let {
+                                engineController.resample(
+                                    previewWidth,
+                                    previewHeight,
+                                    model.width.value,
+                                    model.height.value,
+                                    it.value,
+                                    paramsModel.getParams(comboBox!!.value),
+                                )
+                            }
                         }
                     }
                 }
