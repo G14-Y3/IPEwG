@@ -17,4 +17,6 @@ class BlackAndWhite(val threshold: Double): ImageProcessing {
             }
         }
     }
+
+    override fun toString(): String = "Black and white with threshold $threshold"
 }

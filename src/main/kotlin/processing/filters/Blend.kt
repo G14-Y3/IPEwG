@@ -46,6 +46,8 @@ class Blend(private val blendImage: Image, val mode: BlendType) :
             }
         }
     }
+
+    override fun toString(): String = "Blend with mode $mode"
 }
 
 enum class BlendType(val operation: (topColor: Color, bottomColor: Color) -> Color) {

@@ -73,7 +73,7 @@ class EngineController : Controller() {
     fun blend(type: BlendType) = engine.transform(Blend(engine.blendImage.value, type))
 
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
-        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview", encodeImage.width, encodeImage.height)
+        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder))
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))

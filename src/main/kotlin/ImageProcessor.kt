@@ -23,6 +23,7 @@ class GUI : View("IPEwG") {
             find<FilterPanel>().root,
             find<ImagePanel>().root.managedWhen(batchModel.isBatchTabOpened).visibleWhen(batchModel.isBatchTabOpened)
         ) {
+            // TODO: a better method to resolve this
             batchModel.isBatchTabOpened.addListener { observable, oldValue, newValue ->
                 if (newValue) {
                     setDividerPosition(0, 0.7)

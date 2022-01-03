@@ -22,7 +22,7 @@ class BlackAndWhiteTab: Fragment("Black & White") {
         }
 
         val slider = SliderWithSpinner(0.0, 255.0, ChangeListener { _, _, new ->
-            engineController.blackAndWhite(new as Double)
+            engineController.blackAndWhite(new as Double / 255.0)
         }).withLabel("Threshold")
 
         this.children.add(slider.build())

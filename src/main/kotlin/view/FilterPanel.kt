@@ -43,7 +43,7 @@ class FilterPanel : View() {
                     },
                     TransformationList().root
                 ) {
-                    setDividerPosition(0, 0.4)
+                    setDividerPosition(0, 0.55)
                 }
             }
         }

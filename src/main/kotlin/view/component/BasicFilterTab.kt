@@ -57,7 +57,7 @@ class BasicFilterTab : Fragment("Basic Actions") {
                 engineController.contrast(new as Double)
             }).withLabel("Factor")
             this.children.add(slider.build())
-            button("Apply Rotation") {
+            button("Apply Contrast") {
                 vboxConstraints {
                     margin = Insets(10.0, 20.0, 10.0, 10.0)
                 }

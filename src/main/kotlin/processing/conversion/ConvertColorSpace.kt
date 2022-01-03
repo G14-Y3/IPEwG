@@ -96,5 +96,5 @@ class ConvertColorSpace(private val source: ColorSpaceType, private val target: 
         func(color.opacity, ColorChannels.Alpha),
     )
 
-    override fun toString(): String = "Conversion: $source => $target"
+    override fun toString(): String = "Colour space Conversion: $source => $target"
 }

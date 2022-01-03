@@ -31,11 +31,16 @@ class TransformationList : Fragment() {
 
             listview(engine.transformations) {
                 prefWidth = 400.0
-                engine.currIndexProperty.addListener(
-                    ChangeListener { _, _, newValue ->
-                        selectionModel.select(newValue.toInt() - 1)
+                selectionModel.selectedIndexProperty()
+                    .onChange {
+                        engine.setCurrentIndex(it + 1)
                     }
-                )
+
+                engine.currIndexProperty.onChange {
+                    if (it - 1 != selectionModel.selectedIndex) {
+                        selectionModel.select(it - 1)
+                    }
+                }
             }
         }
         hbox {

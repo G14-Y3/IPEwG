@@ -86,13 +86,14 @@ class DepthEstimationTab : Fragment("Depth Estimation") {
                 }
             }
         }
-        imageview(engine.depthImage) {
-            isPreserveRatio = true
-            fitWidth = 200.0
-            fitHeight = 200.0
-            hboxConstraints {
-                margin = Insets(20.0)
-            }
-        }
+        // TODO: the code below is used to display the original image but currently we just commented it out
+//        imageview(engine.depthImage) {
+//            isPreserveRatio = true
+//            fitWidth = 200.0
+//            fitHeight = 200.0
+//            hboxConstraints {
+//                margin = Insets(20.0)
+//            }
+//        }
     }
 }

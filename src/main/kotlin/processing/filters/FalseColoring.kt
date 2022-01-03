@@ -71,4 +71,6 @@ class FalseColoring(val coloringMethod: FalseColoringMethod) : ImageProcessing {
     private fun clamp(value: Double): Double {
         return if (value < 0) 0.0 else if (value > 1) 1.0 else value
     }
+
+    override fun toString() = "False Colouring with the $coloringMethod method"
 }
