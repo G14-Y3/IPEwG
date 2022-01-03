@@ -11,11 +11,9 @@ class BlackAndWhite(val threshold: Double): ImageProcessing {
 
         for (x in 0 until srcImage.width.toInt()) {
             for (y in 0 until srcImage.height.toInt()) {
-                val r = reader.getColor(x, y).red
-                val g = reader.getColor(x, y).green
-                val b = reader.getColor(x, y).blue
-                val gray = ((r + g + b) / 3.0 * 255.0)
-                writer.setColor(x, y, if (gray < threshold) Color.BLACK else Color.WHITE)
+                // for gray scale value, R = G = B, so we can choose any of them to represent the gray value
+                val grayvalue = reader.getColor(x, y).grayscale().red
+                writer.setColor(x, y, if (grayvalue < threshold) Color.BLACK else Color.WHITE)
             }
         }
     }
