@@ -1,18 +1,10 @@
 package view
 
-import controller.EngineController
 import javafx.geometry.*
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.BatchProcessorModel
 import models.EngineModel
-import processing.depthestimation.DepthEstimationModel
-import processing.filters.BlurType
-import processing.filters.HSVType
-import processing.filters.HistogramEqualization
-import processing.filters.RGBType
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
 import tornadofx.*
 import view.component.*
 import view.fragment.TransformationList
@@ -45,7 +37,9 @@ class FilterPanel : View() {
                         tab<DepthEstimationTab>()
                         tab<WaterMarkTab>()
                         tab<DenoiseTab>()
+                        tab<CNNVisualTab>()
                         tab<FalseColoringTab>()
+                        tab<PosterizationTab>()
                     },
                     TransformationList().root
                 ) {

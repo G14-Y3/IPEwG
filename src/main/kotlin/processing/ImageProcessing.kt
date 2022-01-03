@@ -44,6 +44,7 @@ val jsonFormatter = Json {
             subclass(SpatialSeparableConvolution::class)
             subclass(Blend::class)
             subclass(SaltPepperNoise::class)
+            subclass(CNNVisualization::class)
         }
     }
 }

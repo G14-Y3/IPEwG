@@ -64,6 +64,8 @@ class EngineController : Controller() {
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
 
+    fun posterize(level: Double) = engine.adjust("POSTERIZATION", level)
+
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
 
     fun sharpen() = engine.transform(Sharpen())
@@ -100,4 +102,8 @@ class EngineController : Controller() {
     fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
 
     fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
+    
+    fun CNNVisualize(netName: String, imgShape: List<Int>, layerNum: Int, channelNum: List<Int>) =
+        engine.transform(CNNVisualization(netName, imgShape, layerNum, channelNum))
+
 }
