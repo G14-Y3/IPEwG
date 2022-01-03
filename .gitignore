@@ -70,3 +70,4 @@ outTmp/
 /test.output
 /kotlin-native/dist
 kotlin-ide/
+src/main/resources/CNN_split/CNN_traced

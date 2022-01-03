@@ -39,10 +39,15 @@ dependencies {
     implementation("net.mahdilamb:colormap:0.9.61")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
+    testImplementation("org.testfx:testfx-core:4.0.15-alpha")
+    testImplementation("org.testfx:testfx-junit:4.0.15-alpha")
 }
 
 tasks.test {
     useJUnit()
+    jvmArgs("--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED", "-Djava.library.path=./lib/libtorch/lib")
+    dependsOn("extractLibtorch")
+
 }
 
 tasks.withType<KotlinCompile> {

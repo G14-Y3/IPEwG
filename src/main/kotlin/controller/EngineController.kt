@@ -10,14 +10,16 @@ import processing.depthestimation.DepthColorMap
 import processing.depthestimation.DepthEstimation
 import processing.depthestimation.DepthEstimationModel
 import processing.filters.*
-import processing.steganography.SteganographyEncoder
 import processing.frequency.FrequencyFilters
-import processing.rotation.Rotation
+import processing.resample.Params
+import processing.resample.Resample
+import processing.resample.ResampleMethod
+import processing.steganography.SteganographyEncoder
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import processing.steganography.WaterMark
 import processing.steganography.WaterMarkingTechnique
-import tornadofx.Controller
+import tornadofx.*
 
 /** IMPORTANT:
  *
@@ -34,6 +36,9 @@ import tornadofx.Controller
 class EngineController : Controller() {
 
     private val engine: EngineModel by inject()
+
+    val previewWidth: Double get() = engine.previewImage.value.width
+    val previewHeight: Double get() = engine.previewImage.value.height
 
     fun grayscale() = engine.transform(Grayscale())
 
@@ -58,7 +63,9 @@ class EngineController : Controller() {
     fun styleTransfer(style: NeuralStyles) = engine.transform(NeuralStyleTransfer(style))
 
     fun blur(radius: Double, type: BlurType) = engine.adjust(type.name, radius)
-    
+
+    fun posterize(level: Double) = engine.adjust("POSTERIZATION", level)
+
     fun frequencyTransfer(frequencyFilters: FrequencyFilters) = engine.transform(frequencyFilters)
 
     fun sharpen() = engine.transform(Sharpen())
@@ -79,10 +86,12 @@ class EngineController : Controller() {
     fun convertsRGBToLinearRGB() = convertColorSpace(ColorSpaceType.sRGB, ColorSpaceType.LinearRGB)
 
     fun convertLinearRGBTosRGB() = convertColorSpace(ColorSpaceType.LinearRGB, ColorSpaceType.sRGB)
-    
+
     fun histogramEqualization(histogramEqualization: HistogramEqualization) = engine.transform(histogramEqualization)
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
+
+    fun resample(srcWidth: Int, srcHeight: Int, width: Int, height: Int, method: ResampleMethod, params: Params?) = engine.transform(Resample(srcWidth, srcHeight, width, height, params, method), "preview", width.toDouble(), height.toDouble())
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap, width: Double, height: Double) = engine.transform(DepthEstimation(modelType, colormap), "preview", width, height)
 
@@ -93,4 +102,8 @@ class EngineController : Controller() {
     fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
 
     fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
+    
+    fun CNNVisualize(netName: String, imgShape: List<Int>, layerNum: Int, channelNum: List<Int>) =
+        engine.transform(CNNVisualization(netName, imgShape, layerNum, channelNum))
+
 }
