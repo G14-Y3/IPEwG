@@ -24,12 +24,13 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
+                        tab<ConversionTab>()
+                        tab<ResizerTab>()
                         tab<BlackAndWhiteTab>()
-                        tab<StyleTransferTab>()
                         tab<ColorAdjustTab>()
+                        tab<StyleTransferTab>()
                         tab<BlurFilterTab>()
                         tab<FrequencyTab>()
-                        tab<ConversionTab>()
                         tab<HistogramFilterTab>()
                         tab<BlendTab>()
                         tab<SaltPepperTab>()

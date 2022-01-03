@@ -5,15 +5,15 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.geometry.Rectangle2D
 import javafx.scene.image.Image
-import javafx.scene.image.PixelWriter
+import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
-import javafx.scene.paint.Color
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import processing.ImageProcessing
 import processing.depthestimation.DepthEstimation
 import processing.filters.Adjustment
 import processing.jsonFormatter
+import processing.resample.Resample
 import processing.steganography.SteganographyDecoder
 import tornadofx.*
 import view.ImagePanel
@@ -244,8 +244,10 @@ class EngineModel(
                 snapshots[currIndex].width,
                 snapshots[currIndex].height,
             )
-            imagePanel.updateViewPort(viewport)
-            imagePanel.updateSlider(originalImage.value.width, originalImage.value.height)
+
+            imagePanel.newView.viewport = viewport
+//            imagePanel.newView.isPreserveRatio = true
+            imagePanel.updateSlider(snapshots[currIndex].width, snapshots[currIndex].height)
             imagePanel.sliderInit()
         }
     }
@@ -369,5 +371,4 @@ class EngineModel(
             out.println(jsonFormatter.encodeToString(ArrayList(transformations)))
         }
     }
-
 }
