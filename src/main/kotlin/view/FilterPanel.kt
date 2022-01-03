@@ -1,18 +1,10 @@
 package view
 
-import controller.EngineController
 import javafx.geometry.*
 import javafx.scene.control.TabPane
 import javafx.scene.text.FontWeight
 import models.BatchProcessorModel
 import models.EngineModel
-import processing.depthestimation.DepthEstimationModel
-import processing.filters.BlurType
-import processing.filters.HSVType
-import processing.filters.HistogramEqualization
-import processing.filters.RGBType
-import processing.styletransfer.NeuralStyleTransfer
-import processing.styletransfer.NeuralStyles
 import tornadofx.*
 import view.component.*
 import view.fragment.TransformationList
@@ -32,12 +24,13 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
+                        tab<ConversionTab>()
+                        tab<ResizerTab>()
                         tab<BlackAndWhiteTab>()
-                        tab<StyleTransferTab>()
                         tab<ColorAdjustTab>()
+                        tab<StyleTransferTab>()
                         tab<BlurFilterTab>()
                         tab<FrequencyTab>()
-                        tab<ConversionTab>()
                         tab<HistogramFilterTab>()
                         tab<BlendTab>()
                         tab<SaltPepperTab>()
@@ -46,6 +39,7 @@ class FilterPanel : View() {
                         tab<DenoiseTab>()
                         tab<CNNVisualTab>()
                         tab<FalseColoringTab>()
+                        tab<PosterizationTab>()
                     },
                     TransformationList().root
                 ) {

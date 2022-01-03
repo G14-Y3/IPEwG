@@ -1,0 +1,43 @@
+# Colour Space Conversion
+
+## Pipeline
+
+```mermaid
+flowchart LR
+    subgraph in [Input]
+        direction TB
+        File["Image File<br/> (PNG, JPEG, BMP, etc.)"] -->|Load File| Img("Image (sRGB)")
+        Img -->|sRGB to Linear Conversion| Linear("Image (Linear RGB)")
+    end
+    subgraph out [Output]
+        direction TB
+        ResultLInear("Result Image (Linear RGB)") -->|"Linear to sRGB Conversion"| ResultImg("Result Image (sRGB)")
+        ResultImg --> |Save| ResultFile["Result File<br/> (PNG, JPEG, BMP, etc.)"]
+    end
+    subgraph processing ["Applied multiple times if necessary"]
+        direction LR
+        subgraph A["Image Processing (Assuming Linear RGB model)"]
+            subgraph Resample ["Resample"]
+                Rescale(["Rescale / Resize"])
+                Rotate(["Rotate"])
+                E1(["..."])
+            end
+
+            direction LR
+            subgraph Filtering
+                Blur(["Blur"])
+                Sharpen(["Sharpen"])
+                E2(["..."])
+            end
+
+            direction LR
+            subgraph Algebra ["Algebra, Pixel-level Operation"]
+                Blend(["Blend"])
+                E3(["..."])
+            end
+            E3(["..."])
+        end
+    end
+    in --> |Linear RGB| processing --> |Linear RGB| out
+    %% processing --> |Multiple if necessary| processing
+```
