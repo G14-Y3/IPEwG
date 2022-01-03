@@ -19,6 +19,7 @@ import processing.steganography.SteganographyEncoder
 import processing.styletransfer.NeuralStyleTransfer
 import processing.styletransfer.NeuralStyles
 import kotlin.system.measureTimeMillis
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 class PerformanceTest: ApplicationTest() {
@@ -27,19 +28,14 @@ class PerformanceTest: ApplicationTest() {
     }
 
     @Test
+    @Ignore
     fun performanceTest() {
-
-
         val imagePaths = listOf(
             "file:/Users/zhaoxuan/Desktop/IPEwG/src/main/resources/test_images/test_240p.jpeg"
-//            "./test_image.png"
         )
-
-//        val images = imagePaths.map { path -> Image(path) }
 
         val images = listOf(Image(imagePaths[0]))
         val auxImage = images[0]
-
 
         val transformers = listOf(
             ConvertColorSpace(ColorSpaceType.sRGB, ColorSpaceType.LinearRGB),
