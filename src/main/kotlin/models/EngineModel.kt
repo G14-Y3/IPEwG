@@ -301,8 +301,6 @@ class EngineModel(
     fun undo() {
         if (currIndex < 0) return
 
-        println(currIndex - 1)
-
         currIndex--
         updateListSelection()
         previewImage.value = snapshots[currIndex + 1]
@@ -314,8 +312,6 @@ class EngineModel(
 
     fun redo() {
         if (currIndex >= snapshots.size - 1) return
-
-        println(currIndex + 1)
 
         currIndex++
         updateListSelection()

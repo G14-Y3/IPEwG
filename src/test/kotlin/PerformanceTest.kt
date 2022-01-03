@@ -24,17 +24,20 @@ import kotlin.test.Test
 
 class PerformanceTest: ApplicationTest() {
     override fun start(stage: Stage) {
-        stage.show()
     }
 
     @Test
-    @Ignore
+//    @Ignore
     fun performanceTest() {
         val imagePaths = listOf(
-            "file:/Users/zhaoxuan/Desktop/IPEwG/src/main/resources/test_images/test_240p.jpeg"
+//            "./test_images/test_120p.jpeg",
+            "./test_images/test_240p.jpeg",
+//            "./test_images/test_360p.jpeg",
+            "./test_images/test_480p.jpeg",
+//            "./test_images/test_720p.jpeg",
         )
 
-        val images = listOf(Image(imagePaths[0]))
+        val images = imagePaths.map { path -> Image(path) }
         val auxImage = images[0]
 
         val transformers = listOf(
@@ -79,16 +82,18 @@ class PerformanceTest: ApplicationTest() {
 //            SteganographyEncoder("hello", true, "world", 4), // to be checked
         ) + NeuralStyles.values().map { transform -> NeuralStyleTransfer(transform) }
 
-        for (transformer in transformers) {
-            for (image in images) {
+        for (image in images) {
+            for (transformer in transformers) {
                 val input = WritableImage(image.pixelReader, image.width.toInt(), image.height.toInt())
                 val output = WritableImage(image.width.toInt(), image.height.toInt())
+
+                System.gc()
 
                 val elapsed = measureTimeMillis {
                     transformer.process(input, output)
                 }
 
-                println("Transformer $transformer took $elapsed ms")
+                println("${image.url}\t$transformer\t$elapsed")
             }
         }
     }
