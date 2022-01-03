@@ -89,6 +89,7 @@ class CNNVisualTab : View("CNN Visualize") {
         netBox.clear()
         val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
             .readLines()
+        var layerIndex = 0
         for (lineIndex in 1 until metadata.size) {
             val tokens = metadata[lineIndex].split('|')
             val moduleDepth = tokens[0].toInt()
@@ -107,6 +108,7 @@ class CNNVisualTab : View("CNN Visualize") {
             }
 
             // Convolution layer
+            layerIndex += 1
             val channelNum: List<Int> = tokens.subList(2, tokens.size - 2).map { x -> x.toInt() }
             val channelBox = hbox {}
             for (dimension in channelNum) {
@@ -125,7 +127,7 @@ class CNNVisualTab : View("CNN Visualize") {
                     for (dimentionBox in channelBox.children) {
                         dimentions.add((dimentionBox as ComboBox<Int>).value)
                     }
-                    engineController.CNNVisualize(path, shape, lineIndex - 1, dimentions.toList())
+                    engineController.CNNVisualize(path, shape, layerIndex, dimentions.toList())
                 }
                 isVisible = false
             }
