@@ -93,4 +93,8 @@ class EngineController : Controller() {
     fun blackAndWhite(threshold: Double) = engine.adjust("BLACK_AND_WHITE", threshold)
 
     fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
+    
+    fun CNNVisualize(netName: String, imgShape: List<Int>, layerNum: Int, channelNum: List<Int>) =
+        engine.transform(CNNVisualization(netName, imgShape, layerNum, channelNum))
+
 }

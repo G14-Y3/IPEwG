@@ -44,6 +44,7 @@ class FilterPanel : View() {
                         tab<DepthEstimationTab>()
                         tab<WaterMarkTab>()
                         tab<DenoiseTab>()
+                        tab<CNNVisualTab>()
                         tab<FalseColoringTab>()
                     },
                     TransformationList().root
