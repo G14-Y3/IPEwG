@@ -15,19 +15,19 @@ class GUI : View("IPEwG") {
     private val batchModel: BatchProcessorModel by inject()
 
     override val root = borderpane {
-        setPrefSize(1300.0, 780.0)
+        setPrefSize(1600.0, 780.0)
         top<TopBar>()
 
         center = splitpane(
             Orientation.HORIZONTAL,
             find<FilterPanel>().root,
-            find<ImagePanel>().root.managedWhen(batchModel.isBatchTabOpened).visibleWhen(batchModel.isBatchTabOpened)
+            find<ImagePanel>().root.managedWhen(batchModel.isBatchTabOpened)
+                .visibleWhen(batchModel.isBatchTabOpened)
         ) {
-            batchModel.isBatchTabOpened.addListener { observable, oldValue, newValue ->
+            batchModel.isBatchTabOpened.addListener { _, _, newValue ->
                 if (newValue) {
                     setDividerPosition(0, 0.7)
-                }
-                else {
+                } else {
                     setDividerPosition(0, 1.0)
                 }
             }
