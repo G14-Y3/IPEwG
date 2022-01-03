@@ -68,8 +68,8 @@ class ColorAdjustTab : Fragment("Colour Adjustment") {
         colorAdjustmentSliderList.map { (label, op) ->
             val slider = SliderWithSpinner(
                 minVal = -100.0, maxVal = 100.0,
-                op = ChangeListener { _, _, new -> op(new.toDouble() / 100 + 1) }
-            ).withLabel(label as String)
+                op = ChangeListener { _, _, new -> op(new.toDouble() / 100.0 + 1) }
+            ).withLabel(label)
             this.children.add(
                 slider.build()
             )
