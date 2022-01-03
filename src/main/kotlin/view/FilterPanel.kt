@@ -26,7 +26,6 @@ class FilterPanel : View() {
                         tab<BasicFilterTab>()
                         tab<ConversionTab>()
                         tab<ResizerTab>()
-                        tab<BlackAndWhiteTab>()
                         tab<ColorAdjustTab>()
                         tab<StyleTransferTab>()
                         tab<BlurFilterTab>()

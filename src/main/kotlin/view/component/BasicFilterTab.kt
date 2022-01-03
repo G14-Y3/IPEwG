@@ -2,6 +2,7 @@ package view.component
 
 import controller.EngineController
 import javafx.geometry.Insets
+import javafx.scene.control.Tooltip
 import javafx.scene.text.FontWeight
 import tornadofx.*
 
@@ -9,13 +10,23 @@ class BasicFilterTab : Fragment("Basic Actions") {
 
     private val engineController: EngineController by inject()
 
-    private val basicFilterButtonList = mapOf(
+    private val basicFilterButtonList = listOf(mapOf(
         "Inverse Color" to engineController::inverseColour,
         "Greyscale" to engineController::grayscale,
         "Flip Horizontal" to engineController::flipHorizontal,
-        "Flip Vertical" to engineController::flipVertical,
+        "Flip Vertical" to engineController::flipVertical
+    ), mapOf(
         "Edge Detection" to engineController::edgeDetection,
         "Sharpen" to engineController::sharpen
+    ))
+
+    private val basicFilterTooltipText = mapOf(
+        "Inverse Color" to "Inverse all the pixels in the image",
+        "Greyscale" to "Turn every pixel into grayscaled colour",
+        "Flip Horizontal" to "Turn every pixel into either black or white based on its grayscale value",
+        "Flip Vertical" to "Flip the image vertically",
+        "Edge Detection" to "Flip the image horizontally",
+        "Sharpen" to "Enhancing the edge contrast of the image to increase its visual sharpness"
     )
 
     override val root = vbox {
@@ -29,15 +40,19 @@ class BasicFilterTab : Fragment("Basic Actions") {
             }
         }
 
-        hbox {
-            padding = Insets(20.0, 20.0, 10.0, 10.0)
-            buttonbar {
-                basicFilterButtonList.map { (s, callback) ->
-                    button(s) {
-                        /* The buttons need enough width to load up all labels
-                         in them, or the border will change when tabs clicked. */
-                        prefWidth = 60.0
-                    }.setOnAction { callback.call() }
+        basicFilterButtonList.map { item ->
+            hbox {
+                padding = Insets(10.0, 20.0, 0.0, 0.0)
+                buttonbar {
+                    item.map { (s, callback) ->
+                        button(s) {
+                            prefWidth = 120.0
+                            action {
+                                callback.call()
+                            }
+                            tooltip = Tooltip(basicFilterTooltipText[s])
+                        }
+                    }
                 }
             }
         }
@@ -58,6 +73,7 @@ class BasicFilterTab : Fragment("Basic Actions") {
             }).withLabel("Factor")
             this.children.add(slider.build())
             button("Apply Contrast") {
+                tooltip = Tooltip("Adjust the contrast of the image")
                 vboxConstraints {
                     margin = Insets(10.0, 20.0, 10.0, 10.0)
                 }
@@ -83,6 +99,7 @@ class BasicFilterTab : Fragment("Basic Actions") {
             }).withLabel("Rotate Degree")
             this.children.add(slider.build())
             button("Apply Rotation") {
+                tooltip = Tooltip("Rotate the image clockwise, ranging from 0 to 360 degree")
                 vboxConstraints {
                     margin = Insets(10.0, 20.0, 10.0, 10.0)
                 }

@@ -65,18 +65,21 @@ class BatchProcessTab : Fragment("Batch") {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
                     tab<BasicFilterTab>()
-                    tab<BlackAndWhiteTab>()
-                    tab<StyleTransferTab>()
+                    tab<ConversionTab>()
+                    tab<ResizerTab>()
                     tab<ColorAdjustTab>()
+                    tab<StyleTransferTab>()
                     tab<BlurFilterTab>()
                     tab<FrequencyTab>()
-                    tab<ConversionTab>()
                     tab<HistogramFilterTab>()
                     tab<BlendTab>()
                     tab<SaltPepperTab>()
                     tab<DepthEstimationTab>()
                     tab<WaterMarkTab>()
                     tab<DenoiseTab>()
+                    tab<CNNVisualTab>()
+                    tab<FalseColoringTab>()
+                    tab<PosterizationTab>()
                 }
             )
 
