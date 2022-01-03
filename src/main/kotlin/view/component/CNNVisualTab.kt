@@ -15,7 +15,8 @@ class CNNVisualTab : View("CNN Visualize") {
 
     private val engineController: EngineController by inject()
 
-    private val netBox = vbox {}
+    private val scrollNet = scrollpane {  }
+    private val netBox = vbox { }
 
     private var outputHeight = 0
     private var outputWidth = 0
@@ -65,7 +66,8 @@ class CNNVisualTab : View("CNN Visualize") {
                 }
             }
         }
-        this.children.add(netBox)
+        scrollNet.content = netBox
+        this.children.add(scrollNet)
     }
 
     /**
