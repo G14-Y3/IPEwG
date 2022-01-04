@@ -34,37 +34,46 @@ class CNNVisualTab : View("CNN Visualize") {
         }
 
         hbox {
-            label("input tensor shape") {
-                prefWidth = 150.0
-            }
-            this.children.add(shapeBox)
-        }
-
-        button("Import CNN") {
-            action {
-                try {
-                    val dir = chooseFile(
-                        title = "Import pytorch CNN",
-                        filters = arrayOf(
-                            FileChooser.ExtensionFilter(
-                                "pythorch file",
-                                "*.pt", "*.log"
+            padding = Insets(10.0)
+            textflow {
+                text(
+                    "CNN visualization can display the selected CNN layer's output in a grayscale image.\n\n" +
+                            "To use the tool: \n1. specify the input tensor shape of the network: "
+                )
+                this.children.add(shapeBox)
+                text("\n2. ")
+                button("Import CNN") {
+                    action {
+                        try {
+                            val dir = chooseFile(
+                                title = "Import pytorch CNN",
+                                filters = arrayOf(
+                                    FileChooser.ExtensionFilter(
+                                        "pythorch file",
+                                        "*.pt", "*.log"
+                                    )
+                                ),
+                                mode = FileChooserMode.Single
                             )
-                        ),
-                        mode = FileChooserMode.Single
-                    )
-                    if (dir.isNotEmpty()) {
-                        importNet(dir[0].toString())
+                            if (dir.isNotEmpty()) {
+                                importNet(dir[0].toString())
+                            }
+                        } catch (e: IllegalArgumentException) {
+                            alert(
+                                type = Alert.AlertType.ERROR,
+                                header = "Invalid pytorch file path",
+                                content = "The torch file path you entered is incorrect.\n" +
+                                        "Please check!" + e.toString()
+                            )
+                        }
                     }
-                } catch (e: IllegalArgumentException) {
-                    alert(
-                        type = Alert.AlertType.ERROR,
-                        header = "Invalid pytorch file path",
-                        content = "The torch file path you entered is incorrect.\n" +
-                                "Please check!" + e.toString()
-                    )
                 }
+                text(
+                    "that will be investigated. The structure of the network shall be displayed below.\n" +
+                            "3.Select the channel you wish to visualize and click \"View output tensor\" after each layer to see the image"
+                )
             }
+
         }
         scrollNet.content = netBox
         this.children.add(scrollNet)

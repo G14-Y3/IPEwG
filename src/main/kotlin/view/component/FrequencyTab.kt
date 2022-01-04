@@ -120,7 +120,7 @@ class FrequencyTab : Fragment("Frequency Transfer") {
                 }
             }
 
-            hbox {
+            vbox {
                 label("Filter Image") {
                     addClass(CssStyle.labelTag)
                 }
