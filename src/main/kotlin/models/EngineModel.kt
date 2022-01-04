@@ -298,7 +298,7 @@ class EngineModel(
     }
 
     fun undo() {
-        if (currIndex < 0) return
+        if (currIndex <= 0) return
 
         currIndex--
         updateListSelection()
