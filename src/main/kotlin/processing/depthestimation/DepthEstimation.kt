@@ -85,7 +85,9 @@ class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMa
         }
     }
 
-    public fun get_depth_image(): WritableImage {
+    fun get_depth_image(): WritableImage {
         return depthImage
     }
+
+    override fun toString() = "Depth Estimation using $type model and $colormap colour map"
 }
