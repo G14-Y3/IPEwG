@@ -59,8 +59,8 @@ class BicubicInterpolation(
         val yDist: Double = y.toDouble() / scaleY - y1
 
         // interpolate in horizontal direction
-        val pVertical = getSupports(y1, x1, yInc, srcH, srcW) { _y, _x ->
-            interpolate(xDist, getSupports(_x, _y, xInc, srcW, srcH, reader))
+        val pVertical = getSupports(y1, x1, 1, srcH, srcW) { _y, _x ->
+            interpolate(xDist, getSupports(_x, _y, 1, srcW, srcH, reader))
         }
 
         // interpolate in vertical direction
