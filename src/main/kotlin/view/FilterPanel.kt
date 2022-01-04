@@ -7,7 +7,7 @@ import models.BatchProcessorModel
 import models.EngineModel
 import tornadofx.*
 import view.component.*
-import view.fragment.TransformationList
+import view.component.TransformationList
 
 class FilterPanel : View() {
 

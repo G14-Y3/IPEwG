@@ -1,4 +1,4 @@
-package view.fragment
+package view.component
 
 import controller.FileController
 import javafx.geometry.Insets
