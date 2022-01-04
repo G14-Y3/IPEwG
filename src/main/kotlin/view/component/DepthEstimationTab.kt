@@ -28,60 +28,49 @@ class DepthEstimationTab : Fragment("Depth Estimation") {
                     fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                 }
             }
+
             hbox {
-                vbox {
-                    hbox {
-                        vboxConstraints {
-                            margin = Insets(20.0, 20.0, 10.0, 10.0)
-                        }
-                        label("Estimating the depth using ") {
-                            hboxConstraints {
-                                marginTop = 5.0
-                                marginBottom = 20.0
-                            }
-                        }
-                        combobox(values = DepthEstimationModel.values().toList()) {
-                            valueProperty()
-                                .addListener(ChangeListener { _, _, new ->
-                                    modelType = new
-                                })
+                padding = Insets(10.0)
+                textflow {
+                    text("Depth estimation will create a depth map of the image with the colour of the" +
+                            " depth map being the relative estimated depth. You can choose two different machine learning" +
+                            " models and three different color map below. Click Estimate depth button below to visualize.")
+                }
+            }
 
-                            value = DepthEstimationModel.NYU
-                        }
+            hbox {
+                padding = Insets(10.0)
+                textflow {
+                    text("Estimating the depth using the  ")
+                    combobox(values = DepthEstimationModel.values().toList()) {
+                        valueProperty()
+                            .addListener(ChangeListener { _, _, new ->
+                                modelType = new
+                            })
+
+                        value = DepthEstimationModel.NYU
                     }
-                    hbox {
-                        vboxConstraints {
-                            margin = Insets(0.0, 20.0, 10.0, 10.0)
-                        }
-                        label("Using ") {
-                            hboxConstraints {
-                                marginTop = 5.0
-                                marginBottom = 20.0
-                            }
-                        }
-                        combobox(values = DepthColorMap.values().toList()) {
-                            valueProperty()
-                                .addListener(ChangeListener { _, _, new ->
-                                    colormap = new
-                                })
+                    text("  model and  ")
+                    combobox(values = DepthColorMap.values().toList()) {
+                        valueProperty()
+                            .addListener(ChangeListener { _, _, new ->
+                                colormap = new
+                            })
 
-                            value = DepthColorMap.Viridis
-                        }
-                        label(" as the depth color map") {
-                            hboxConstraints {
-                                marginTop = 5.0
-                                marginBottom = 20.0
-                            }
-                        }
+                        value = DepthColorMap.Viridis
                     }
+                    text("  as the colour map.")
+                }
+            }
 
-                    button("Estimate Depth") {
-                        action {
-                            engineController.depthEstimation(modelType, colormap, engine.previewImage.value.width / 2, engine.previewImage.value.height / 2)
-                        }
-                        vboxConstraints {
-                            margin = Insets(0.0, 20.0, 10.0, 10.0)
-                        }
+            hbox {
+                padding = Insets(10.0)
+                button("Estimate Depth") {
+                    action {
+                        engineController.depthEstimation(modelType, colormap, engine.previewImage.value.width / 2, engine.previewImage.value.height / 2)
+                    }
+                    vboxConstraints {
+                        margin = Insets(0.0, 20.0, 10.0, 10.0)
                     }
                 }
             }

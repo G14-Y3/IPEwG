@@ -51,12 +51,12 @@ class ConversionTab : Fragment("Colour Space Conversions") {
                 hboxConstraints {
                     margin = Insets(10.0, 20.0, 10.0, 10.0)
                 }
-                text("Convert colour spaces between CIELab and Linear RGB. For more information about CIELab and, visit ") {
+                text("Convert colour spaces between sRGB and Linear RGB. For more information about sRGB and Linear RGB, visit ") {
                     textAlignment = TextAlignment.CENTER
                 }
                 hyperlink("this link") {
                     action {
-                        Desktop.getDesktop().browse(URL("https://knowledge.ulprospector.com/10780/pc-the-cielab-lab-system-the-method-to-quantify-colors-of-coatings/").toURI());
+                        Desktop.getDesktop().browse(URL("https://matt77hias.github.io/blog/2018/07/01/linear-gamma-and-sRGB-color-spaces.html").toURI());
                     }
                 }
                 text(". Colour space conversion is inherently used in other image processing techniques as well, such as resize/rescale and histogram equalization.")

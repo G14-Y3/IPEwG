@@ -50,7 +50,7 @@ class ResizerTab : Fragment("Resize Image") {
                 textflow {
                     text("Image rescale is the process of changing the " +
                             "dimension of the image by downsampling or upsampling/" +
-                            "super-resolutionusing different techniques. You can choose " +
+                            "super-resolution using different techniques. You can choose " +
                             "a method below and resize the image to a specific dimension. " +
                             "Notice that a large dimension might take longer time to process.")
                     padding = Insets(10.0, 0.0, 10.0, 0.0)

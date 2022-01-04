@@ -30,29 +30,39 @@ class BlendTab : Fragment("Blend") {
         }
 
         hbox {
-            padding = Insets(20.0, 10.0, 20.0, 10.0)
-
-            val importButton = button("Import")
-
-            val blendView = imageview(engine.blendImage) {
-                isPreserveRatio = true
+            hbox {
+                padding = Insets(10.0)
+                textflow {
+                    text(
+                        "Blending will mix two images using different blending methods, e.g. " +
+                                "multiply, overlay, dissolve. The resulting effect will look like two images stack on top " +
+                                "of one another in a special way. Some blending effect might produce water-mark style effects." +
+                                "You can first  "
+                    )
+                    button("import").setOnAction { importBlendImage() }
+                    text("  a second image and then choose the blending method  ")
+                    val blendList = BlendType.values().toList()
+                    val comboBox = combobox(values = blendList)
+                    comboBox.value = blendList[0]
+                    text("  to  ")
+                    button("blend").setOnAction {
+                        engineController.blend(comboBox.value)
+                    }
+                    text("  the two images together.")
+                }
             }
-            blendView.fitHeight = 100.0
-            blendView.fitWidth = 200.0
-            importButton.setOnAction {
-                importBlendImage()
-            }
-        }
 
-        hbox {
-            padding = Insets(20.0, 10.0, 20.0, 10.0)
+            vbox {
+                padding = Insets(20.0, 10.0, 20.0, 10.0)
 
-            val blendList = BlendType.values().toList()
-            val comboBox = combobox(values = blendList)
-            comboBox.value = blendList[0]
+                label("Blend Image")
 
-            button("Blend").setOnAction {
-                engineController.blend(comboBox.value)
+                val blendView = imageview(engine.blendImage) {
+                    isPreserveRatio = true
+                    prefWidth = 200.0
+                    prefHeight = 200.0
+                }
+                blendView.fitHeight = 250.0
             }
         }
     }

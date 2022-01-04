@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
+import javafx.scene.text.TextAlignment
 import processing.frequency.*
 import tornadofx.*
 import view.CssStyle
@@ -61,7 +62,7 @@ class FrequencyTab : Fragment("Frequency Transfer") {
     private val engineController: EngineController by inject()
 
     override val root = vbox {
-        label("Frequency Filtering ") {
+        label("Frequency Filtering") {
             vboxConstraints {
                 margin = Insets(20.0, 20.0, 10.0, 10.0)
             }
@@ -70,26 +71,59 @@ class FrequencyTab : Fragment("Frequency Transfer") {
                 fontSize = Dimension(20.0, Dimension.LinearUnits.px)
             }
         }
+
+        hbox {
+            padding = Insets(10.0)
+            textflow {
+                text("Frequency filtering can extract the change in frequency of the pixels on the image. In " +
+                        "the context of image processing, frequency refers to the rate of change in patterns or colour differences " +
+                        "among nearby pixels. It is achieved by applying Fourier transform on the image. In this filter panel, you can " +
+                        "choose 3 different filters to filter out high/low frequency regions. A low pass means to only keep low frequency " +
+                        "parts of the image, whereas high pass means to only keep the high frequency parts of the image.")
+            }
+        }
+
         hbox {
             vbox {
                 this.minWidth = 400.0
                 hbox {
-                    label("filter type ") { addClass(CssStyle.labelTag) }
+                    padding = Insets(10.0, 0.0, 0.0, 10.0)
+                    label("Filter type") {
+                        addClass(CssStyle.labelTag)
+                        textAlignment = TextAlignment.CENTER
+                    }
                     this.children.add(filterType)
                 }
 
-                hbox {label("filter range") { addClass(CssStyle.labelTag) }
+                hbox {
+                    padding = Insets(10.0, 0.0, 0.0, 10.0)
+                    label("Filter range") {
+                        addClass(CssStyle.labelTag)
+                        textAlignment = TextAlignment.CENTER
+                    }
                     this.children.add(filterRange)
                 }
 
-                this.children.add(passStopBoundSlider.build())
-                this.children.add(bandWidthSlider.build())
+                vbox {
+                    padding = Insets(10.0, 0.0, 0.0, 5.0)
+                    this.children.add(passStopBoundSlider.build())
+                }
 
-                this.children.add(orderBox)
+                vbox {
+                    padding = Insets(10.0, 0.0, 0.0, 5.0)
+                    this.children.add(bandWidthSlider.build())
+                }
+
+                vbox {
+                    padding = Insets(10.0, 0.0, 0.0, 10.0)
+                    this.children.add(orderBox)
+                }
             }
 
             hbox {
-                label("filter image:") {addClass(CssStyle.labelTag)}
+                label("Filter Image") {
+                    addClass(CssStyle.labelTag)
+                }
                 this.children.add(filterImageView)
             }
         }

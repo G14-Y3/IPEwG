@@ -14,7 +14,7 @@ class FalseColoringTab: Fragment("False Coloring") {
     override val root: Parent = vbox {
         label("False Coloring") {
             vboxConstraints {
-                margin = Insets(10.0, 20.0, 0.0, 20.0)
+                margin = Insets(20.0, 20.0, 0.0, 10.0)
             }
             style {
                 fontWeight = FontWeight.BOLD
@@ -23,28 +23,31 @@ class FalseColoringTab: Fragment("False Coloring") {
         }
 
         hbox {
-            var scheme = FalseColoringMethod.ENHANCEMENT
-            label("Choose a false coloring scheme ") {
-                hboxConstraints {
-                    margin = Insets(10.0, 20.0, 0.0, 20.0)
-                }
+            padding = Insets(10.0)
+            textflow {
+                text("False colouring uses a colour set different from the natural rendition of the " +
+                        "image to re-colour the image in order to enhance the contrast between components in the image. " +
+                        "It is used for better information visualization or geographical map. You can choose different " +
+                        "methods of false colouring. See the project report for more details.")
             }
+        }
 
+        hbox {
+            padding = Insets(10.0)
+            textflow {
+                text("You can simply choose a false coloring scheme:  ")
+            }
+            var scheme = FalseColoringMethod.ENHANCEMENT
             val box = combobox(values = FalseColoringMethod.values().toList()) {
                 value = scheme
             }
-
-            label(" and then ") {
-                hboxConstraints {
-                    margin = Insets(10.0, 20.0, 0.0, 20.0)
-                }
-            }
-
+            text("  and then  ")
             button("Apply") {
                 action {
                     engineController.falseColoring(box.value)
                 }
             }
+            text("  it.")
         }
     }
 

@@ -1,6 +1,7 @@
 package view
 
 import controller.FileController
+import javafx.event.EventHandler
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
@@ -13,28 +14,28 @@ class TopBar : View() {
     private val fileController: FileController by inject()
 
     override val root = menubar {
-        menu("_File") {
-            item("_Import Image...") {
+        menu("File") {
+            item("Import Image...") {
                 action {
                     fileOperation(mode = "import image")
                 }
             }
-            item("_Export Result...") {
+            item("Export Result...") {
                 action {
                     fileOperation(mode = "export image")
                 }
             }
-            item("I_mport Transformations...") {
+            item("Import Transformations...") {
                 action {
                     fileOperation(mode = "import JSON")
                 }
             }
-            item("E_xport Transformations...") {
+            item("Export Transformations...") {
                 action {
                     fileOperation(mode = "export JSON")
                 }
             }
-            item("_Quit") {
+            item("Quit") {
                 action {
                     val quitText = "Quit"
                     val result = alert(
@@ -49,9 +50,6 @@ class TopBar : View() {
                     }
                 }
             }
-        }
-        menu("_Help") {
-            item("_How to")
         }
     }
 
