@@ -1,6 +1,9 @@
 package processing.resample
 
 import javafx.scene.paint.Color
+import processing.conversion.ColorChannels
+import processing.conversion.linearTosRGBByChannel
+import processing.conversion.sRGBToLinearByChannel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -26,11 +29,27 @@ data class RGBA(val R: Double, val G: Double, val B: Double, val A: Double) {
     companion object {
         val addIdentity = RGBA(.0, .0, .0, .0)
         val mulIdentity = RGBA(1.0, 1.0, 1.0, 1.0)
-        fun fromColor(x: Color): RGBA = RGBA(x.red, x.green, x.blue, x.opacity)
+        fun fromColor(x: Color, fromSRGB: Boolean = false): RGBA =
+            if (fromSRGB)
+                RGBA(
+                    sRGBToLinearByChannel(x.red, ColorChannels.Red),
+                    sRGBToLinearByChannel(x.green, ColorChannels.Green),
+                    sRGBToLinearByChannel(x.blue, ColorChannels.Blue),
+                    sRGBToLinearByChannel(x.opacity, ColorChannels.Alpha),
+                )
+                else
+            RGBA(x.red, x.green, x.blue, x.opacity)
     }
 
     // Clamped.
     val color get() = Color(clamp(R), clamp(G), clamp(B), clamp(A))
+
+    val sRGB = Color(
+        clamp(linearTosRGBByChannel(R, ColorChannels.Red)),
+        clamp(linearTosRGBByChannel(G, ColorChannels.Green)),
+        clamp(linearTosRGBByChannel(B, ColorChannels.Blue)),
+        clamp(linearTosRGBByChannel(A, ColorChannels.Alpha)),
+    )
 
     // clamp to .0 - 1.0 (incl.)
     private fun clamp(x: Double): Double =
@@ -39,10 +58,11 @@ data class RGBA(val R: Double, val G: Double, val B: Double, val A: Double) {
     operator fun plus(other: RGBA) = RGBA(R + other.R, G + other.G, B + other.B, A + other.A)
     operator fun times(scalar: Double) = RGBA(scalar * R, scalar * G, scalar * B, scalar * A)
     operator fun times(scalar: Int) = RGBA(scalar * R, scalar * G, scalar * B, scalar * A)
-    operator fun div(scalar: Double) = RGBA(R / scalar, G / scalar , B / scalar, A / scalar)
+    operator fun div(scalar: Double) = RGBA(R / scalar, G / scalar, B / scalar, A / scalar)
 }
 
 fun Color.toRGBA() = RGBA.fromColor(this)
+fun Color.toRGBAFromSRGB() = RGBA.fromColor(this, fromSRGB = true)
 operator fun Double.times(vector: RGBA) = vector * this
 operator fun Int.times(vector: RGBA) = vector * this
 
