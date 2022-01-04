@@ -19,7 +19,7 @@ import models.BatchProcessorModel
 import tornadofx.*
 import view.fragment.TransformationList
 
-class BatchProcessTab : Fragment("Batch") {
+class BatchProcessTab : Fragment("Batch Processing") {
 
     private val batchProcessor: BatchProcessorModel by inject()
     private val engine: FileController by inject()

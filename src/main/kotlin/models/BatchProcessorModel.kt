@@ -53,7 +53,7 @@ class BatchProcessorModel : ViewModel() {
 
     fun apply() {
         val transformations =
-            engine.transformations.subList(0, engine.currIndex + 1)
+            engine.transformations.subList(0, engine.currIndex)
 
         for (image in transformedImages) {
             transformations.forEach { transformation ->

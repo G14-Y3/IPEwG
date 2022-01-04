@@ -26,11 +26,28 @@ class FilterPanel : View() {
                         tab<BasicFilterTab>()
                         tab<ColorAdjustTab>()
                         tab<ConversionTab>()
+                        tab<SaltPepperTab>()
+                    },
+                    TransformationList().root
+                ) {
+                    setDividerPosition(0, 0.55)
+                }
+            }
+        }
+
+        tab("Advanced Spatial Domain") {
+            vbox {
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<ResizerTab>()
                         tab<BlendTab>()
-                        tab<SaltPepperTab>()
                         tab<WaterMarkTab>()
                         tab<FalseColoringTab>()
+                        tab<HistogramFilterTab>()
+                        tab<PosterizationTab>()
                     },
                     TransformationList().root
                 ) {
@@ -48,8 +65,6 @@ class FilterPanel : View() {
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BlurFilterTab>()
                         tab<FrequencyTab>()
-                        tab<HistogramFilterTab>()
-                        tab<PosterizationTab>()
                     },
                     TransformationList().root
                 ) {
