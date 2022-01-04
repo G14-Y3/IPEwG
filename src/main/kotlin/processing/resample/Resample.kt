@@ -1,6 +1,5 @@
 package processing.resample
 
-import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import kotlinx.serialization.SerialName
@@ -44,7 +43,7 @@ class Resample(
         val stripeWidth = (destImage.height / num_threads).roundToInt()
 
         val writer: PixelWriter = destImage.pixelWriter
-        val reader: PixelReader = srcImage.pixelReader
+        val reader: RGBAReader = { x, y -> srcImage.pixelReader.getColor(x, y).toRGBA() }
 
         for (i in 0 until num_threads) {
             val yStart = i * stripeWidth

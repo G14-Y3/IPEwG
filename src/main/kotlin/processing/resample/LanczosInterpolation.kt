@@ -1,6 +1,5 @@
 package processing.resample
 
-import javafx.scene.image.PixelReader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.math.*
@@ -40,7 +39,7 @@ class LanczosInterpolation(
     private val radiusX: Double = if (scaleX >= 1.0) taps.toDouble() else taps.toDouble() / scaleX
     private val radiusY: Double = if (scaleY >= 1.0) taps.toDouble() else taps.toDouble() / scaleY
 
-    override fun getPixel(reader: PixelReader, x: Int, y: Int): RGBA {
+    override fun getPixel(reader: RGBAReader, x: Int, y: Int): RGBA {
         val srcX: Double = x.toDouble() * srcW / tarW
         val srcY: Double = y.toDouble() * srcH / tarH
 
@@ -53,10 +52,8 @@ class LanczosInterpolation(
         }
         val fTotal = kernel.sum()
         val fvTotal = supports.zip(kernel)
-            .map { reader.getColor(it.first.first, it.first.second).toRGBA() * it.second }
+            .map { reader(it.first.first, it.first.second) * it.second }
             .reduce { acc, rgba -> acc + rgba }
-
-        val ret = fvTotal / fTotal
 
         return fvTotal / fTotal
     }
