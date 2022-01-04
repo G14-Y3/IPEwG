@@ -16,7 +16,7 @@ Many images formats (including PNG format used in our software) stores images in
 
 ### Example
 
-Raw Image (4800 $\times$ 2400, notice that your reader / browser may not resize this image correctly):
+[Raw Image](https://visibleearth.nasa.gov/images/55167/earths-city-lights) (4800 $\times$ 2400, notice that your reader / browser may not resize this image correctly):
 
 ![earth_lights_4800](img/earth_lights_4800.png)
 
