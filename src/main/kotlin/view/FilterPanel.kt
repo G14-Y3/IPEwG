@@ -7,7 +7,7 @@ import models.BatchProcessorModel
 import models.EngineModel
 import tornadofx.*
 import view.component.*
-import view.fragment.TransformationList
+import view.component.TransformationList
 
 class FilterPanel : View() {
 
@@ -16,7 +16,7 @@ class FilterPanel : View() {
 
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-        tab("Filters") {
+        tab("Spatial Domain") {
             vbox {
                 splitpane(
                     Orientation.VERTICAL,
@@ -24,32 +24,75 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
-                        tab<ConversionTab>()
-                        tab<ResizerTab>()
-                        tab<BlackAndWhiteTab>()
                         tab<ColorAdjustTab>()
-                        tab<StyleTransferTab>()
-                        tab<BlurFilterTab>()
-                        tab<FrequencyTab>()
-                        tab<HistogramFilterTab>()
-                        tab<BlendTab>()
+                        tab<ConversionTab>()
                         tab<SaltPepperTab>()
-                        tab<DepthEstimationTab>()
-                        tab<WaterMarkTab>()
-                        tab<DenoiseTab>()
-                        tab<CNNVisualTab>()
-                        tab<FalseColoringTab>()
-                        tab<PosterizationTab>()
                     },
                     TransformationList().root
                 ) {
-                    setDividerPosition(0, 0.4)
+                    setDividerPosition(0, 0.55)
                 }
             }
         }
 
-        tab("Steganography")
-        {
+        tab("Advanced Spatial Domain") {
+            vbox {
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab<ResizerTab>()
+                        tab<BlendTab>()
+                        tab<WaterMarkTab>()
+                        tab<FalseColoringTab>()
+                        tab<HistogramFilterTab>()
+                        tab<PosterizationTab>()
+                    },
+                    TransformationList().root
+                ) {
+                    setDividerPosition(0, 0.55)
+                }
+            }
+        }
+
+        tab("Frequency Domain") {
+            vbox {
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab<BlurFilterTab>()
+                        tab<FrequencyTab>()
+                    },
+                    TransformationList().root
+                ) {
+                    setDividerPosition(0, 0.55)
+                }
+            }
+        }
+
+        tab("Neural Network Based") {
+            vbox {
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab<StyleTransferTab>()
+                        tab<DepthEstimationTab>()
+                        tab<DenoiseTab>()
+                        tab<CNNVisualTab>()
+                    },
+                    TransformationList().root
+                ) {
+                    setDividerPosition(0, 0.55)
+                }
+            }
+        }
+
+        tab("Steganography") {
             vbox {
                 splitpane {
                     prefHeight = 1000.0

@@ -68,7 +68,7 @@ class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMa
             for (j in 0 until new_h) {
                 val r = output[(i * new_h + j)]
                 val clipped = clip(MAX_DEPTH / r, MIN_DEPTH, MAX_DEPTH) / MAX_DEPTH
-                val final_color = colormap.get(clipped)
+                val final_color = colormap.get((clipped * 1024.0).toInt() / 1024.0)
                 val color = Color(final_color.red / 255.0, final_color.green / 255.0, final_color.blue / 255.0, reader.getColor(j, i).opacity)
                 writer.setColor(j, i, color)
             }
@@ -85,7 +85,9 @@ class DepthEstimation(val type: DepthEstimationModel, val colormap: DepthColorMa
         }
     }
 
-    public fun get_depth_image(): WritableImage {
+    fun get_depth_image(): WritableImage {
         return depthImage
     }
+
+    override fun toString() = "Depth Estimation using $type model and $colormap colour map"
 }

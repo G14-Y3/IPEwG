@@ -6,7 +6,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import processing.ImageProcessing
 import processing.multithread.splitImageVertical
-import java.lang.StrictMath.pow
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -23,7 +22,11 @@ class ConvertColorSpace(private val source: ColorSpaceType, private val target: 
         multiThreadedProcess(srcImage, destImage, numCores)
     }
 
-    private fun multiThreadedProcess(srcImage: WritableImage, destImage: WritableImage, num_threads: Int) {
+    private fun multiThreadedProcess(
+        srcImage: WritableImage,
+        destImage: WritableImage,
+        num_threads: Int,
+    ) {
         val partitions = splitImageVertical(num_threads, srcImage)
         val executorService = Executors.newFixedThreadPool(num_threads)
 
@@ -74,27 +77,5 @@ class ConvertColorSpace(private val source: ColorSpaceType, private val target: 
         }
     }
 
-    private fun sRGBToLinearByChannel(value: Double, channel: ColorChannels) =
-        if (channel == ColorChannels.Alpha) value else {
-            if (value <= 0.04045) value / 12.92
-            else pow((value + 0.055) / 1.055, 2.4)
-        }
-
-    private fun linearTosRGBByChannel(value: Double, channel: ColorChannels) =
-        if (channel == ColorChannels.Alpha) value else {
-            if (value <= 0.04045 / 12.92) value * 12.92
-            else 1.055 * pow(value, 1.0 / 2.4) - 0.055
-        }
-
-    private fun channelWiseConversion(
-        color: Color,
-        func: (Double, ColorChannels) -> Double
-    ): Color = Color(
-        func(color.red, ColorChannels.Red),
-        func(color.green, ColorChannels.Green),
-        func(color.blue, ColorChannels.Blue),
-        func(color.opacity, ColorChannels.Alpha),
-    )
-
-    override fun toString(): String = "Conversion: $source => $target"
+    override fun toString(): String = "Colour space Conversion: $source => $target"
 }

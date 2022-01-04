@@ -27,4 +27,6 @@ class Contrast(private val factor: Double) : ImageProcessing {
             }
         }
     }
+
+    override fun toString(): String = "Contrast with ratio $factor"
 }

@@ -61,7 +61,7 @@ class EngineModel(
     var updateListSelection: () -> Unit = {}
 
     // historical snapshots for quick undo-ing
-    private val snapshots = mutableListOf<WritableImage>(WritableImage(originalImage.pixelReader, originalImage.width.toInt(), originalImage.height.toInt()))
+    val snapshots = mutableListOf<WritableImage>(WritableImage(originalImage.pixelReader, originalImage.width.toInt(), originalImage.height.toInt()))
 
     val currIndexProperty = SimpleIntegerProperty(0)
     var currIndex by currIndexProperty
@@ -214,7 +214,6 @@ class EngineModel(
                     )
                 )
                 transformations.add(transformation)
-                updateListSelection()
 
                 transformation.process(snapshots[currIndex++], snapshots[currIndex])
                 previewImage.value = snapshots[currIndex]
@@ -299,13 +298,11 @@ class EngineModel(
     }
 
     fun undo() {
-        if (currIndex < 0) return
-
-        println(currIndex - 1)
+        if (currIndex <= 0) return
 
         currIndex--
         updateListSelection()
-        previewImage.value = snapshots[currIndex + 1]
+        previewImage.value = if (currIndex < 0) originalImage.value else snapshots[currIndex]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()
@@ -313,9 +310,7 @@ class EngineModel(
     }
 
     fun redo() {
-        if (currIndex >= snapshots.size - 1) return
-
-        println(currIndex + 1)
+        if (currIndex == snapshots.size - 1) return
 
         currIndex++
         updateListSelection()
@@ -330,9 +325,7 @@ class EngineModel(
         if (index < 0) return
 
         currIndex = index
-        println(currIndex)
-        println(snapshots.size)
-        previewImage.value = snapshots[currIndex + 1]
+        previewImage.value = snapshots[currIndex]
         parallelImage.value = previewImage.value
         for (imagePanel in imagePanels) {
             imagePanel.sliderInit()

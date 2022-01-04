@@ -15,7 +15,8 @@ class CNNVisualTab : View("CNN Visualize") {
 
     private val engineController: EngineController by inject()
 
-    private val netBox = vbox {}
+    private val scrollNet = scrollpane {  }
+    private val netBox = vbox { }
 
     private var outputHeight = 0
     private var outputWidth = 0
@@ -33,39 +34,49 @@ class CNNVisualTab : View("CNN Visualize") {
         }
 
         hbox {
-            label("input tensor shape") {
-                prefWidth = 150.0
-            }
-            this.children.add(shapeBox)
-        }
-
-        button("Import CNN") {
-            action {
-                try {
-                    val dir = chooseFile(
-                        title = "Import pytorch CNN",
-                        filters = arrayOf(
-                            FileChooser.ExtensionFilter(
-                                "pythorch file",
-                                "*.pt", "*.log"
+            padding = Insets(10.0)
+            textflow {
+                text(
+                    "CNN visualization can display the selected CNN layer's output in a grayscale image.\n\n" +
+                            "To use the tool: \n1. specify the input tensor shape of the network: "
+                )
+                this.children.add(shapeBox)
+                text("\n2. ")
+                button("Import CNN") {
+                    action {
+                        try {
+                            val dir = chooseFile(
+                                title = "Import pytorch CNN",
+                                filters = arrayOf(
+                                    FileChooser.ExtensionFilter(
+                                        "pythorch file",
+                                        "*.pt", "*.log"
+                                    )
+                                ),
+                                mode = FileChooserMode.Single
                             )
-                        ),
-                        mode = FileChooserMode.Single
-                    )
-                    if (dir.isNotEmpty()) {
-                        importNet(dir[0].toString())
+                            if (dir.isNotEmpty()) {
+                                importNet(dir[0].toString())
+                            }
+                        } catch (e: IllegalArgumentException) {
+                            alert(
+                                type = Alert.AlertType.ERROR,
+                                header = "Invalid pytorch file path",
+                                content = "The torch file path you entered is incorrect.\n" +
+                                        "Please check!" + e.toString()
+                            )
+                        }
                     }
-                } catch (e: IllegalArgumentException) {
-                    alert(
-                        type = Alert.AlertType.ERROR,
-                        header = "Invalid pytorch file path",
-                        content = "The torch file path you entered is incorrect.\n" +
-                                "Please check!" + e.toString()
-                    )
                 }
+                text(
+                    "that will be investigated. The structure of the network shall be displayed below.\n" +
+                            "3.Select the channel you wish to visualize and click \"View output tensor\" after each layer to see the image"
+                )
             }
+
         }
-        this.children.add(netBox)
+        scrollNet.content = netBox
+        this.children.add(scrollNet)
     }
 
     /**
@@ -77,31 +88,33 @@ class CNNVisualTab : View("CNN Visualize") {
         val shape = observableListOf<Int>()
         shapeBox.characters.toString().split('x').forEach { s -> shape.add(s.toInt()) }
 
-        val exitCode = CNNVisualization.loadNet(path, shape) // shape is dummy constant for initialize metadata
+        val exitCode = CNNVisualization.loadNet(path, shape)
         if (exitCode != 0)
             alert(
                 type = Alert.AlertType.ERROR,
                 header = "Load torch network failed",
-                content = "The torch network provided couldn't be imported.\n" +
-                        "Please check!" + path
+                content = "Please check if input tensor shape, file path and network structure are valid"
             )
 
         netBox.clear()
         val metadata = File("./src/main/resources/CNN_split/CNN_traced/.Metadata.log")
             .readLines()
+        var nonLayer = 1
         for (lineIndex in 1 until metadata.size) {
             val tokens = metadata[lineIndex].split('|')
             val moduleDepth = tokens[0].toInt()
             val layerName = tokens[1]
+            val layerNum = lineIndex - nonLayer
 
-            if (tokens.size == 2) { // module head line
+            // module head line
+            if (tokens.size == 2) {
                 netBox.children.add(
-                    label(layerName) {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-                        }
+                    hbox {
+                        padding = Insets(.0, .0, .0, 20.0 * moduleDepth)
+                        label(layerName)
                     }
                 )
+                nonLayer += 1
                 continue
             }
 
@@ -124,17 +137,14 @@ class CNNVisualTab : View("CNN Visualize") {
                     for (dimentionBox in channelBox.children) {
                         dimentions.add((dimentionBox as ComboBox<Int>).value)
                     }
-                    engineController.CNNVisualize(path, shape, lineIndex - 1, dimentions.toList())
+                    engineController.CNNVisualize(path, shape, layerNum, lineIndex, dimentions.toList())
                 }
                 isVisible = false
             }
             netBox.children.add(
                 hbox {
-                    label(layerName) {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 0.0, 20.0 * moduleDepth)
-                        }
-                    }
+                    padding = Insets(.0, .0, .0, 20.0 * moduleDepth)
+                    label(layerName)
                     this.children.add(channelBox)
                     this.children.add(applyButton)
 

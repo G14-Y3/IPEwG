@@ -73,7 +73,7 @@ class EngineController : Controller() {
     fun blend(type: BlendType) = engine.transform(Blend(engine.blendImage.value, type))
 
     fun encodeImage(encodeImage: Image, key: String, bits: Int, isByPixelOrder: Boolean) =
-        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder), "preview", encodeImage.width, encodeImage.height)
+        engine.transform(SteganographyEncoder(encodeImage, key, bits, isByPixelOrder))
 
     fun encodeText(encodeText: String, key: String, bits: Int, onlyRChannel: Boolean) =
         engine.transform(SteganographyEncoder(encodeText, onlyRChannel, key, bits))
@@ -91,7 +91,7 @@ class EngineController : Controller() {
 
     fun saltAndPepper(noiseRatio: Double, seed: Int) = engine.transform(SaltPepperNoise(noiseRatio, seed))
 
-    fun resample(srcWidth: Int, srcHeight: Int, width: Int, height: Int, method: ResampleMethod, params: Params?) = engine.transform(Resample(srcWidth, srcHeight, width, height, params, method), "preview", width.toDouble(), height.toDouble())
+    fun resample(srcWidth: Int, srcHeight: Int, width: Int, height: Int, fromSRGB: Boolean, method: ResampleMethod, params: Params?) = engine.transform(Resample(srcWidth, srcHeight, width, height, fromSRGB, params, method), "preview", width.toDouble(), height.toDouble())
 
     fun depthEstimation(modelType: DepthEstimationModel, colormap: DepthColorMap, width: Double, height: Double) = engine.transform(DepthEstimation(modelType, colormap), "preview", width, height)
 
@@ -103,7 +103,7 @@ class EngineController : Controller() {
 
     fun rotate(angle: Double) = engine.adjust("ROTATION", angle)
     
-    fun CNNVisualize(netName: String, imgShape: List<Int>, layerNum: Int, channelNum: List<Int>) =
-        engine.transform(CNNVisualization(netName, imgShape, layerNum, channelNum))
+    fun CNNVisualize(netName: String, imgShape: List<Int>, layerNum: Int, lineIndex: Int, channelNum: List<Int>) =
+        engine.transform(CNNVisualization(netName, imgShape, layerNum, lineIndex, channelNum))
 
 }

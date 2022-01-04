@@ -39,7 +39,5 @@ class SaltPepperNoise(val noiseRatio: Double, val seed: Int): ImageProcessing {
         }
     }
 
-    override fun toString(): String {
-        return "Salt & Pepper Noise"
-    }
+    override fun toString() = "Salt & Pepper Noise with noise ratio $noiseRatio"
 }

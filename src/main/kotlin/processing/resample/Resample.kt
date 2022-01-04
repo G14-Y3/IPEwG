@@ -1,6 +1,5 @@
 package processing.resample
 
-import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
 import kotlinx.serialization.SerialName
@@ -19,6 +18,7 @@ class Resample(
     private val sourceHeight: Int,
     private val targetWidth: Int,
     private val targetHeight: Int,
+    private val fromSRGB: Boolean,
     private val params: Params?,
     private val method: ResampleMethod,
 ) : ImageProcessing {
@@ -44,7 +44,11 @@ class Resample(
         val stripeWidth = (destImage.height / num_threads).roundToInt()
 
         val writer: PixelWriter = destImage.pixelWriter
-        val reader: PixelReader = srcImage.pixelReader
+        val reader: RGBAReader = { x, y ->
+            if (fromSRGB)
+                srcImage.pixelReader.getColor(x, y).toRGBAFromSRGB()
+            else srcImage.pixelReader.getColor(x, y).toRGBA()
+        }
 
         for (i in 0 until num_threads) {
             val yStart = i * stripeWidth
@@ -56,7 +60,8 @@ class Resample(
                         writer.setColor(
                             x,
                             y,
-                            interpolator.getPixel(reader, x, y).color
+                            if (fromSRGB) interpolator.getPixel(reader, x, y).sRGB
+                            else interpolator.getPixel(reader, x, y).color
                         )
                     }
                 }
@@ -66,5 +71,5 @@ class Resample(
         executorService.awaitTermination(1, TimeUnit.MINUTES)
     }
 
-    override fun toString(): String = "$name ($interpolator)"
+    override fun toString(): String = "${if (fromSRGB) "Gamma-aware" else ""} $name ($interpolator)"
 }

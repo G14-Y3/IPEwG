@@ -22,13 +22,36 @@ class WaterMarkTab: Fragment("Water Mark") {
         vbox {
             label("Add Watermark") {
                 vboxConstraints {
-                    margin = Insets(10.0, 20.0, 0.0, 20.0)
+                    margin = Insets(20.0, 20.0, 0.0, 10.0)
                 }
                 style {
                     fontWeight = FontWeight.BOLD
                     fontSize = Dimension(20.0, Dimension.LinearUnits.px)
                 }
             }
+
+            hbox {
+                padding = Insets(10.0)
+                textflow {
+                    text("Watermark is a transparent pattern that can be added on to the image. You can upload " +
+                            "another image and then choose among three different blending methods below. Click on each of" +
+                            "them to view the effect.")
+                }
+            }
+
+            hbox {
+                padding = Insets(10.0)
+                textflow {
+                    text("You can  ")
+                    button("Upload") {
+                        action {
+                            Utils.imageOperation(mode = "encode", fileController)
+                        }
+                    }
+                    text("  an image and use it as a watermark to add on the input image.")
+                }
+            }
+
             hbox {
                 imageview(engine.encodeImage) {
                     isPreserveRatio = true
@@ -39,19 +62,6 @@ class WaterMarkTab: Fragment("Water Mark") {
                     }
                 }
                 vbox {
-                    hbox {
-                        button("Upload") {
-                            action {
-                                Utils.imageOperation(mode = "encode", fileController)
-                            }
-                        }
-                        label("  an image and add water mark by adjusting the image below") {
-                            hboxConstraints {
-                                marginTop = 5.0
-                                marginBottom = 20.0
-                            }
-                        }
-                    }
                     buttonbar {
                         vboxConstraints {
                             marginTop = 20.0

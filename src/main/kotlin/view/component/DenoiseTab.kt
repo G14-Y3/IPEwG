@@ -6,6 +6,8 @@ import javafx.scene.Parent
 import javafx.scene.text.FontWeight
 import processing.denoise.DenoiseMethod
 import tornadofx.*
+import java.awt.Desktop
+import java.net.URL
 
 class DenoiseTab: Fragment("Denoise") {
 
@@ -21,58 +23,57 @@ class DenoiseTab: Fragment("Denoise") {
                 fontSize = Dimension(20.0, Dimension.LinearUnits.px)
             }
         }
-        hbox {
-            vboxConstraints {
-                margin = Insets(0.0, 20.0, 5.0, 10.0)
-            }
-            label("You can choose to ") {
-                hboxConstraints {
-                    marginTop = 5.0
-                }
-            }
 
-            button("Denoise Using Ridnet") {
-                action {
-                    engineController.denoise(DenoiseMethod.RIDNET, 0.0)
+        hbox {
+            padding = Insets(10.0)
+            textflow {
+                text("Denoise uses two different machine learning models to reduce the noises in the image. The " +
+                        "two models are open-source and available at the links ")
+                hyperlink("DRUNET") {
+                    action {
+                        Desktop.getDesktop().browse(URL("https://github.com/cszn/DPIR").toURI());
+                    }
+                }
+                text(" and ")
+                hyperlink("RIDNET") {
+                    action {
+                        Desktop.getDesktop().browse(URL("https://github.com/saeed-anwar/RIDNet").toURI());
+                    }
                 }
             }
         }
 
         hbox {
-            var noiseLevel = 0.0
-            vbox {
-                hbox {
-                    prefWidth = 300.0
-                    label("Or you can adjust the noise level") {
-                        vboxConstraints {
-                            margin = Insets(10.0, 20.0, 5.0, 10.0)
-                        }
-                    }
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 10.0, 10.0)
-                    }
+            padding = Insets(10.0)
+            text("You can choose to  ")
+            button("Denoise Using Ridnet") {
+                action {
+                    engineController.denoise(DenoiseMethod.RIDNET, 0.0)
                 }
-                val slider = SliderWithSpinner(0.0, 255.0, ChangeListener { _, _, new ->
-                    noiseLevel = new as Double
-                }).withLabel("Noise Level")
-                this.children.add(slider.build())
-                hbox {
-                    vboxConstraints {
-                        margin = Insets(10.0, 20.0, 10.0, 10.0)
-                    }
-                    label("and use ") {
-                        hboxConstraints {
-                            marginTop = 5.0
-                        }
-                    }
-                    button("Denoise Using Drunet") {
-                        vboxConstraints {
-                            margin = Insets(20.0, 20.0, 10.0, 10.0)
-                        }
+            }
+            text("  or you can adjust the noise level")
+        }
 
-                        action {
-                            engineController.denoise(DenoiseMethod.DRUNET, noiseLevel)
-                        }
+        var noiseLevel = 0.0
+
+        vbox {
+            val slider = SliderWithSpinner(0.0, 255.0, ChangeListener { _, _, new ->
+                noiseLevel = new as Double
+            }).withLabel("Noise Level")
+            this.children.add(slider.build())
+        }
+
+        hbox {
+            padding = Insets(10.0)
+            textflow {
+                text("and  ")
+                button("Denoise Using Drunet") {
+                    vboxConstraints {
+                        margin = Insets(20.0, 20.0, 10.0, 10.0)
+                    }
+
+                    action {
+                        engineController.denoise(DenoiseMethod.DRUNET, noiseLevel)
                     }
                 }
             }

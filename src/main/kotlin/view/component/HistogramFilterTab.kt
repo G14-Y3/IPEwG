@@ -27,7 +27,7 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
 
         label("Histogram Equalization") {
             vboxConstraints {
-                margin = Insets(10.0, 20.0, 0.0, 20.0)
+                margin = Insets(10.0, 20.0, 0.0, 10.0)
             }
             style {
                 fontWeight = FontWeight.BOLD
@@ -35,18 +35,18 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
             }
         }
         hbox {
-            vbox {
-                padding = Insets(20.0, 10.0, 20.0, 10.0)
-                label("Equalize in color space: ") {
-                    minWidth = 200.0
-                }
+            padding = Insets(10.0)
+            textflow {
+                text("Histogram equalization will adjust the contrast of the image using the image's histogram, " +
+                        "supporting all three RGB channel adjustments. The resulting image will look more realistic without " +
+                        "a strong bias towards certain colour. You can choose to Equalize in color space  ")
                 val colorSpaceBox = combobox(values =
-                    RGBType.values().toList() +
-                    HSVType.values().toList() +
-                    LabColor.values().toList() +
-                    listOf(GrayScaleColorSpace()
-                ))
-
+                RGBType.values().toList() +
+                        HSVType.values().toList() +
+                        LabColor.values().toList() +
+                        listOf(GrayScaleColorSpace()
+                        ))
+                text("  and then  ")
                 button("Apply") {
                     action {
                         if (colorSpaceBox.value == null) {
@@ -61,6 +61,15 @@ class HistogramFilterTab : Fragment("Histogram Equalization") {
                         }
                     }
                 }
+                text("  to the image. A histogram of the cumulative distribution function of the original image " +
+                        "and the result image will be displayed below. " +
+                        "The histogram of the resulting image should be a straight line")
+            }
+        }
+        hbox {
+            vbox {
+                padding = Insets(20.0, 10.0, 20.0, 10.0)
+
             }
             chart = linechart(
                 "Cumulative Distribution Histogram",

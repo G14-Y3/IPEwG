@@ -52,39 +52,75 @@ class ColorAdjustTab : Fragment("Colour Adjustment") {
     )
 
     override val root = vbox {
-        label("Color Adjustment") {
-            vboxConstraints {
-                margin = Insets(20.0, 20.0, 10.0, 10.0)
+        vbox {
+            label("Color Adjustment") {
+                vboxConstraints {
+                    margin = Insets(20.0, 20.0, 10.0, 10.0)
+                }
+                style {
+                    fontWeight = FontWeight.BOLD
+                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                }
             }
-            style {
-                fontWeight = FontWeight.BOLD
-                fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+//            vboxConstraints {
+//                margin = Insets(10.0)
+//            }
+            val sliders = ArrayList<Slider>()
+            colorAdjustmentSliderList.map { (label, op) ->
+                val slider = SliderWithSpinner(
+                    minVal = -100.0, maxVal = 100.0,
+                    op = ChangeListener { _, _, new -> op(new.toDouble() / 100.0 + 1) }
+                ).withLabel(label)
+                this.children.add(
+                    slider.build()
+                )
+                sliders += slider.getSlider()
+            }
+            buttonbar {
+                padding = Insets(20.0, 10.0, 0.0, 10.0)
+                button("Adjust").setOnAction {
+                    engineController.submitAdjustment()
+                    sliders.forEach { it.value = 0.0 }
+                }
+                button("Reset").setOnAction {
+                    engineController.resetAdjustment()
+                    sliders.forEach { it.value = 0.0 }
+                }
             }
         }
-        vboxConstraints {
-            margin = Insets(10.0)
-        }
-        val sliders = ArrayList<Slider>()
-        colorAdjustmentSliderList.map { (label, op) ->
-            val slider = SliderWithSpinner(
-                minVal = -100.0, maxVal = 100.0,
-                op = ChangeListener { _, _, new -> op(new.toDouble() / 100.0 + 1) }
-            ).withLabel(label)
-            this.children.add(
-                slider.build()
-            )
-            sliders += slider.getSlider()
-        }
-        buttonbar {
-            padding = Insets(20.0, 10.0, 20.0, 10.0)
-            button("Adjust").setOnAction {
-                engineController.submitAdjustment()
-                sliders.forEach { it.value = 0.0 }
+
+        vbox {
+            label("Black and White") {
+                vboxConstraints {
+                    margin = Insets(0.0, 20.0, 10.0, 10.0)
+                }
+                style {
+                    fontWeight = FontWeight.BOLD
+                    fontSize = Dimension(20.0, Dimension.LinearUnits.px)
+                }
             }
-            button("Reset").setOnAction {
-                engineController.resetAdjustment()
-                sliders.forEach { it.value = 0.0 }
+
+            hbox {
+                padding = Insets(0.0, 0.0, 10.0, 10.0)
+                textflow {
+                    text(
+                        "Black and white filter will turn every pixel into " +
+                                "either black or white based on its grayscale value. Choose a " +
+                                "threshold and "
+                    )
+                    button("Apply") {
+                        action {
+                            engineController.submitAdjustment()
+                        }
+                    }
+                    text(" to the image.")
+                }
             }
+            val slider = SliderWithSpinner(0.0, 255.0, ChangeListener { _, _, new ->
+                engineController.blackAndWhite(new as Double / 255.0)
+            }).withLabel("Threshold")
+
+            this.add(slider.build())
         }
     }
 }

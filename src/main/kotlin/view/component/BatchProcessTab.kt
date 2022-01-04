@@ -1,13 +1,10 @@
 package view.component
 
-import controller.EngineController
 import controller.FileController
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.geometry.Side
 import javafx.scene.control.SelectionMode
 import javafx.scene.control.TabPane
 import javafx.scene.image.Image
@@ -17,9 +14,8 @@ import javafx.scene.text.Font
 import javafx.stage.FileChooser
 import models.BatchProcessorModel
 import tornadofx.*
-import view.fragment.TransformationList
 
-class BatchProcessTab : Fragment("Batch") {
+class BatchProcessTab : Fragment("Batch Processing") {
 
     private val batchProcessor: BatchProcessorModel by inject()
     private val engine: FileController by inject()
@@ -65,18 +61,21 @@ class BatchProcessTab : Fragment("Batch") {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
                     tab<BasicFilterTab>()
-                    tab<BlackAndWhiteTab>()
-                    tab<StyleTransferTab>()
+                    tab<ConversionTab>()
+                    tab<ResizerTab>()
                     tab<ColorAdjustTab>()
+                    tab<StyleTransferTab>()
                     tab<BlurFilterTab>()
                     tab<FrequencyTab>()
-                    tab<ConversionTab>()
                     tab<HistogramFilterTab>()
                     tab<BlendTab>()
                     tab<SaltPepperTab>()
                     tab<DepthEstimationTab>()
                     tab<WaterMarkTab>()
                     tab<DenoiseTab>()
+                    tab<CNNVisualTab>()
+                    tab<FalseColoringTab>()
+                    tab<PosterizationTab>()
                 }
             )
 

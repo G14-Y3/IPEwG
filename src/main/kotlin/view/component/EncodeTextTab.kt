@@ -6,6 +6,7 @@ import javafx.geometry.Insets
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.control.TextArea
+import javafx.scene.image.WritableImage
 import javafx.scene.text.FontWeight
 import models.EngineModel
 import processing.steganography.SteganographyDecoder
@@ -110,7 +111,8 @@ class EncodeTextTab: Fragment("Encode/Decode Text") {
                             button("Decode") {
                                 action {
                                     val decoder = SteganographyDecoder(false)
-                                    engine.transform(decoder)
+                                    val dummy = engine.snapshots[engine.currIndex]
+                                    decoder.process(engine.snapshots[engine.currIndex], dummy)
                                     decodeTextarea!!.text = decoder.get_result_text()
                                 }
                             }

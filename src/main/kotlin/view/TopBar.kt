@@ -1,11 +1,14 @@
 package view
 
 import controller.FileController
+import javafx.event.EventHandler
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
+import javafx.scene.control.Menu
 import javafx.stage.FileChooser
 import tornadofx.*
+import view.CssStyle.Companion.topbarButton
 import java.io.File
 
 
@@ -13,51 +16,101 @@ class TopBar : View() {
     private val fileController: FileController by inject()
 
     override val root = menubar {
-        menu("_File") {
-            item("_Import Image...") {
-                action {
-                    fileOperation(mode = "import image")
-                }
-            }
-            item("_Export Result...") {
-                action {
-                    fileOperation(mode = "export image")
-                }
-            }
-            item("Export Current _Parallel View...") {
-                action {
-                    fileOperation(mode = "export_parallel")
-                }
-            }
-            item("I_mport Transformations...") {
-                action {
-                    fileOperation(mode = "import JSON")
-                }
-            }
-            item("E_xport Transformations...") {
-                action {
-                    fileOperation(mode = "export JSON")
-                }
-            }
-            item("_Quit") {
-                action {
-                    val quitText = "Quit"
-                    val result = alert(
-                        type = Alert.AlertType.CONFIRMATION,
-                        header = "Confirm Quit",
-                        content = "Are you sure you want to quit?",
-                        ButtonType.CANCEL,
-                        ButtonType(quitText, ButtonBar.ButtonData.OK_DONE),
-                    ).result
-                    if (result.text == quitText) {
-                        close()
-                    }
-                }
-            }
+        menu("Import") {
+             onShown = EventHandler {
+                 (it.source as Menu).hide()
+                 fileOperation(mode = "import image")
+             }
+
+            item("")
         }
-        menu("_Help") {
-            item("_How to")
+
+        menu("Export") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                fileOperation(mode = "export image")
+            }
+
+            item("")
         }
+
+        menu("Import Transformation") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                fileOperation(mode = "import JSON")
+            }
+
+            item("")
+        }
+
+        menu("Export Transformation") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                fileOperation(mode = "export JSON")
+            }
+
+            item("")
+        }
+
+        menu("Quit") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                val quitText = "Quit"
+                val result = alert(
+                    type = Alert.AlertType.CONFIRMATION,
+                    header = "Confirm Quit",
+                    content = "Are you sure you want to quit?",
+                    ButtonType.CANCEL,
+                    ButtonType(quitText, ButtonBar.ButtonData.OK_DONE),
+                ).result
+                if (result.text == quitText) {
+                    close()
+                }
+            }
+
+            item("")
+        }
+
+//        button("Import Image") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "import image")
+//            }
+//        }
+//        button("Export Image") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "export image")
+//            }
+//        }
+//        button("Import Transformation") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "import JSON")
+//            }
+//        }
+//        button("Export Transformation") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "export JSON")
+//            }
+//        }
+//        button("Quit") {
+//            addClass(topbarButton)
+//            action {
+//                val quitText = "Quit"
+//                val result = alert(
+//                    type = Alert.AlertType.CONFIRMATION,
+//                    header = "Confirm Quit",
+//                    content = "Are you sure you want to quit?",
+//                    ButtonType.CANCEL,
+//                    ButtonType(quitText, ButtonBar.ButtonData.OK_DONE),
+//                ).result
+//                if (result.text == quitText) {
+//                    close()
+//                }
+//            }
+//        }
     }
 
     private fun fileOperation(mode: String) {
@@ -110,12 +163,6 @@ class TopBar : View() {
                     fileSelectorMode = FileChooserMode.Save
                 }
 
-                "export_parallel" -> {
-                    fileSelectorTitle = "Export image in parallel mode"
-                    fileSelectorFilter = exportFilter
-                    fileSelectorMode = FileChooserMode.Save
-                }
-
                 "import JSON" -> {
                     fileSelectorTitle = "import JSON"
                     fileSelectorFilter = jsonFilter
@@ -147,16 +194,6 @@ class TopBar : View() {
                                 dir[0].toString().lastIndexOf(".") + 1,
                                 dir[0].toString().length
                             )
-                        )
-
-                    "export_parallel" ->
-                        fileController.saveImage(
-                            dir[0].toString(),
-                            dir[0].toString().substring(
-                                dir[0].toString().lastIndexOf(".") + 1,
-                                dir[0].toString().length
-                            ),
-                            mode = "parallel"
                         )
 
                     "import JSON" -> fileController.loadJson(dir[0].toString())

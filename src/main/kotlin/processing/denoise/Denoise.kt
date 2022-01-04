@@ -7,6 +7,10 @@ import org.pytorch.Module
 import org.pytorch.Tensor
 import processing.ImageProcessing
 
+enum class DenoiseMethod {
+    RIDNET, DRUNET
+}
+
 class Denoise(val denoiseMethod: DenoiseMethod, val noise: Double): ImageProcessing {
     private val methodToModel =
         mapOf(DenoiseMethod.RIDNET to "./src/main/resources/denoise_model/ridnet.pt",
@@ -113,4 +117,6 @@ class Denoise(val denoiseMethod: DenoiseMethod, val noise: Double): ImageProcess
     private fun clamp(value: Double): Double {
         return if (value < 0) 0.0 else if (value > 1) 1.0 else value
     }
+
+    override fun toString() = "De-noise using $denoiseMethod"
 }

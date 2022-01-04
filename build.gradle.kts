@@ -14,7 +14,7 @@ group = "group14"
 version = "1.0-SNAPSHOT"
 
 application {
-    applicationDefaultJvmArgs = listOf("-Djava.library.path=./lib/libtorch/lib")
+    applicationDefaultJvmArgs = listOf("-Djava.library.path=./lib/libtorch/lib", "-Xms4096m", "-Xmx4096m")
     mainClass.set("ImageProcessor")
 }
 
@@ -45,9 +45,8 @@ dependencies {
 
 tasks.test {
     useJUnit()
-    jvmArgs("--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED", "-Djava.library.path=./lib/libtorch/lib")
+    jvmArgs("--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED", "-Djava.library.path=./lib/libtorch/lib", "-Xms4096m", "-Xmx4096m")
     dependsOn("extractLibtorch")
-
 }
 
 tasks.withType<KotlinCompile> {
