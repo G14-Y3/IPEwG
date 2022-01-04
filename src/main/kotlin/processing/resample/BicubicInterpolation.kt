@@ -1,6 +1,5 @@
 package processing.resample
 
-import javafx.scene.image.PixelReader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.math.ceil
@@ -48,7 +47,7 @@ class BicubicInterpolation(
     private val scaleX: Double = tarW.toDouble() / srcW
     private val scaleY: Double = tarH.toDouble() / srcH
 
-    override fun getPixel(reader: PixelReader, x: Int, y: Int): RGBA {
+    override fun getPixel(reader: RGBAReader, x: Int, y: Int): RGBA {
         // Ref: https://en.wikipedia.org/wiki/Mitchell–Netravali_filters
         val x1: Int = x * srcW / tarW
         val xInc: Int = ceil(1.0 / scaleX).toInt()
@@ -60,13 +59,8 @@ class BicubicInterpolation(
         val yDist: Double = y.toDouble() / scaleY - y1
 
         // interpolate in horizontal direction
-        val pVertical = getSupports(y1, x1, yInc, srcH, srcW) { _y, _x ->
-            interpolate(
-                xDist,
-                getSupports(_x, _y, xInc, srcW, srcH) { __x, __y ->
-                    reader.getColor(__x, __y).toRGBA()
-                },
-            )
+        val pVertical = getSupports(y1, x1, 1, srcH, srcW) { _y, _x ->
+            interpolate(xDist, getSupports(_x, _y, 1, srcW, srcH, reader))
         }
 
         // interpolate in vertical direction

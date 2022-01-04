@@ -1,6 +1,5 @@
 package processing.resample
 
-import javafx.scene.image.PixelReader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.math.max
@@ -35,7 +34,7 @@ class LagrangeInterpolation(
     private val leftExtent: Int = (extent - 1) / 2
     private val rightExtent: Int = extent - 1 - leftExtent
 
-    override fun getPixel(reader: PixelReader, x: Int, y: Int): RGBA = let {
+    override fun getPixel(reader: RGBAReader, x: Int, y: Int): RGBA = let {
         val srcX: Double = x.toDouble() * srcW / tarW
         val srcY: Double = y.toDouble() * srcH / tarH
 
@@ -43,9 +42,8 @@ class LagrangeInterpolation(
         val interpolateOnX: RGBAReader = { x, y ->
             interpolate(
                 supportCoordinatesOnX(x, y),
-                { _x, _y -> reader.getColor(_x, _y).toRGBA() },
-                { srcX - it.first.toDouble() },
-            )
+                reader,
+            ) { srcX - it.first.toDouble() }
         }
 
         // interpolate in vertical direction
