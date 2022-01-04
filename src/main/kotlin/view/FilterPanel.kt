@@ -16,7 +16,7 @@ class FilterPanel : View() {
 
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-        tab("Filters") {
+        tab("Spatial Domain") {
             vbox {
                 splitpane(
                     Orientation.VERTICAL,
@@ -24,20 +24,31 @@ class FilterPanel : View() {
                         side = Side.LEFT
                         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BasicFilterTab>()
+                        tab<ColorAdjustTab>()
                         tab<ConversionTab>()
                         tab<ResizerTab>()
-                        tab<ColorAdjustTab>()
-                        tab<StyleTransferTab>()
+                        tab<BlendTab>()
+                        tab<SaltPepperTab>()
+                        tab<WaterMarkTab>()
+                        tab<FalseColoringTab>()
+                    },
+                    TransformationList().root
+                ) {
+                    setDividerPosition(0, 0.55)
+                }
+            }
+        }
+
+        tab("Frequency Domain") {
+            vbox {
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                         tab<BlurFilterTab>()
                         tab<FrequencyTab>()
                         tab<HistogramFilterTab>()
-                        tab<BlendTab>()
-                        tab<SaltPepperTab>()
-                        tab<DepthEstimationTab>()
-                        tab<WaterMarkTab>()
-                        tab<DenoiseTab>()
-                        tab<CNNVisualTab>()
-                        tab<FalseColoringTab>()
                         tab<PosterizationTab>()
                     },
                     TransformationList().root
@@ -47,8 +58,26 @@ class FilterPanel : View() {
             }
         }
 
-        tab("Steganography")
-        {
+        tab("Neural Network Based") {
+            vbox {
+                splitpane(
+                    Orientation.VERTICAL,
+                    tabpane {
+                        side = Side.LEFT
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab<StyleTransferTab>()
+                        tab<DepthEstimationTab>()
+                        tab<DenoiseTab>()
+                        tab<CNNVisualTab>()
+                    },
+                    TransformationList().root
+                ) {
+                    setDividerPosition(0, 0.55)
+                }
+            }
+        }
+
+        tab("Steganography") {
             vbox {
                 splitpane {
                     prefHeight = 1000.0

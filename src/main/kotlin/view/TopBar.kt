@@ -5,8 +5,10 @@ import javafx.event.EventHandler
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
+import javafx.scene.control.Menu
 import javafx.stage.FileChooser
 import tornadofx.*
+import view.CssStyle.Companion.topbarButton
 import java.io.File
 
 
@@ -14,43 +16,101 @@ class TopBar : View() {
     private val fileController: FileController by inject()
 
     override val root = menubar {
-        menu("File") {
-            item("Import Image...") {
-                action {
-                    fileOperation(mode = "import image")
-                }
-            }
-            item("Export Result...") {
-                action {
-                    fileOperation(mode = "export image")
-                }
-            }
-            item("Import Transformations...") {
-                action {
-                    fileOperation(mode = "import JSON")
-                }
-            }
-            item("Export Transformations...") {
-                action {
-                    fileOperation(mode = "export JSON")
-                }
-            }
-            item("Quit") {
-                action {
-                    val quitText = "Quit"
-                    val result = alert(
-                        type = Alert.AlertType.CONFIRMATION,
-                        header = "Confirm Quit",
-                        content = "Are you sure you want to quit?",
-                        ButtonType.CANCEL,
-                        ButtonType(quitText, ButtonBar.ButtonData.OK_DONE),
-                    ).result
-                    if (result.text == quitText) {
-                        close()
-                    }
-                }
-            }
+        menu("Import") {
+             onShown = EventHandler {
+                 (it.source as Menu).hide()
+                 fileOperation(mode = "import image")
+             }
+
+            item("")
         }
+
+        menu("Export") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                fileOperation(mode = "export image")
+            }
+
+            item("")
+        }
+
+        menu("Import Transformation") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                fileOperation(mode = "import JSON")
+            }
+
+            item("")
+        }
+
+        menu("Export Transformation") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                fileOperation(mode = "export JSON")
+            }
+
+            item("")
+        }
+
+        menu("Quit") {
+            onShown = EventHandler {
+                (it.source as Menu).hide()
+                val quitText = "Quit"
+                val result = alert(
+                    type = Alert.AlertType.CONFIRMATION,
+                    header = "Confirm Quit",
+                    content = "Are you sure you want to quit?",
+                    ButtonType.CANCEL,
+                    ButtonType(quitText, ButtonBar.ButtonData.OK_DONE),
+                ).result
+                if (result.text == quitText) {
+                    close()
+                }
+            }
+
+            item("")
+        }
+
+//        button("Import Image") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "import image")
+//            }
+//        }
+//        button("Export Image") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "export image")
+//            }
+//        }
+//        button("Import Transformation") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "import JSON")
+//            }
+//        }
+//        button("Export Transformation") {
+//            addClass(topbarButton)
+//            action {
+//                fileOperation(mode = "export JSON")
+//            }
+//        }
+//        button("Quit") {
+//            addClass(topbarButton)
+//            action {
+//                val quitText = "Quit"
+//                val result = alert(
+//                    type = Alert.AlertType.CONFIRMATION,
+//                    header = "Confirm Quit",
+//                    content = "Are you sure you want to quit?",
+//                    ButtonType.CANCEL,
+//                    ButtonType(quitText, ButtonBar.ButtonData.OK_DONE),
+//                ).result
+//                if (result.text == quitText) {
+//                    close()
+//                }
+//            }
+//        }
     }
 
     private fun fileOperation(mode: String) {
