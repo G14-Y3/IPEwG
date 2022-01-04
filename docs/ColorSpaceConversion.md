@@ -4,6 +4,6 @@ We have implemented colour space transformation methods as the first and last s
 
 ![Image Pipeline](https://github.com/G14-Y3/IPEwG/blob/master/docs/img/ColorSpaceConversion-1.svg)
 
-The necessity of processing under correct colour space is exemplified [here](http://www.ericbrasseur.org/gamma.html#introduction), [here](https://legacy.imagemagick.org/Usage/resize/#resize_colorspace) and [here (interactive)](https://entropymine.com/imageworsener/gamma/) for scaling.
+The necessity of processing under correct colour space is exemplified [here](http://www.ericbrasseur.org/gamma.html#introduction), [here](https://legacy.imagemagick.org/Usage/resize/#resize_colorspace) and [here (interactive)](https://entropymine.com/imageworsener/gamma/) for scaling. A illustration can be done with our software as stated in [Rescaling #Gamma-aware Rescaling](https://github.com/G14-Y3/IPEwG/blob/master/docs/Rescaling.md#Gamma-aware%20Rescaling).
 
 As noted by [Alan Wolfe](https://twitter.com/Atrix256) in [his blog](https://blog.demofox.org/2018/03/10/dont-convert-srgb-u8-to-linear-u8/), the intermediate results are kept with `Double` rather than 8-bits for correct results with enough precision.

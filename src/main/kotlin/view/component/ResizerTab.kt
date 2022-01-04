@@ -48,11 +48,13 @@ class ResizerTab : Fragment("Resize Image") {
             }
             hbox {
                 textflow {
-                    text("Image rescale is the process of changing the " +
+                    text(
+                        "Image rescale is the process of changing the " +
                             "dimension of the image by downsampling or upsampling/" +
                             "super-resolution using different techniques. You can choose " +
                             "a method below and resize the image to a specific dimension. " +
-                            "Notice that a large dimension might take longer time to process.")
+                            "Notice that a large dimension might take longer time to process."
+                    )
                     padding = Insets(10.0, 0.0, 10.0, 0.0)
                 }
             }
@@ -96,6 +98,10 @@ class ResizerTab : Fragment("Resize Image") {
                             }
                         }
                     }
+                    checkbox(
+                        "Gamma-aware resizing (assuming source image is in sRGB)",
+                        paramsModel.fromSRGB,
+                    )
                     bicubicParamsField(paramsModel) {
                         text(
                             """
@@ -149,6 +155,7 @@ class ResizerTab : Fragment("Resize Image") {
                                     previewHeight,
                                     model.width.value,
                                     model.height.value,
+                                    paramsModel.fromSRGB.value,
                                     it.value,
                                     paramsModel.getParams(comboBox!!.value),
                                 )
@@ -254,6 +261,7 @@ class KernelParams {
     val doubleArg2Property = SimpleDoubleProperty(this, "doubleArg2", .0)
     val intArg1Property = SimpleIntegerProperty(this, "intArg1", 0)
     val boolArg1Property = SimpleBooleanProperty(this, "boolArg1", false)
+    val fromSRGB = SimpleBooleanProperty(this, "fromSRGB", true)
 }
 
 class KernelParamsModel(params: KernelParams) : ItemViewModel<KernelParams>(params) {
@@ -261,6 +269,7 @@ class KernelParamsModel(params: KernelParams) : ItemViewModel<KernelParams>(para
     val doubleArg2 = bind(KernelParams::doubleArg2Property) as DoubleProperty
     val intArg1 = bind(KernelParams::intArg1Property) as IntegerProperty
     val boolArg1 = bind(KernelParams::boolArg1Property) as BooleanProperty
+    val fromSRGB = bind(KernelParams::fromSRGB) as BooleanProperty
 
     fun getParams(method: ResampleMethod): Params? = when (method) {
         Point -> null
