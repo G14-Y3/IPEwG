@@ -1,0 +1,20 @@
+#!/bin/sh
+./gradlew clean
+./gradlew jar
+javapackager -deploy \
+  -appclass ImageProcessor \
+  -description "Image Processing Engine with GUI" \
+  -name IPEwG \
+  -outdir build/bin \
+  -outfile IPEwG \
+  -srcdir build/ \
+  -srcfiles libs/IPEwG-1.0-SNAPSHOT.jar \
+  -srcfiles resources/ \
+  -title IPEwG \
+  -vendor Group14 \
+  -BappVersion=1.0.0 \
+  -BjvmOptions="-Djava.library.path=./lib/libtorch/lib" \
+  -BmainJar=libs/IPEwG-1.0-SNAPSHOT.jar \
+  -Bruntime=/Users/Toujour/.sdkman/candidates/java/11.0.13.fx-zulu/zulu-11.jdk/Contents/Home \
+  -nosign \
+  -native image

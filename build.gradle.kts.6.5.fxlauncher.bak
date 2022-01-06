@@ -1,23 +1,19 @@
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 
 plugins {
     kotlin("jvm") version "1.5.31"
     kotlin("plugin.serialization") version "1.5.31"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
     java
     application
     id("org.openjfx.javafxplugin") version "0.0.8"
     id("de.undercouch.download").version("3.4.3")
+    id("no.tornado.fxlauncher") version "1.0.20"
 }
 
-val implementationVersion = "1.0-SNAPSHOT"
-
 group = "group14"
-version = implementationVersion
+version = "1.0-SNAPSHOT"
 
 java {
     targetCompatibility = JavaVersion.VERSION_11
@@ -25,10 +21,15 @@ java {
 }
 
 application {
-    applicationDefaultJvmArgs = listOf("-Djava.library.path=./lib/libtorch/lib", "-Xms4096m", "-Xmx4096m")
-    // mainClass.set("ImageProcessor")
-    mainClass.set("ImageProcessorKt") // due to a bug of shadowJar, it will always take this name if exists
-    // Besides, ImageProcessorKt is the one I found in ./build/classes/kotlin/main, which works as the executable in JAR
+    applicationDefaultJvmArgs = listOf("-Djava.library.path=./lib/libtorch/lib")
+    mainClass.set("ImageProcessor")
+}
+
+fxlauncher {
+    applicationVendor = "Group 14"
+    applicationUrl = "https://github.com/G14-Y3/IPEwG"
+    applicationMainClass = "ImageProcessor"
+    acceptDowngrade = false
 }
 
 repositories {
@@ -55,11 +56,18 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
     testImplementation("org.testfx:testfx-core:4.0.15-alpha")
     testImplementation("org.testfx:testfx-junit:4.0.15-alpha")
+
+    implementation("org.controlsfx:controlsfx:8.40.12")
 }
 
 tasks.test {
     useJUnit()
-    jvmArgs("--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED", "-Djava.library.path=./lib/libtorch/lib", "-Xms4096m", "-Xmx4096m")
+    jvmArgs(
+        "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+        "-Djava.library.path=./lib/libtorch/lib",
+        "-Xms4096m",
+        "-Xmx4096m"
+    )
     dependsOn("extractLibtorch")
 }
 
@@ -95,52 +103,10 @@ task<Copy>("extractLibtorch") {
 tasks.jar {
     manifest {
         attributes(
-            "Main-Class" to "ImageProcessorKt",
-            "Implementation-Title" to "IPEwG",
-            "Implementation-Version" to archiveVersion,
+            mapOf(
+                "Main-Class" to "ImageProcessor"
+            )
         )
     }
 }
 
-tasks.withType<ShadowJar> {
-    archiveBaseName.set("IPEwG")
-    archiveClassifier.set("")
-    archiveVersion.set(implementationVersion)
-    manifest {
-        attributes(
-            "Main-Class" to "ImageProcessorKt",
-            "Implementation-Title" to "IPEwG",
-            "Implementation-Version" to archiveVersion,
-        )
-    }
-}
-
-task<Exec>("buildNativeExecutable") {
-    dependsOn("shadowJar")
-
-    val mainClassName = "ImageProcessorKt"
-    val graalVmHome = System.getenv("GRAAVLVM_HOME")?.ifEmpty { System.getenv("JAVA_HOME") }
-        ?: System.getenv("JAVA_HOME")
-    val EXE_NAME = "IPEwG"
-    val EXE_PATH = "$buildDir/bin/"
-    val JAR = "$buildDir/libs/IPEwG-1.0-SNAPSHOT.jar"
-    val resourceConfigurationFile = "./resource-config.json"
-
-    // FIX ME: Not sure why it says "unrecognised option --class-path balabala"
-    commandLine(
-        "$graalVmHome/bin/native-image",
-        "--class-path \"$JAR\"",
-        "--no-fallback",
-        "-Djava.library.path=./lib/libtorch/lib",
-        "-H:+StaticExecutable",
-        "-H:Class=$mainClassName",
-        "-H:Name=$EXE_NAME",
-        "-H:Path=$EXE_PATH",
-        "-H:ResourceConfigurationFiles=$resourceConfigurationFile",
-        "--libc",
-        "--static",
-        "--target",
-        // "-jar \"$JAR\"",
-        "--verbose",
-    )
-}
