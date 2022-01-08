@@ -20,7 +20,7 @@ class BatchProcessTab : Fragment("Batch Processing") {
     private val batchProcessor: BatchProcessorModel by inject()
     private val engine: FileController by inject()
 
-    private val focusedImageProperty = SimpleObjectProperty(Image("./test_image.png"))
+    private val focusedImageProperty: SimpleObjectProperty<Image> = SimpleObjectProperty()
     private var focusedImage by focusedImageProperty
 
     private val imagesListView = listview(batchProcessor.transformedImages) {
@@ -81,17 +81,17 @@ class BatchProcessTab : Fragment("Batch Processing") {
 
             bottom = buttonbar {
                 button("Import").action { importImages() }
-                button("Apply").action { batchProcessor.apply() }
                 button("Remove").action {
                     batchProcessor.remove(
                         *imagesListView.selectionModel.selectedIndices.toIntArray()
                     )
                 }
+                button("Apply All").action { batchProcessor.apply() }
+                button("Export All").action { exportImages() }
                 button("Revert").action {
                     batchProcessor.revert()
                     engine.revert()
                 }
-                button("Export").action { exportImages() }
                 padding = Insets(15.0)
             }
         },
