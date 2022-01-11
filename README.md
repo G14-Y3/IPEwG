@@ -5,7 +5,7 @@ Supervisor: Dr. Pancham Shukla
 
 ***Please see our group [project report](https://github.com/G14-Y3/IPEwG/blob/master/docs/ProjectReport.pdf). It contains more details about the project, including the development process, project structure, benchmarking, and more information about each functionalities.***
 
-Currently submitted and software has been packaged. This project is completed within approximately 9 weeks. Please refer to the How-to-use section for more details.
+Currently submitted and the latest commit is in the master branch. This project is completed within approximately 9 weeks. Please refer to the How-to-use section for more details.
 
 We want to create an image processing engine that does not only include common functionalities, but also include clearly defined advanced processing techniques that can be easily visualized. We want the transformation to be portable: user can export a sequence of transformation and import/apply those operations on different images later, including across different operating systems. We also expect this processing engine to include the visualization of the output of open-source machine learning models in order to allow researcher to compare the performance difference between various models. Ultimately, we want to create a work flow so that anyone who wants to implement a processing routine or include any models can easily do so.
 
@@ -19,7 +19,7 @@ Depth Estimation           |  Style Transfer
 
 We have tried to package the software into executable format (e.g. dmg/exe/deb). However, due to the use of TornadoFx in Kotlin, it has taken significantly longer time than we expected. Thus the most recommended way for launching the software now is by running `gradlew` script in the root folder.
 
-You need to have JDK 11 - 16 installed on your local computer. In Linux or MacOS, simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command. In Windows, run `./gradlew.bat run`. Remember to check the permission of the file `gradlew` or `gradlew.bat`.
+You need to have JDK any version between 11 to 16 installed on your local computer. In Linux or MacOS, simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command. In Windows, run `./gradlew.bat run`. Remember to check the permission of the file `gradlew` or `gradlew.bat`.
 
 Below is a list of issues we encountered when trying to package the software into a proper distribution:
 
