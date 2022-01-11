@@ -1,19 +1,19 @@
 # Image Processing Engine with GUI
-Imperial College London Department of Computing Third Year Software Engineer Group Project
-
-Group 14
+Imperial College London Department of Computing Third Year Software Engineer Group Project (Group 14)
 
 Supervisor: Dr. Pancham Shukla
 
-Currently submitted and software has been packaged. Please refer to the How-to-use section for more details.
+***Please see our group [project report](https://github.com/G14-Y3/IPEwG/blob/master/docs/ProjectReport.pdf). It contains more details about the project, including the development process, project structure, benchmarking, and more information about each functionalities.***
 
-Please see our group project report. It contains more details about the project, including the development process, benchmarking, and more information about each functionalities.
+Currently submitted and software has been packaged. This project is completed within approximately 9 weeks. Please refer to the How-to-use section for more details.
 
-Original Overview          |  Histogram Equalization
+We want to create an image processing engine that does not only include common functionalities, but also include clearly defined advanced processing techniques that can be easily visualized. We want the transformation to be portable: user can export a sequence of transformation and import/apply those operations on different images later, including across different operating systems. We also expect this processing engine to include the visualization of the output of open-source machine learning models in order to allow researcher to compare the performance difference between various models. Ultimately, we want to create a work flow so that anyone who wants to implement a processing routine or include any models can easily do so.
+
+Grayscale Overview          |  Histogram Equalization
 :-------------------------:|:-------------------------:
-![ori](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.18.44.png) | ![histeq](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.17.00.png)
+![ori](https://github.com/G14-Y3/IPEwG/blob/master/docs/img/grayscale_demo.png) | ![histeq](https://github.com/G14-Y3/IPEwG/blob/master/docs/img/hist_eq_demo.png)
 Depth Estimation           |  Style Transfer
-![depth](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.19.16.png) | ![styletransfer](https://github.com/G14-Y3/IPEwG/blob/master/Screenshot%202021-12-02%20at%2012.19.35.png)
+![depth](https://github.com/G14-Y3/IPEwG/blob/master/docs/img/depth_estimation_demo.png) | ![styletransfer](https://github.com/G14-Y3/IPEwG/blob/master/docs/img/style_transfer_demo.png)
 
 # How to Use
 
@@ -67,6 +67,6 @@ descriptions.
 # Known Issues
 
 - [Rotation might lower the quality of image](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
-- [A better decoding mechanism for steganograph](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
-- [Image panel collapsed in the batch processing tab](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
-- [Changing image dimension will cause slider view to be displayed inappropriately](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
+- [A better decoding mechanism for steganograph](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#better-decoding-mechanism-for-steganography)
+- [Image panel collapsed in the batch processing tab](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#image-panel-closed-incorrectly-in-batch-processing-tab)
+- [Changing image dimension will cause slider view to be displayed inappropriately](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#changes-in-dimensions-will-cause-slider-view-to-display-incorrectly)
