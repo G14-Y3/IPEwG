@@ -1,0 +1,5 @@
+# Histogram Equalization
+
+Histogram  equalization  supports equalization  in 10  colour spaces,  including  RBG,  HSV,  grayscale, and Lab colour space.  The equalization algorithm first collect the distribution of pixels in the colourspace and construct a cumulative distribution function (CDF). Next, equalization algorithm is used to’stretch’ the CDF to a linear function that span the colour space.  Based on the new linear CDF, each oldcolour space value is mapped to a new value.  The output image is constructed by applying the mappingto each pixel in the given image.  We also implemented visualization of the CDF of pixels in colour spacebefore and after the transform.  The chart shows clearly that the colour space pixel distribution becomeslinear  after  the  transform.   In  general,  output  image  has  higher  contrast  in  the  selected  colour  space,which is consistent with the fact that pixel are now evenly distributed in the colour space.
+
+See the project report for more details.

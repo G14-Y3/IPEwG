@@ -34,3 +34,5 @@ Colour adjustment will allow user to change the RGB and HSV values of the image.
 [RGBHSV] = [oldValue] * (factor / 100.0 + 1)
 ```
 where `factor` is a float between `-100.0` and `100.0`
+
+See the project report for more details.

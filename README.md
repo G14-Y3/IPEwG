@@ -1,7 +1,13 @@
 # Image Processing Engine with GUI
 Imperial College London Department of Computing Third Year Software Engineer Group Project
+
+Group 14
+
 Supervisor: Dr. Pancham Shukla
-Currently under development.
+
+Currently submitted and software has been packaged. Please refer to the How-to-use section for more details.
+
+Please see our group project report. It contains more details about the project, including the development process, benchmarking, and more information about each functionalities.
 
 Original Overview          |  Histogram Equalization
 :-------------------------:|:-------------------------:
@@ -11,12 +17,8 @@ Depth Estimation           |  Style Transfer
 
 # How to Use
 
-Since it is still under development, we have not yet packaged the software into a single bundle (e.g. dmg/exe/deb). Thus you have to have a JDK 17 environment.
+We have tried to package the software into executable format (e.g. dmg/exe/deb). However, due to the use of libtorch, it has taken significantly longer time than we expected. Thus you have to have a JDK 17 environment.
 Simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command.
-
-# Development Process & Dependencies
-
-
 
 # Feature Overview
 
@@ -65,3 +67,6 @@ descriptions.
 # Known Issues
 
 - [Rotation might lower the quality of image](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
+- [A better decoding mechanism for steganograph](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
+- [Image panel collapsed in the batch processing tab](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)
+- [Changing image dimension will cause slider view to be displayed inappropriately](https://github.com/G14-Y3/IPEwG/blob/master/docs/KnownIssues.md#rotation-might-lower-the-quality-of-the-image)

@@ -16,3 +16,5 @@ You can also select how many bits to use when you want to encode image/text. Sel
 the most information while not significantly altering the content image; whereas selecting 1 bit will lose
 more information of the encode image. For text information, lower number of bits will not lose 
 information, but limit the maximum number of text literals that can be encoded.
+
+See the project report for more details.
