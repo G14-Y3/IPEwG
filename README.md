@@ -19,7 +19,7 @@ Depth Estimation           |  Style Transfer
 
 We have tried to package the software into executable format (e.g. dmg/exe/deb). However, due to the use of TornadoFx in Kotlin, it has taken significantly longer time than we expected. Thus the most recommended way for launching the software now is by running `gradlew` script in the root folder.
 
-In Linux or MacOS, simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command. In Windows, run `./gradlew.bat run`. Remember to check the permission of the file `gradlew` or `gradlew.bat`.
+You need to have JDK 11 - 16 installed on your local computer. In Linux or MacOS, simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command. In Windows, run `./gradlew.bat run`. Remember to check the permission of the file `gradlew` or `gradlew.bat`.
 
 Below is a list of issues we encountered when trying to package the software into a proper distribution:
 
