@@ -17,3 +17,5 @@ Details of the training process is available below.
 The training process requires a large data set of content image. You can use the [COCO dataset](https://cocodataset.org/#download) to 
 train your style model. During the training process, you can specify the output folder to see the 
 effect of running the training process after certain epochs.
+
+See the project report for a more detailed description of the training process.

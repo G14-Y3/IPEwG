@@ -1,0 +1,5 @@
+# Frequency Filter
+
+Frequency filtering is implemented by first accepting a list of parameters defining a frequency filter.When the filtering is applied, image is transformed to frequency domain using a 2 dimentional Fast FourierTransform (FFT) algorithm.  In the transferred image,  frequency in different range is filtered outaccording to the filter defined by user.  Finally the filterred image in frequency domain is transferredback using 2 dimentional inverse FFT to spacial domain for visualization.  The 2 dimentional FFT andinverse  FFT  are  implemented  by  applying  FFT  first  to  each  row,  and  on  each  column.   Since  FFTperforms the best on image with side length of power of 2, zero paddings are added to image to extendthe height and width of image to the nearest 2’s exponent.
+
+See the project report for more details.

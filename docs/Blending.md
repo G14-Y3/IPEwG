@@ -1,0 +1,7 @@
+# Blending
+
+Blending will blend two images using different blending methods, e.g.  multiply, overlay, dissolve.
+
+Blending takes the pixel color from the top layer and that from the bottom layer and apply a blendoperation from a  range of blend modes including normal, dissolve,  multiply,  screen,  overlay, darken,lighten, color dodge, color burn, linear dodge, linear burn, hard light, soft light, vivid light, linear light,difference,  and exclusion. The blend operations follows the W3C SVG Compositing Specification.During a blend operation, all three RGB channels and the alpha channel are normalized to the interval [0,1]. The top and bottom colors are first multiplied by their own opacity to allow easier calculation foralpha blending. The dissolve mode is different from the others in terms that it is the only randomizedoperation, with a probability of choosing the top color equals to the top opacity. Overlay, hard light,soft light, vivid light, and linear light modes are all compositions of other simpler blend modes, so thecode is reused. The soft light mode involves a potential divide by zero in its operation, and we fixed itby introducing a `Double.MINVALUEdeviation`.
+
+See the project report for more details.
