@@ -17,8 +17,20 @@ Depth Estimation           |  Style Transfer
 
 # How to Use
 
-We have tried to package the software into executable format (e.g. dmg/exe/deb). However, due to the use of libtorch, it has taken significantly longer time than we expected. Thus you have to have a JDK 17 environment.
-Simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command.
+We have tried to package the software into executable format (e.g. dmg/exe/deb). However, due to the use of TornadoFx in Kotlin, it has taken significantly longer time than we expected. Thus the most recommended way for launching the software now is by running `gradlew` script in the root folder.
+
+In Linux or MacOS, simply run `./gradlew run` and it will start the application, or use Intellij to open the project and configure the runner to be `gradle` with the `run` command. In Windows, run `./gradlew.bat run`. Remember to check the permission of the file `gradlew` or `gradlew.bat`.
+
+Below is a list of issues we encountered when trying to package the software into a proper distribution:
+
+1. GraavlVM has issue with GUI software who need reflection/unsafe will not work unless we compile the source code of these dependencies as well
+https://github.com/oracle/graal/issues/2232
+2. GraavlVM-native-image-plugin does not work. Not maintained.
+
+3. FXLauncher does not work. It is not maintained.
+4. Not sure how to use update4j, but looks not working as expected.
+5. javapackager, might working but hard to use with Kotlin. Facing issues.
+6. Launch4j may work, but is Windows only (actually it is easy to run on Linux anyway)
 
 # Feature Overview
 
